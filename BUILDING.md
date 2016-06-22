@@ -1,0 +1,1 @@
+To build **pdfSweep Community**, you need to build the cleanup solution.
