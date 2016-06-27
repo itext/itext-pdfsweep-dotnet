@@ -42,6 +42,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using iText.IO.Source;
 using iText.IO.Util;
 using iText.Kernel;
@@ -500,7 +501,7 @@ namespace iText.Pdfcleanup {
                 else {
                     switch (tokeniser.GetTokenType()) {
                         case PdfTokenizer.TokenType.Number: {
-                            currentArguments.Add(new PdfNumber(Convert.ToSingle(tokeniser.GetStringValue().Replace(".", ","))));
+                            currentArguments.Add(new PdfNumber(Convert.ToSingle(tokeniser.GetStringValue(), CultureInfo.InvariantCulture)));
                             break;
                         }
 

@@ -214,22 +214,32 @@ namespace iText.Pdfcleanup {
             if (areasToBeCleaned.Count == 0) {
                 return imageBytes;
             }
-            Image image = Image.FromStream(new MemoryStream(imageBytes));
-            CleanImage(image, areasToBeCleaned);
-            if (image.RawFormat.Equals(ImageFormat.Jpeg))
+            using (Stream imageStream = new MemoryStream(imageBytes))
             {
-                MemoryStream ms = new MemoryStream();
-                image.Save(ms, ImageFormat.Jpeg);
-                return ms.ToArray();
-            }
-            else
-            {
-                MemoryStream ms = new MemoryStream();
-                EncoderParameters encoderParams = new EncoderParameters(1);
-                encoderParams.Param[0] = new EncoderParameter(Encoder.Compression, (long) EncoderValue.CompressionLZW);
-                ImageCodecInfo codecInfo = GetEncoderInfo("image/tiff");
-                image.Save(ms, codecInfo, encoderParams);
-                return ms.ToArray();
+                Image image = Image.FromStream(imageStream);
+                CleanImage(image, areasToBeCleaned);
+
+                using (MemoryStream outStream = new MemoryStream())
+                {
+                    if (Equals(image.RawFormat, ImageFormat.Tiff))
+                    {
+                        EncoderParameters encParams = new EncoderParameters(1);
+                        encParams.Param[0] = new EncoderParameter(Encoder.Compression, (long)EncoderValue.CompressionLZW);
+                        image.Save(outStream, GetEncoderInfo(image.RawFormat), encParams);
+                    }
+                    else if (Equals(image.RawFormat, ImageFormat.Jpeg))
+                    {
+                        EncoderParameters encParams = new EncoderParameters(1);
+                        encParams.Param[0] = new EncoderParameter(Encoder.Quality, 100L);
+                        image.Save(outStream, GetEncoderInfo(image.RawFormat), encParams);
+                    }
+                    else
+                    {
+                        image.Save(outStream, image.RawFormat);
+                    }
+
+                    return outStream.ToArray();
+                }
             }
         }
 
@@ -241,9 +251,9 @@ namespace iText.Pdfcleanup {
             foreach (Rectangle rect in areasToBeCleaned) {
                 int scaledBottomY = (int)System.Math.Ceiling(rect.GetBottom() * image.Height);
                 int scaledTopY = (int)Math.Floor(rect.GetTop() * image.Height);
-                int x = (int)System.Math.Ceiling(rect.GetLeft() * image.Height);
+                int x = (int)System.Math.Ceiling(rect.GetLeft() * image.Width);
                 int y = scaledTopY * -1 + image.Height;
-                int width = (int)Math.Floor(rect.GetRight() * image.Height) - x;
+                int width = (int)Math.Floor(rect.GetRight() * image.Width) - x;
                 int height = scaledTopY - scaledBottomY;
                 g.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR.Value), x, y,  width, height);
             }
@@ -503,18 +513,18 @@ namespace iText.Pdfcleanup {
             }
         }
 
-        private static ImageCodecInfo GetEncoderInfo(String mimeType)
+        private static ImageCodecInfo GetEncoderInfo(ImageFormat format)
         {
-            int j;
-            ImageCodecInfo[] encoders;
-            encoders = ImageCodecInfo.GetImageEncoders();
-            for (j = 0; j < encoders.Length; ++j)
+            ImageCodecInfo[] encoders = ImageCodecInfo.GetImageEncoders();
+
+            for (int j = 0; j < encoders.Length; ++j)
             {
-                if (encoders[j].MimeType == mimeType)
+                if (encoders[j].FormatID == format.Guid)
                     return encoders[j];
             }
+
             return null;
-        }
+        } 
 
         private class StandardLine {
             internal float A;
