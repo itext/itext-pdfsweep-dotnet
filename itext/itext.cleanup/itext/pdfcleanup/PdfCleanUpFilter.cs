@@ -56,7 +56,7 @@ using Point = iText.Kernel.Geom.Point;
 using Rectangle = iText.Kernel.Geom.Rectangle;
 using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iText.Kernel.Pdf.Canvas.Parser.ClipperLib.IntPoint>>;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     public class PdfCleanUpFilter {
         private static readonly Color? CLEANED_AREA_FILL_COLOR = Color.White;
 

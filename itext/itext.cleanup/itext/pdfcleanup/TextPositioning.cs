@@ -45,7 +45,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     internal class TextPositioning {
         private String prevOperator;
 

@@ -56,7 +56,7 @@ using iText.Kernel.Pdf.Colorspace;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     public class PdfCleanUpProcessor : PdfCanvasProcessor {
         private static readonly ICollection<String> textShowingOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
             ("TJ", "Tj", "'", "\""));

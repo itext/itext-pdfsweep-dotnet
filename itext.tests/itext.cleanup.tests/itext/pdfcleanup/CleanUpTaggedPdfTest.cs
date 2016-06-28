@@ -50,7 +50,7 @@ using Versions.Attributes;
 using iText.Kernel;
 using iText.Test;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     public class CleanUpTaggedPdfTest : ExtendedITextTest {
 
         private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/CleanUpTaggedPdfTest/";

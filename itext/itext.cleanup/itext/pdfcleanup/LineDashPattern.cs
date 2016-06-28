@@ -44,7 +44,7 @@ using System.Collections.Generic;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     /// <summary>Represents the line dash pattern.</summary>
     /// <remarks>
     /// Represents the line dash pattern. The line dash pattern shall control the pattern

@@ -42,7 +42,7 @@
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     /// <summary>Defines the region to be erased in a PDF document.</summary>
     public class PdfCleanUpLocation {
         private int page;

@@ -46,7 +46,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     public class PdfCleanUpEventListener : IEventListener {
         private const String textDataExpected = "Text data expected.";
 

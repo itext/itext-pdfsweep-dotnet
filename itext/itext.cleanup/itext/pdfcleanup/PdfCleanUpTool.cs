@@ -61,7 +61,7 @@ using System.IO;
 using Versions.Attributes;
 using iText.Kernel;
 
-namespace iText.Pdfcleanup {
+namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
     public class PdfCleanUpTool {
         /// <summary>
@@ -243,7 +243,7 @@ namespace iText.Pdfcleanup {
             }
         }
 
-        public virtual iText.Pdfcleanup.PdfCleanUpTool AddCleanupLocation(PdfCleanUpLocation cleanUpLocation) {
+        public virtual iText.PdfCleanup.PdfCleanUpTool AddCleanupLocation(PdfCleanUpLocation cleanUpLocation) {
             IList<PdfCleanUpLocation> pgLocations; 
             this.pdfCleanUpLocations.TryGetValue(cleanUpLocation.GetPage(), out pgLocations);
             if (pgLocations == null) {
