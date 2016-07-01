@@ -41,7 +41,6 @@
     address: sales@itextpdf.com */
 using System;
 using System.Collections.Generic;
-using iText.IO;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -52,7 +51,6 @@ using System.IO;
 using Versions.Attributes;
 using iText.Kernel;
 using iText.Test;
-using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpToolTest : ExtendedITextTest {
@@ -392,33 +390,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
-        public virtual void CleanUpTest28() {
-            String input = inputPath + "inlineImages.pdf";
-            String output = outputPath + "inlineImages_partial.pdf";
-            String cmp = inputPath + "cmp_inlineImages_partial.pdf";
-            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(62, 100, 20, 800), null));
-            CleanUp(input, output, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff_28");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
-        public virtual void CleanUpTest29() {
-            String input = inputPath + "inlineImages.pdf";
-            String output = outputPath + "inlineImages_partial2.pdf";
-            String cmp = inputPath + "cmp_inlineImages_partial2.pdf";
-            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(10, 100, 70, 599), null));
-            CleanUp(input, output, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff_29");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
         public virtual void CleanUpTest30() {
             String input = inputPath + "inlineImages.pdf";
             String output = outputPath + "inlineImages_full.pdf";
@@ -427,18 +398,6 @@ namespace iText.PdfCleanup {
                 new Rectangle(10, 100, 400, 600), null));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_30");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
-        [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
-        public virtual void CleanUpTest31() {
-            String input = inputPath + "inlineImageCleanup.pdf";
-            String output = outputPath + "inlineImageCleanup.pdf";
-            String cmp = inputPath + "cmp_inlineImageCleanup.pdf";
-            CleanUp(input, output, null);
-            CompareByContent(cmp, output, outputPath, "diff_31");
         }
 
         /// <exception cref="System.IO.IOException"/>
