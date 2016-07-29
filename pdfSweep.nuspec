@@ -6,7 +6,7 @@
     <title>iText 7 pdfSweep</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
-    <licenseUrl>http://www.gnu.org/licenses/agpl.html</licenseUrl>
+    <licenseUrl>http://itextpdf.com/legal</licenseUrl>
     <projectUrl>http://itextpdf.com/</projectUrl>
     <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -25,6 +25,5 @@
 	<file src="itext\itext.cleanup\bin\Release\itext.cleanup.xml" target="lib\net40" />
 	<file src="itext\itext.cleanup\bin\Release\itext.licensekey.dll" target="lib\net40" />
 	<file src="itext\itext.cleanup\bin\Release\itext.licensekey.xml" target="lib\net40" />
-	<!--file src="LICENSE.md" target="" /-->
   </files>
 </package>
