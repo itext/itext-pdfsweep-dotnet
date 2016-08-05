@@ -170,7 +170,6 @@ namespace iText.PdfCleanup {
                     if (canvas.GetGraphicsState().GetLeading() != currLeading) {
                         canvas.SetLeading((float)currLeading);
                     }
-                    canvas.NewlineText();
                 }
                 PdfCleanUpProcessor.WriteOperands(canvas, firstPositioningOperands);
             }
@@ -180,7 +179,7 @@ namespace iText.PdfCleanup {
                 }
                 else {
                     if (tmShift != null) {
-                        canvas.ConcatMatrix(tmShift.Get(Matrix.I11), tmShift.Get(Matrix.I12), tmShift.Get(Matrix.I21), tmShift.Get
+                        canvas.SetTextMatrix(tmShift.Get(Matrix.I11), tmShift.Get(Matrix.I12), tmShift.Get(Matrix.I21), tmShift.Get
                             (Matrix.I22), tmShift.Get(Matrix.I31), tmShift.Get(Matrix.I32));
                     }
                 }

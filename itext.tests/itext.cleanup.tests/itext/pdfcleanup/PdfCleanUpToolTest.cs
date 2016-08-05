@@ -413,6 +413,31 @@ namespace iText.PdfCleanup {
         }
 
         /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest33() {
+            String input = inputPath + "viewer_prefs_dict_table.pdf";
+            String output = outputPath + "complexTextPositioning.pdf";
+            String cmp = inputPath + "cmp_complexTextPositioning.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(300f, 370f
+                , 215f, 270f))));
+            CompareByContent(cmp, output, outputPath, "diff_33");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("DEVSIX-722")]
+        public virtual void CleanUpTest34() {
+            String input = inputPath + "new_york_times.pdf";
+            String output = outputPath + "textAndImages.pdf";
+            String cmp = inputPath + "cmp_textAndImages.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(150f, 235f
+                , 230f, 445f))));
+            CompareByContent(cmp, output, outputPath, "diff_34");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
