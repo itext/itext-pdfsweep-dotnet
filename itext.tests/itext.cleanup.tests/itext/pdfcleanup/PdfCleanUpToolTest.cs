@@ -451,6 +451,19 @@ namespace iText.PdfCleanup {
         }
 
         /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("DEVSIX-772")]
+        public virtual void CleanUpTest36() {
+            String input = inputPath + "bigOne.pdf";
+            String output = outputPath + "bigOne.pdf";
+            String cmp = inputPath + "cmp_bigOne.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(300f, 370f
+                , 215f, 270f), Color.GRAY)));
+            CompareByContent(cmp, output, outputPath, "diff_36");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
