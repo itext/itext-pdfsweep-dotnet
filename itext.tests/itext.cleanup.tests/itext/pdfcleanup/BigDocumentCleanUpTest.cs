@@ -80,6 +80,7 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("DEVSIX-770")]
         public virtual void BigTaggedDocument() {
             String input = inputPath + "chapter8_Interactive_features.pdf";
             String output = outputPath + "bigTaggedDocument.pdf";
