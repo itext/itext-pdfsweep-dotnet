@@ -450,10 +450,17 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_35");
         }
 
+        /// <summary>In this test, glyph "1" got removed by the clean up area that on first sight is not covering the glyph.
+        ///     </summary>
+        /// <remarks>
+        /// In this test, glyph "1" got removed by the clean up area that on first sight is not covering the glyph.
+        /// However, we can't get the particular glyphs height and instead we have the same height for all glyphs.
+        /// Because of this, in case of the big font sizes such situations might occur, that even though visually glyph is
+        /// rather away from the cleanup location we still get it removed because it's bbox intersects with cleanup area rectangle.
+        /// </remarks>
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-772")]
         public virtual void CleanUpTest36() {
             String input = inputPath + "bigOne.pdf";
             String output = outputPath + "bigOne.pdf";
