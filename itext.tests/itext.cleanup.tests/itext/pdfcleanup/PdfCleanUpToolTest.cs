@@ -111,6 +111,7 @@ namespace iText.PdfCleanup {
 
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Timeout(30000)]
         [NUnit.Framework.Test]
         public virtual void CleanUpTest04() {
             String input = inputPath + "hello_05.pdf";
