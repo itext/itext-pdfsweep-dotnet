@@ -54,6 +54,7 @@ using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Xobject;
 using iText.Layout.Element;
+using iText.Layout.Layout;
 using iText.Layout.Properties;
 using System.Collections.Generic;
 using System.Reflection;
@@ -466,9 +467,14 @@ namespace iText.PdfCleanup {
             modelCanvas.Add(p);
             if (repeat != null && repeat.GetValue()) {
                 bool? isFull = modelCanvas.GetRenderer().GetPropertyAsBoolean(Property.FULL);
-                while (isFull == null || (bool) !isFull) {
+                while (isFull == null || (bool)!isFull) {
                     p.Add(overlayText);
+                    LayoutArea previousArea = modelCanvas.GetRenderer().GetCurrentArea().Clone();
                     modelCanvas.Relayout();
+                    if (modelCanvas.GetRenderer().GetCurrentArea().Equals(previousArea)) {
+                        // Avoid infinite loop. This might be caused by the fact that the font does not support the text we want to show
+                        break;
+                    }
                     isFull = modelCanvas.GetRenderer().GetPropertyAsBoolean(Property.FULL);
                 }
             }
