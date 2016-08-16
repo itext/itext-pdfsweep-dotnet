@@ -66,13 +66,12 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-722")]
         public virtual void BigUntaggedDocument() {
             String input = inputPath + "iphone_user_guide_untagged.pdf";
             String output = outputPath + "bigUntaggedDocument.pdf";
             String cmp = inputPath + "cmp_bigUntaggedDocument.pdf";
             IList<Rectangle> rects = iText.IO.Util.JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle
-                (300f, 370f, 215f, 270f));
+                (300f, 370f, 215f, 260f));
             CleanUp(input, output, InitLocations(rects, 130));
             CompareByContent(cmp, output, outputPath, "diff_bigUntagged_");
         }

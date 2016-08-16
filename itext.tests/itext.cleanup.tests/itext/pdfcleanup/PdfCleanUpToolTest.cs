@@ -111,7 +111,6 @@ namespace iText.PdfCleanup {
 
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Timeout(30000)]
         [NUnit.Framework.Test]
         public virtual void CleanUpTest04() {
             String input = inputPath + "hello_05.pdf";
@@ -428,7 +427,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-722")]
         public virtual void CleanUpTest34() {
             String input = inputPath + "new_york_times.pdf";
             String output = outputPath + "textAndImages.pdf";
