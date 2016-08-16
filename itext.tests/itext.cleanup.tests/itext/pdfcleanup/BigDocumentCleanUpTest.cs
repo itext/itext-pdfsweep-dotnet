@@ -92,6 +92,19 @@ namespace iText.PdfCleanup {
         }
 
         /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void TextPositioning() {
+            String input = inputPath + "textPositioning.pdf";
+            String output = outputPath + "textPositioning.pdf";
+            String cmp = inputPath + "cmp_textPositioning.pdf";
+            IList<Rectangle> rects = iText.IO.Util.JavaUtil.ArraysAsList(new Rectangle(0f, 0f, 1f, 1f));
+            // just to enable cleanup processing of the pages
+            CleanUp(input, output, InitLocations(rects, 163));
+            CompareByContent(cmp, output, outputPath, "diff_txtPos_");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations);

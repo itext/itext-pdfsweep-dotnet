@@ -72,6 +72,9 @@ namespace iText.PdfCleanup {
         }
 
         public virtual void AppendPositioningOperator(String @operator, IList<PdfObject> operands) {
+            if (firstPositioningOperands != null) {
+                StorePositioningInfoInShiftFields();
+            }
             if ("TL".Equals(@operator)) {
                 currLeading = ((PdfNumber)operands[0]).FloatValue();
                 return;
@@ -84,9 +87,6 @@ namespace iText.PdfCleanup {
                 prevOperator = @operator;
             }
             else {
-                if ("TD".Equals(prevOperator)) {
-                    currLeading = -((PdfNumber)firstPositioningOperands[1]).FloatValue();
-                }
                 if ("Tm".Equals(@operator)) {
                     Clear();
                     firstPositioningOperands = new List<PdfObject>(operands);
@@ -97,33 +97,17 @@ namespace iText.PdfCleanup {
                     float ty;
                     if ("T*".Equals(@operator)) {
                         tx = 0;
-                        ty = GetCurrLeading();
+                        ty = -GetCurrLeading();
                     }
                     else {
                         tx = ((PdfNumber)operands[0]).FloatValue();
                         ty = ((PdfNumber)operands[1]).FloatValue();
                     }
                     if ("Tm".Equals(prevOperator)) {
-                        if (firstPositioningOperands != null) {
-                            tmShift = PdfCleanUpProcessor.OperandsToMatrix(firstPositioningOperands);
-                            firstPositioningOperands = null;
-                        }
                         tmShift = new Matrix(tx, ty).Multiply(tmShift);
                     }
                     else {
                         // prevOperator is left as TM here
-                        if ("T*".Equals(prevOperator)) {
-                            firstPositioningOperands = null;
-                            tdShift = new float[] { 0, GetCurrLeading() };
-                        }
-                        else {
-                            if (firstPositioningOperands != null) {
-                                tdShift = new float[2];
-                                tdShift[0] = ((PdfNumber)firstPositioningOperands[0]).FloatValue();
-                                tdShift[1] = ((PdfNumber)firstPositioningOperands[1]).FloatValue();
-                                firstPositioningOperands = null;
-                            }
-                        }
                         tdShift[0] += tx;
                         tdShift[1] += ty;
                         prevOperator = "Td";
@@ -136,6 +120,28 @@ namespace iText.PdfCleanup {
             }
         }
 
+        private void StorePositioningInfoInShiftFields() {
+            if ("Tm".Equals(prevOperator)) {
+                tmShift = PdfCleanUpProcessor.OperandsToMatrix(firstPositioningOperands);
+            }
+            else {
+                if ("T*".Equals(prevOperator)) {
+                    tdShift = new float[] { 0, -GetCurrLeading() };
+                }
+                else {
+                    float tx = ((PdfNumber)firstPositioningOperands[0]).FloatValue();
+                    float ty = ((PdfNumber)firstPositioningOperands[1]).FloatValue();
+                    if ("TD".Equals(prevOperator)) {
+                        currLeading = -ty;
+                    }
+                    tdShift = new float[2];
+                    tdShift[0] = tx;
+                    tdShift[1] = ty;
+                }
+            }
+            firstPositioningOperands = null;
+        }
+
         public virtual void AppendTjArrayWithSingleNumber(PdfArray tjArray, float fontSize, float scaling) {
             if (removedTextShift == null) {
                 removedTextShift = 0f;
@@ -144,7 +150,7 @@ namespace iText.PdfCleanup {
             removedTextShift += shift * fontSize * (scaling / 100) / 1000;
         }
 
-        /// <summary>is performed when text object is ended</summary>
+        /// <summary>is performed when text object is ended or text chunk is written</summary>
         public virtual void Clear() {
             // leading is not removed, as it is preserved between different text objects
             firstPositioningOperands = null;
