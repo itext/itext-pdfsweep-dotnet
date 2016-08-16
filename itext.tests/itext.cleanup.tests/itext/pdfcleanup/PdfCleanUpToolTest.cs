@@ -439,7 +439,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-770")]
         public virtual void CleanUpTest35() {
             String input = inputPath + "lineArtsSimple.pdf";
             String output = outputPath + "lineArtsSimple.pdf";
