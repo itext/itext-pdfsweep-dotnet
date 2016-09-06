@@ -43,6 +43,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using iText.IO.Source;
 using iText.IO.Util;
 using iText.Kernel;
@@ -488,7 +489,7 @@ namespace iText.PdfCleanup {
         private IDictionary<String, IList> ParseDAParam(PdfString DA) {
             IDictionary<String, IList> commandArguments = new Dictionary<String, IList>();
             PdfTokenizer tokeniser = new PdfTokenizer(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource
-                (DA.ToUnicodeString().GetBytes())));
+                (DA.ToUnicodeString().GetBytes(Encoding.UTF8))));
             IList currentArguments = new ArrayList();
             while (tokeniser.NextToken()) {
                 if (tokeniser.GetTokenType() == PdfTokenizer.TokenType.Other) {
