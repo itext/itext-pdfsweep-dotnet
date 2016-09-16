@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("647c862e-d837-4901-8e7b-68f5f8bf8f34")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.1")]
+[assembly: AssemblyFileVersion("1.0.1.1")]
 
 [assembly: NUnit.Framework.Timeout(300000)]

@@ -17,7 +17,7 @@
     <language>en-US</language>
     <tags>itext itextsharp c# .net csharp pdf cleanup</tags>
 	<dependencies>
-      <dependency id="itext" version="7.0.0" />
+      <dependency id="itext" version="7.0.1.1" />
     </dependencies>
   </metadata>
   <files>
