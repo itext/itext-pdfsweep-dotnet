@@ -41,7 +41,6 @@
     address: sales@itextpdf.com */
 using System;
 using System.Collections.Generic;
-using iText.IO;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -52,7 +51,6 @@ using System.IO;
 using Versions.Attributes;
 using iText.Kernel;
 using iText.Test;
-using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpToolTest : ExtendedITextTest {
@@ -392,33 +390,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
-        public virtual void CleanUpTest28() {
-            String input = inputPath + "inlineImages.pdf";
-            String output = outputPath + "inlineImages_partial.pdf";
-            String cmp = inputPath + "cmp_inlineImages_partial.pdf";
-            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(62, 100, 20, 800), null));
-            CleanUp(input, output, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff_28");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
-        public virtual void CleanUpTest29() {
-            String input = inputPath + "inlineImages.pdf";
-            String output = outputPath + "inlineImages_partial2.pdf";
-            String cmp = inputPath + "cmp_inlineImages_partial2.pdf";
-            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(10, 100, 70, 599), null));
-            CleanUp(input, output, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff_29");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
         public virtual void CleanUpTest30() {
             String input = inputPath + "inlineImages.pdf";
             String output = outputPath + "inlineImages_full.pdf";
@@ -432,18 +403,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
-        public virtual void CleanUpTest31() {
-            String input = inputPath + "inlineImageCleanup.pdf";
-            String output = outputPath + "inlineImageCleanup.pdf";
-            String cmp = inputPath + "cmp_inlineImageCleanup.pdf";
-            CleanUp(input, output, null);
-            CompareByContent(cmp, output, outputPath, "diff_31");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
         public virtual void CleanUpTest32() {
             String input = inputPath + "page229.pdf";
             String output = outputPath + "wholePageCleanUp.pdf";
@@ -451,6 +410,62 @@ namespace iText.PdfCleanup {
             CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(1, 1, PageSize
                 .A4.GetWidth() - 1, PageSize.A4.GetHeight() - 1))));
             CompareByContent(cmp, output, outputPath, "diff_32");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest33() {
+            String input = inputPath + "viewer_prefs_dict_table.pdf";
+            String output = outputPath + "complexTextPositioning.pdf";
+            String cmp = inputPath + "cmp_complexTextPositioning.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(300f, 370f
+                , 215f, 270f))));
+            CompareByContent(cmp, output, outputPath, "diff_33");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest34() {
+            String input = inputPath + "new_york_times.pdf";
+            String output = outputPath + "textAndImages.pdf";
+            String cmp = inputPath + "cmp_textAndImages.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(150f, 235f
+                , 230f, 445f))));
+            CompareByContent(cmp, output, outputPath, "diff_34");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest35() {
+            String input = inputPath + "lineArtsSimple.pdf";
+            String output = outputPath + "lineArtsSimple.pdf";
+            String cmp = inputPath + "cmp_lineArtsSimple.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 80f
+                , 460f, 65f), Color.GRAY)));
+            CompareByContent(cmp, output, outputPath, "diff_35");
+        }
+
+        /// <summary>In this test, glyph "1" got removed by the clean up area that on first sight is not covering the glyph.
+        ///     </summary>
+        /// <remarks>
+        /// In this test, glyph "1" got removed by the clean up area that on first sight is not covering the glyph.
+        /// However, we can't get the particular glyphs height and instead we have the same height for all glyphs.
+        /// Because of this, in case of the big font sizes such situations might occur, that even though visually glyph is
+        /// rather away from the cleanup location we still get it removed because it's bbox intersects with cleanup area rectangle.
+        /// </remarks>
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest36() {
+            String input = inputPath + "bigOne.pdf";
+            String output = outputPath + "bigOne.pdf";
+            String cmp = inputPath + "cmp_bigOne.pdf";
+            CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(300f, 370f
+                , 215f, 270f), Color.GRAY)));
+            CompareByContent(cmp, output, outputPath, "diff_36");
         }
 
         /// <exception cref="System.IO.IOException"/>

@@ -72,9 +72,17 @@ namespace iText.PdfCleanup {
         }
 
         public virtual void AppendPositioningOperator(String @operator, IList<PdfObject> operands) {
-            if ("TL".Equals(@operator)) {
-                currLeading = ((PdfNumber)operands[0]).FloatValue();
-                return;
+            if (firstPositioningOperands != null) {
+                StorePositioningInfoInShiftFields();
+            }
+            if ("TD".Equals(@operator)) {
+                currLeading = -((PdfNumber)operands[1]).FloatValue();
+            }
+            else {
+                if ("TL".Equals(@operator)) {
+                    currLeading = ((PdfNumber)operands[0]).FloatValue();
+                    return;
+                }
             }
             if (removedTextShift != null) {
                 removedTextShift = null;
@@ -84,9 +92,6 @@ namespace iText.PdfCleanup {
                 prevOperator = @operator;
             }
             else {
-                if ("TD".Equals(prevOperator)) {
-                    currLeading = -((PdfNumber)firstPositioningOperands[1]).FloatValue();
-                }
                 if ("Tm".Equals(@operator)) {
                     Clear();
                     firstPositioningOperands = new List<PdfObject>(operands);
@@ -97,43 +102,41 @@ namespace iText.PdfCleanup {
                     float ty;
                     if ("T*".Equals(@operator)) {
                         tx = 0;
-                        ty = GetCurrLeading();
+                        ty = -GetCurrLeading();
                     }
                     else {
                         tx = ((PdfNumber)operands[0]).FloatValue();
                         ty = ((PdfNumber)operands[1]).FloatValue();
                     }
                     if ("Tm".Equals(prevOperator)) {
-                        if (firstPositioningOperands != null) {
-                            tmShift = PdfCleanUpProcessor.OperandsToMatrix(firstPositioningOperands);
-                            firstPositioningOperands = null;
-                        }
                         tmShift = new Matrix(tx, ty).Multiply(tmShift);
                     }
                     else {
                         // prevOperator is left as TM here
-                        if ("T*".Equals(prevOperator)) {
-                            firstPositioningOperands = null;
-                            tdShift = new float[] { 0, GetCurrLeading() };
-                        }
-                        else {
-                            if (firstPositioningOperands != null) {
-                                tdShift = new float[2];
-                                tdShift[0] = ((PdfNumber)firstPositioningOperands[0]).FloatValue();
-                                tdShift[1] = ((PdfNumber)firstPositioningOperands[1]).FloatValue();
-                                firstPositioningOperands = null;
-                            }
-                        }
                         tdShift[0] += tx;
                         tdShift[1] += ty;
                         prevOperator = "Td";
                     }
-                    // concatenation of two any TD, Td, T* result in Td
-                    if ("TD".Equals(@operator)) {
-                        currLeading = -((PdfNumber)operands[1]).FloatValue();
-                    }
                 }
             }
+        }
+
+        // concatenation of two any TD, Td, T* result in Td
+        private void StorePositioningInfoInShiftFields() {
+            if ("Tm".Equals(prevOperator)) {
+                tmShift = PdfCleanUpProcessor.OperandsToMatrix(firstPositioningOperands);
+            }
+            else {
+                if ("T*".Equals(prevOperator)) {
+                    tdShift = new float[] { 0, -GetCurrLeading() };
+                }
+                else {
+                    tdShift = new float[2];
+                    tdShift[0] = ((PdfNumber)firstPositioningOperands[0]).FloatValue();
+                    tdShift[1] = ((PdfNumber)firstPositioningOperands[1]).FloatValue();
+                }
+            }
+            firstPositioningOperands = null;
         }
 
         public virtual void AppendTjArrayWithSingleNumber(PdfArray tjArray, float fontSize, float scaling) {
@@ -144,7 +147,7 @@ namespace iText.PdfCleanup {
             removedTextShift += shift * fontSize * (scaling / 100) / 1000;
         }
 
-        /// <summary>is performed when text object is ended</summary>
+        /// <summary>is performed when text object is ended or text chunk is written</summary>
         public virtual void Clear() {
             // leading is not removed, as it is preserved between different text objects
             firstPositioningOperands = null;
@@ -163,14 +166,10 @@ namespace iText.PdfCleanup {
 
         private void WritePositioningOperator(PdfCanvas canvas) {
             if (firstPositioningOperands != null) {
-                if ("TD".Equals(prevOperator)) {
-                    currLeading = -((PdfNumber)firstPositioningOperands[1]).FloatValue();
-                }
                 if ("T*".Equals(prevOperator)) {
                     if (canvas.GetGraphicsState().GetLeading() != currLeading) {
                         canvas.SetLeading((float)currLeading);
                     }
-                    canvas.NewlineText();
                 }
                 PdfCleanUpProcessor.WriteOperands(canvas, firstPositioningOperands);
             }
@@ -180,7 +179,7 @@ namespace iText.PdfCleanup {
                 }
                 else {
                     if (tmShift != null) {
-                        canvas.ConcatMatrix(tmShift.Get(Matrix.I11), tmShift.Get(Matrix.I12), tmShift.Get(Matrix.I21), tmShift.Get
+                        canvas.SetTextMatrix(tmShift.Get(Matrix.I11), tmShift.Get(Matrix.I12), tmShift.Get(Matrix.I21), tmShift.Get
                             (Matrix.I22), tmShift.Get(Matrix.I31), tmShift.Get(Matrix.I32));
                     }
                 }
