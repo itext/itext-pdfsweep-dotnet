@@ -17,13 +17,11 @@
     <language>en-US</language>
     <tags>itext itext7 itextsharp c# .net csharp pdf cleanup pdfsweep</tags>
 	<dependencies>
-      <dependency id="itext" version="7.0.1.1" />
+      <dependency id="itext7" version="7.0.1.1" />
     </dependencies>
   </metadata>
   <files>
 	<file src="itext\itext.cleanup\bin\Release\itext.cleanup.dll" target="lib\net40" />
 	<file src="itext\itext.cleanup\bin\Release\itext.cleanup.xml" target="lib\net40" />
-	<file src="itext\itext.cleanup\bin\Release\itext.licensekey.dll" target="lib\net40" />
-	<file src="itext\itext.cleanup\bin\Release\itext.licensekey.xml" target="lib\net40" />
   </files>
 </package>
