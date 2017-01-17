@@ -54,7 +54,8 @@ using iText.Test;
 namespace iText.PdfCleanup {
     public class BigDocumentCleanUpTest : ExtendedITextTest {
 
-        private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/BigDocumentCleanUpTest/";
+        private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/BigDocumentCleanUpTest/";
 
         private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/BigDocumentCleanUpTest/";
 

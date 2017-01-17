@@ -53,7 +53,8 @@ using iText.Test;
 namespace iText.PdfCleanup {
     public class CleanUpTaggedPdfTest : ExtendedITextTest {
 
-        private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/CleanUpTaggedPdfTest/";
+        private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/CleanUpTaggedPdfTest/";
 
         private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/CleanUpTaggedPdfTest/";
 
