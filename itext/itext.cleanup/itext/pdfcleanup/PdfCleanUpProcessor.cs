@@ -313,7 +313,7 @@ namespace iText.PdfCleanup {
                                                 }
                                                 else {
                                                     if (lineStyleOperators.Contains(@operator)) {
-                                                        notAppliedGsParams.Peek().lineStyleOperators[@operator] = new List<PdfObject>(operands);
+                                                        notAppliedGsParams.Peek().lineStyleOperators.Put(@operator, new List<PdfObject>(operands));
                                                     }
                                                     else {
                                                         if ("gs".Equals(@operator)) {
