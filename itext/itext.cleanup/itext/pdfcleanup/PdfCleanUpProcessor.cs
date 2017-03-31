@@ -232,7 +232,7 @@ namespace iText.PdfCleanup {
             return new Matrix(a, b, c, d, e, f);
         }
 
-        private override void EventOccurred(IEventData data, EventType type) {
+        protected override void EventOccurred(IEventData data, EventType type) {
             if (supportedEvents == null || supportedEvents.Contains(type)) {
                 eventListener.EventOccurred(data, type);
             }
