@@ -232,6 +232,12 @@ namespace iText.PdfCleanup {
             return new Matrix(a, b, c, d, e, f);
         }
 
+        private override void EventOccurred(IEventData data, EventType type) {
+            if (supportedEvents == null || supportedEvents.Contains(type)) {
+                eventListener.EventOccurred(data, type);
+            }
+        }
+
         private void WriteGsParamsIfFormXObject(String @operator, IList<PdfObject> operands) {
             if ("Do".Equals(@operator)) {
                 PdfStream formStream = GetXObjectStream((PdfName)operands[0]);
