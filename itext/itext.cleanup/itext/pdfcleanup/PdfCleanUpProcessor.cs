@@ -232,6 +232,12 @@ namespace iText.PdfCleanup {
             return new Matrix(a, b, c, d, e, f);
         }
 
+        protected override void EventOccurred(IEventData data, EventType type) {
+            if (supportedEvents == null || supportedEvents.Contains(type)) {
+                eventListener.EventOccurred(data, type);
+            }
+        }
+
         private void WriteGsParamsIfFormXObject(String @operator, IList<PdfObject> operands) {
             if ("Do".Equals(@operator)) {
                 PdfStream formStream = GetXObjectStream((PdfName)operands[0]);
@@ -313,7 +319,7 @@ namespace iText.PdfCleanup {
                                                 }
                                                 else {
                                                     if (lineStyleOperators.Contains(@operator)) {
-                                                        notAppliedGsParams.Peek().lineStyleOperators[@operator] = new List<PdfObject>(operands);
+                                                        notAppliedGsParams.Peek().lineStyleOperators.Put(@operator, new List<PdfObject>(operands));
                                                     }
                                                     else {
                                                         if ("gs".Equals(@operator)) {

@@ -55,11 +55,12 @@ using iText.Test;
 namespace iText.PdfCleanup {
     public class PdfCleanUpToolTest : ExtendedITextTest {
 
-        private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/PdfCleanUpToolTest/";
+        private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/PdfCleanUpToolTest/";
 
         private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/PdfCleanUpToolTest/";
 
-        [NUnit.Framework.TestFixtureSetUp]
+        [NUnit.Framework.OneTimeSetUp]
         public static void Before() {
             CreateOrClearDestinationFolder(outputPath);
         }
