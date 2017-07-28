@@ -71,7 +71,8 @@ namespace iText.PdfCleanup {
         /// <param name="page">specifies the number of the page which the region belongs to.</param>
         /// <param name="region">represents the boundaries of the area to be erased.</param>
         /// <param name="cleanUpColor">
-        /// a color used to fill the area after erasing it. If <CODE>null</CODE>
+        /// a color used to fill the area after erasing it. If
+        /// <see langword="null"/>
         /// the erased area left uncolored.
         /// </param>
         public PdfCleanUpLocation(int page, Rectangle region, Color cleanUpColor)
@@ -94,8 +95,11 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>Returns a color used to fill the area after erasing it.</summary>
-        /// <remarks>Returns a color used to fill the area after erasing it. If <CODE>null</CODE> the erased area left uncolored.
-        ///     </remarks>
+        /// <remarks>
+        /// Returns a color used to fill the area after erasing it. If
+        /// <see langword="null"/>
+        /// the erased area left uncolored.
+        /// </remarks>
         /// <returns>a color used to fill the area after erasing it.</returns>
         public virtual Color GetCleanUpColor() {
             return cleanUpColor;

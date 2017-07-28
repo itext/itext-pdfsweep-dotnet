@@ -155,6 +155,7 @@ namespace iText.PdfCleanup {
         /// is 0.
         /// For example: [3 0 4 0 5 0 6 0] (sum is 0), [3 0 4 0 5 1] (sum is 1).
         /// </remarks>
+        /// <returns>is the dashed pattern solid or not</returns>
         public virtual bool IsSolid() {
             if (dashArray.Size() % 2 != 0) {
                 return false;

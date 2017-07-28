@@ -292,7 +292,10 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
+        /// <param name="path">path</param>
+        /// <param name="ctm">ctm</param>
         /// <param name="fillingRule">If the subpath is contour, pass any value.</param>
+        /// <returns>filterFillPath</returns>
         protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
             path.CloseAllSubpaths();
             Clipper clipper = new Clipper();
