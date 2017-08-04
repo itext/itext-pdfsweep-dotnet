@@ -486,8 +486,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("line style operators are written even if there is no need for this (like on paths fill or FILL text rendering mode"
-            )]
         public virtual void CleanUpTest38() {
             String input = inputPath + "helloHelvetica02.pdf";
             String output = outputPath + "helloHelvetica02.pdf";
