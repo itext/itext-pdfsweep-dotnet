@@ -729,10 +729,12 @@ namespace iText.PdfCleanup {
                     (Matrix.I31), m.Get(Matrix.I32));
                 gsParams.ctms.Clear();
             }
-            foreach (IList<PdfObject> strokeState in gsParams.lineStyleOperators.Values) {
-                WriteOperands(GetCanvas(), strokeState);
+            if (stroke) {
+                foreach (IList<PdfObject> strokeState in gsParams.lineStyleOperators.Values) {
+                    WriteOperands(GetCanvas(), strokeState);
+                }
+                gsParams.lineStyleOperators.Clear();
             }
-            gsParams.lineStyleOperators.Clear();
             if (fill) {
                 if (gsParams.fillColor != null) {
                     GetCanvas().SetFillColor(gsParams.fillColor);
