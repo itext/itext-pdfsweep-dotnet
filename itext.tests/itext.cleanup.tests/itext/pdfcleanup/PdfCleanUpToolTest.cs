@@ -469,6 +469,20 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_36");
         }
 
+        /// <summary>In this test we check that line style operators (such as 'w') are processed correctly</summary>
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest37() {
+            String input = inputPath + "helloHelvetica.pdf";
+            String output = outputPath + "helloHelvetica.pdf";
+            String cmp = inputPath + "cmp_helloHelvetica.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(0f, 0f, 595f, 680f), Color.GRAY));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_37");
+        }
+
         /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));

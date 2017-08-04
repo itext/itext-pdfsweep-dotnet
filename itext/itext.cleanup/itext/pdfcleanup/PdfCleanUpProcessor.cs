@@ -242,8 +242,7 @@ namespace iText.PdfCleanup {
             if ("Do".Equals(@operator)) {
                 PdfStream formStream = GetXObjectStream((PdfName)operands[0]);
                 if (PdfName.Form.Equals(formStream.GetAsName(PdfName.Subtype))) {
-                    WriteNotAppliedGsParams(true, true, true);
-                    // write here all gs params because we don't know which content is inside of form
+                    WriteNotAppliedGsParams(true, true);
                     OpenNotWrittenTags();
                 }
             }
@@ -474,7 +473,7 @@ namespace iText.PdfCleanup {
                     break;
                 }
             }
-            WriteNotAppliedGsParams(fill, stroke, false);
+            WriteNotAppliedGsParams(fill, stroke);
         }
 
         private void CheckIfImageAndClean(IList<PdfObject> operands) {
@@ -495,7 +494,7 @@ namespace iText.PdfCleanup {
                 }
                 if (imageToWrite != null) {
                     float[] ctm = PollNotAppliedCtm();
-                    WriteNotAppliedGsParams(false, false, false);
+                    WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
                     GetCanvas().AddXObject(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
                 }
@@ -512,7 +511,7 @@ namespace iText.PdfCleanup {
                     filteredImage.MakeMask();
                 }
                 float[] ctm = PollNotAppliedCtm();
-                WriteNotAppliedGsParams(false, false, false);
+                WriteNotAppliedGsParams(false, false);
                 OpenNotWrittenTags();
                 GetCanvas().AddImage(filteredImage, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5], true);
             }
@@ -556,7 +555,7 @@ namespace iText.PdfCleanup {
             if (fill) {
                 fillPath = filter.FilterFillPath(path, path.GetRule());
                 if (!fillPath.IsEmpty()) {
-                    WriteNotAppliedGsParams(true, false, true);
+                    WriteNotAppliedGsParams(true, false);
                     OpenNotWrittenTags();
                     WritePath(fillPath);
                     if (path.GetRule() == PdfCanvasConstants.FillingRule.NONZERO_WINDING) {
@@ -572,7 +571,7 @@ namespace iText.PdfCleanup {
                 Path strokePath = filter.FilterStrokePath(path);
                 if (!strokePath.IsEmpty()) {
                     // we pass stroke here as false, because stroke is transformed into fill. we don't need to set stroke color
-                    WriteNotAppliedGsParams(false, false, true);
+                    WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
                     WriteStrokePath(strokePath, path.GetStrokeColor());
                 }
@@ -586,7 +585,7 @@ namespace iText.PdfCleanup {
                     clippingPath = filter.FilterFillPath(path, path.GetClippingRule());
                 }
                 if (!clippingPath.IsEmpty()) {
-                    WriteNotAppliedGsParams(false, false, true);
+                    WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
                     WritePath(clippingPath);
                     if (path.GetClippingRule() == PdfCanvasConstants.FillingRule.NONZERO_WINDING) {
@@ -605,7 +604,7 @@ namespace iText.PdfCleanup {
                     // there is no visible content at all. But at the same time as we removed the clipping
                     // path, the invisible content would become visible. So, to emulate the correct result,
                     // we would simply put a degenerate clipping path which consists of a single point at (0, 0).
-                    WriteNotAppliedGsParams(false, false, false);
+                    WriteNotAppliedGsParams(false, false);
                     // we still need to open all q operators
                     canvas.MoveTo(0, 0).Clip();
                 }
@@ -702,22 +701,21 @@ namespace iText.PdfCleanup {
             return ctm;
         }
 
-        private void WriteNotAppliedGsParams(bool fill, bool stroke, bool isPath) {
+        private void WriteNotAppliedGsParams(bool fill, bool stroke) {
             if (notAppliedGsParams.Count > 0) {
                 while (notAppliedGsParams.Count != 1) {
                     PdfCleanUpProcessor.NotAppliedGsParams gsParams = notAppliedGsParams.PollLast();
                     // We want to apply graphics state params of outer q/Q nesting level on it's level and not on the inner
                     // q/Q nesting level. Because of that we write all gs params for the outer q/Q, just in case it will be needed
                     // later (if we don't write it now, there will be no possibility to write it in the outer q/Q later).
-                    ApplyGsParams(true, true, true, gsParams);
+                    ApplyGsParams(true, true, gsParams);
                     GetCanvas().SaveState();
                 }
-                ApplyGsParams(fill, stroke, isPath, notAppliedGsParams.Peek());
+                ApplyGsParams(fill, stroke, notAppliedGsParams.Peek());
             }
         }
 
-        private void ApplyGsParams(bool fill, bool stroke, bool isPath, PdfCleanUpProcessor.NotAppliedGsParams gsParams
-            ) {
+        private void ApplyGsParams(bool fill, bool stroke, PdfCleanUpProcessor.NotAppliedGsParams gsParams) {
             foreach (PdfDictionary extGState in gsParams.extGStates) {
                 GetCanvas().SetExtGState(extGState);
             }
@@ -731,12 +729,10 @@ namespace iText.PdfCleanup {
                     (Matrix.I31), m.Get(Matrix.I32));
                 gsParams.ctms.Clear();
             }
-            if (isPath) {
-                foreach (IList<PdfObject> strokeState in gsParams.lineStyleOperators.Values) {
-                    WriteOperands(GetCanvas(), strokeState);
-                }
-                gsParams.lineStyleOperators.Clear();
+            foreach (IList<PdfObject> strokeState in gsParams.lineStyleOperators.Values) {
+                WriteOperands(GetCanvas(), strokeState);
             }
+            gsParams.lineStyleOperators.Clear();
             if (fill) {
                 if (gsParams.fillColor != null) {
                     GetCanvas().SetFillColor(gsParams.fillColor);
