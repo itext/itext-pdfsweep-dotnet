@@ -484,6 +484,21 @@ namespace iText.PdfCleanup {
         }
 
         /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("line style operators are written even if there is no need for this (like on paths fill or FILL text rendering mode"
+            )]
+        public virtual void CleanUpTest38() {
+            String input = inputPath + "helloHelvetica02.pdf";
+            String output = outputPath + "helloHelvetica02.pdf";
+            String cmp = inputPath + "cmp_helloHelvetica02.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(0f, 0f, 0f, 0f), Color.GRAY));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_38");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
