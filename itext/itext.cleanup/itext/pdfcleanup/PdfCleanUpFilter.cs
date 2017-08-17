@@ -60,6 +60,14 @@ namespace iText.PdfCleanup {
     public class PdfCleanUpFilter {
         private static readonly Color? CLEANED_AREA_FILL_COLOR = Color.White;
 
+        /* There is no exact representation of the circle using Bezier curves.
+         * But, for a Bezier curve with n segments the optimal distance to the control points,
+         * in the sense that the middle of the curve lies on the circle itself, is (4/3) * tan(pi / (2*n))
+         * So for 4 points it is (4/3) * tan(pi/8) = 4 * (sqrt(2)-1)/3 = 0.5522847498
+         * In this approximation, the B�zier curve always falls outside the circle,
+         * except momentarily when it dips in to touch the circle at the midpoint and endpoints.
+         * However, a better approximation is possible using 0.55191502449
+         */
         private const double CIRCLE_APPROXIMATION_CONST = 0.55191502449;
 
         private IList<Rectangle> regions;
@@ -473,6 +481,10 @@ namespace iText.PdfCleanup {
             return transformed;
         }
 
+        /// <summary> Get the bounding box of a TextRenderInfo object
+        /// <returns>
+        /// <code>Point[]</code>
+        /// </returns>
         private Point[] GetTextRectangle(TextRenderInfo renderInfo) {
             LineSegment ascent = renderInfo.GetAscentLine();
             LineSegment descent = renderInfo.GetDescentLine();
@@ -481,12 +493,20 @@ namespace iText.PdfCleanup {
                 ().Get(1)), new Point(descent.GetStartPoint().Get(0), descent.GetStartPoint().Get(1)) };
         }
 
+        /// <summary> Convert a Rectangle object into 4 Points
+        /// <returns>
+        /// <code>Point[]</code>
+        /// </returns>
         private Point[] GetRectangleVertices(Rectangle rect) {
             Point[] points = new Point[] { new Point(rect.GetLeft(), rect.GetBottom()), new Point(rect.GetRight(), rect
                 .GetBottom()), new Point(rect.GetRight(), rect.GetTop()), new Point(rect.GetLeft(), rect.GetTop()) };
             return points;
         }
 
+        /// <summary> Convert 4 Point objects into a Rectangle
+        /// <returns>
+        /// <code>Rectangle</code>
+        /// </returns>
         private Rectangle GetAsRectangle(Point p1, Point p2, Point p3, Point p4) {
             IList<double> xs = iText.IO.Util.JavaUtil.ArraysAsList(p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX());
             IList<double> ys = iText.IO.Util.JavaUtil.ArraysAsList(p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY());
@@ -497,6 +517,10 @@ namespace iText.PdfCleanup {
             return new Rectangle((float)left, (float)bottom, (float)(right - left), (float)(top - bottom));
         }
 
+        /// <summary>Calculate the intersection of 2 Rectangles
+        /// <returns>
+        /// <code>Rectangle</code> representing the intersection of 2 Rectangles
+        /// </returns>
         private Rectangle GetRectanglesIntersection(Rectangle rect1, Rectangle rect2) {
             float x1 = Math.Max(rect1.GetLeft(), rect2.GetLeft());
             float y1 = Math.Max(rect1.GetBottom(), rect2.GetBottom());

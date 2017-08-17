@@ -124,8 +124,10 @@ namespace iText.PdfCleanup {
         /// On "q" operator new
         /// <c>NotAppliedGsParams</c>
         /// is pushed to the stack and on "Q" it is popped.
+        /// <p>
         /// When operators are applied, they are written from the outer to inner nesting level, separated by "q".
         /// After being written the stack is cleared.
+        /// <p>
         /// Graphics state parameters are applied in two ways:
         /// <ul>
         /// <li>
@@ -150,7 +152,7 @@ namespace iText.PdfCleanup {
 
         private TextPositioning textPositioning;
 
-        public PdfCleanUpProcessor(IList<Rectangle> cleanUpRegions, PdfDocument document)
+        internal PdfCleanUpProcessor(IList<Rectangle> cleanUpRegions, PdfDocument document)
             : base(new PdfCleanUpEventListener()) {
             this.document = document;
             this.filter = new PdfCleanUpFilter(cleanUpRegions);
@@ -185,7 +187,7 @@ namespace iText.PdfCleanup {
             return (PdfCleanUpEventListener)eventListener;
         }
 
-        public virtual PdfCanvas PopCleanedCanvas() {
+        internal virtual PdfCanvas PopCleanedCanvas() {
             // If it is the last canvas, we finish to wrap it with Q
             if (canvasStack.Count == 1) {
                 GetCanvas().RestoreState();
@@ -209,7 +211,7 @@ namespace iText.PdfCleanup {
             }
         }
 
-        protected internal static void WriteOperands(PdfCanvas canvas, IList<PdfObject> operands) {
+        internal static void WriteOperands(PdfCanvas canvas, IList<PdfObject> operands) {
             int index = 0;
             foreach (PdfObject obj in operands) {
                 canvas.GetContentStream().GetOutputStream().Write(obj);
@@ -222,7 +224,7 @@ namespace iText.PdfCleanup {
             }
         }
 
-        protected internal static Matrix OperandsToMatrix(IList<PdfObject> operands) {
+        internal static Matrix OperandsToMatrix(IList<PdfObject> operands) {
             float a = ((PdfNumber)operands[0]).FloatValue();
             float b = ((PdfNumber)operands[1]).FloatValue();
             float c = ((PdfNumber)operands[2]).FloatValue();
@@ -754,14 +756,20 @@ namespace iText.PdfCleanup {
         /// <remarks>
         /// Single instance of this class represents not applied graphics state params of the single q/Q nesting level.
         /// For example:
+        /// <p>
         /// 0 g
         /// 1 0 0 1 25 50 cm
+        /// <p>
         /// q
+        /// <p>
         /// 5 w
         /// /Gs1 gs
         /// 13 g
+        /// <p>
         /// Q
+        /// <p>
         /// 1 0 0 RG
+        /// <p>
         /// Operators "0 g", "1 0 0 1 25 50 cm" and "1 0 0 RG" belong to the outer q/Q nesting level;
         /// Operators "5 w", "/Gs1 gs", "13 g" belong to the inner q/Q nesting level.
         /// Operators of every level of the q/Q nesting are stored in different instances of this class.
