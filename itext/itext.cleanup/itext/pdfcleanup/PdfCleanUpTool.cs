@@ -76,12 +76,14 @@ namespace iText.PdfCleanup {
         /// into fixed point numbers by multiplying by this coefficient. Vary it
         /// to adjust the preciseness of the calculations.
         /// </remarks>
+        [Obsolete]
         public static double floatMultiplier = Math.Pow(10, 14);
 
         /// <summary>
         /// Used as the criterion of a good approximation of rounded line joins
         /// and line caps.
         /// </summary>
+        [Obsolete]
         public static double arcTolerance = 0.0025;
 
         private PdfDocument pdfDocument;
