@@ -64,14 +64,16 @@ namespace iText.PdfCleanup {
         private float? currLeading;
 
         // shift in text space units, which is the result of the removed text
-        public virtual float GetCurrLeading() {
+        /// <summary>Get the current leading</summary>
+        /// <returns/>
+        internal virtual float GetCurrLeading() {
             if (currLeading != null) {
                 return (float)currLeading;
             }
             return 0f;
         }
 
-        public virtual void AppendPositioningOperator(String @operator, IList<PdfObject> operands) {
+        internal virtual void AppendPositioningOperator(String @operator, IList<PdfObject> operands) {
             if (firstPositioningOperands != null) {
                 StorePositioningInfoInShiftFields();
             }
@@ -139,7 +141,7 @@ namespace iText.PdfCleanup {
             firstPositioningOperands = null;
         }
 
-        public virtual void AppendTjArrayWithSingleNumber(PdfArray tjArray, float fontSize, float scaling) {
+        internal virtual void AppendTjArrayWithSingleNumber(PdfArray tjArray, float fontSize, float scaling) {
             if (removedTextShift == null) {
                 removedTextShift = 0f;
             }
@@ -148,7 +150,7 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>is performed when text object is ended or text chunk is written</summary>
-        public virtual void Clear() {
+        internal virtual void Clear() {
             // leading is not removed, as it is preserved between different text objects
             firstPositioningOperands = null;
             prevOperator = null;
@@ -157,8 +159,8 @@ namespace iText.PdfCleanup {
             tmShift = null;
         }
 
-        public virtual void WritePositionedText(String @operator, IList<PdfObject> operands, PdfArray cleanedText, 
-            PdfCanvas canvas) {
+        internal virtual void WritePositionedText(String @operator, IList<PdfObject> operands, PdfArray cleanedText
+            , PdfCanvas canvas) {
             WritePositioningOperator(canvas);
             WriteText(@operator, operands, cleanedText, canvas);
             Clear();

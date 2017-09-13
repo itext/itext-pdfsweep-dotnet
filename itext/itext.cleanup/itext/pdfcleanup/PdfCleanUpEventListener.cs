@@ -71,7 +71,10 @@ namespace iText.PdfCleanup {
             }
         }
 
-        public virtual IList<TextRenderInfo> GetEncounteredText() {
+        /// <summary>Get the last encountered TextRenderInfo objects, then clears the internal buffer</summary>
+        /// <returns>the TextRenderInfo objects that were encountered when processing the last text rendering operation
+        ///     </returns>
+        internal virtual IList<TextRenderInfo> GetEncounteredText() {
             if (content.Count == 0) {
                 throw new PdfException(textDataExpected);
             }
@@ -88,7 +91,10 @@ namespace iText.PdfCleanup {
             return text;
         }
 
-        public virtual ImageRenderInfo GetEncounteredImage() {
+        /// <summary>Get the last encountered ImageRenderInfo, then clears the internal buffer</summary>
+        /// <returns>the ImageRenderInfo object that was encountered when processing the last image rendering operation
+        ///     </returns>
+        internal virtual ImageRenderInfo GetEncounteredImage() {
             if (content.Count == 0) {
                 throw new PdfException(imageDataExpected);
             }
@@ -100,7 +106,9 @@ namespace iText.PdfCleanup {
             return (ImageRenderInfo)eventData;
         }
 
-        public virtual PathRenderInfo GetEncounteredPath() {
+        /// <summary>Get the last encountered PathRenderInfo, then clears the internal buffer</summary>
+        /// <returns>the PathRenderInfo object that was encountered when processing the last path rendering operation</returns>
+        internal virtual PathRenderInfo GetEncounteredPath() {
             if (content.Count == 0) {
                 throw new PdfException(pathDataExpected);
             }

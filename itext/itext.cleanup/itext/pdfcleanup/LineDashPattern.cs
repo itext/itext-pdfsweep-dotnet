@@ -84,6 +84,7 @@ namespace iText.PdfCleanup {
         /// <summary>Getter for the dash array.</summary>
         /// <remarks>
         /// Getter for the dash array.
+        /// <p>
         /// The dash array’s elements is number that specify the lengths of
         /// alternating dashes and gaps; the numbers are nonnegative. The
         /// elements are expressed in user space units.
@@ -106,6 +107,7 @@ namespace iText.PdfCleanup {
         /// <summary>Getter for the dash phase.</summary>
         /// <remarks>
         /// Getter for the dash phase.
+        /// <p>
         /// The dash phase shall specify the distance into the dash pattern at which
         /// to start the dash. The elements are expressed in user space units.
         /// </remarks>
@@ -126,7 +128,7 @@ namespace iText.PdfCleanup {
 
         /// <summary>Calculates and returns the next element which is either gap or dash.</summary>
         /// <returns>The next dash array's element.</returns>
-        public virtual LineDashPattern.DashArrayElem Next() {
+        private LineDashPattern.DashArrayElem Next() {
             LineDashPattern.DashArrayElem ret = currentElem;
             if (dashArray.Size() > 0) {
                 currentIndex = (currentIndex + 1) % dashArray.Size();
@@ -142,7 +144,7 @@ namespace iText.PdfCleanup {
         /// method will start
         /// from the beginning of the dash array.
         /// </summary>
-        public virtual void Reset() {
+        private void Reset() {
             currentIndex = 0;
             elemOrdinalNumber = 1;
             InitFirst(dashPhase);
@@ -186,40 +188,51 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>Return whether or not a given number is even</summary>
+        /// <param name="num">input number</param>
+        /// <returns>true if the input number is even, false otherwise</returns>
         private bool IsEven(int num) {
             return (num % 2) == 0;
         }
 
+        /// <summary>Class representing a single element of a dash array</summary>
         public class DashArrayElem {
             private float val;
 
             private bool isGap;
 
-            public DashArrayElem(LineDashPattern _enclosing, float val, bool isGap) {
+            /// <summary>Construct a new DashArrayElem object</summary>
+            /// <param name="val">the length of the dash array element</param>
+            /// <param name="isGap">whether this element indicates a gap, or a stroke</param>
+            internal DashArrayElem(LineDashPattern _enclosing, float val, bool isGap) {
                 this._enclosing = _enclosing;
                 this.val = val;
                 this.isGap = isGap;
             }
 
-            public virtual float GetVal() {
+            internal virtual float GetVal() {
                 return this.val;
             }
 
-            public virtual void SetVal(float val) {
+            internal virtual void SetVal(float val) {
                 this.val = val;
             }
 
-            public virtual bool IsGap() {
+            internal virtual bool IsGap() {
                 return this.isGap;
             }
 
-            public virtual void SetGap(bool isGap) {
+            internal virtual void SetGap(bool isGap) {
                 this.isGap = isGap;
             }
 
             private readonly LineDashPattern _enclosing;
         }
 
+        /// <summary>Apply a LineDashPattern along a Path</summary>
+        /// <param name="path">input path</param>
+        /// <param name="lineDashPattern">input LineDashPattern</param>
+        /// <returns>a dashed Path</returns>
         public static Path ApplyDashPattern(Path path, LineDashPattern lineDashPattern) {
             ICollection<int> modifiedSubpaths = new HashSet<int>(path.ReplaceCloseWithLine());
             Path dashedPath = new Path();
@@ -270,15 +283,29 @@ namespace iText.PdfCleanup {
             return new Point(segStart.GetX() + dist * unitVector.GetX(), segStart.GetY() + dist * unitVector.GetY());
         }
 
+        /// <summary>Returns the componentwise difference between two vectors</summary>
+        /// <param name="minuend">first vector</param>
+        /// <param name="subtrahend">second vector</param>
+        /// <returns>first vector .- second vector</returns>
         private static Point ComponentwiseDiff(Point minuend, Point subtrahend) {
             return new Point(minuend.GetX() - subtrahend.GetX(), minuend.GetY() - subtrahend.GetY());
         }
 
+        /// <summary>Construct a unit vector from a given vector</summary>
+        /// <param name="vector">input vector</param>
+        /// <returns>a vector of length 1, with the same orientation as the original vector</returns>
         private static Point GetUnitVector(Point vector) {
             double vectorLength = GetVectorEuclideanNorm(vector);
             return new Point(vector.GetX() / vectorLength, vector.GetY() / vectorLength);
         }
 
+        /// <summary>Returns the Euclidean vector norm.</summary>
+        /// <remarks>
+        /// Returns the Euclidean vector norm.
+        /// This is the Euclidean distance between the tip of the vector and the origin.
+        /// </remarks>
+        /// <param name="vector">input vector</param>
+        /// <returns/>
         private static double GetVectorEuclideanNorm(Point vector) {
             return vector.Distance(0, 0);
         }
@@ -298,6 +325,11 @@ namespace iText.PdfCleanup {
             return remainingDist;
         }
 
+        /// <summary>Returns whether a given point lies on a line-segment specified by start and end point</summary>
+        /// <param name="segStart">start of the line segment</param>
+        /// <param name="segEnd">end of the line segment</param>
+        /// <param name="point">query point</param>
+        /// <returns/>
         private static bool LiesOnSegment(Point segStart, Point segEnd, Point point) {
             return point.GetX() >= Math.Min(segStart.GetX(), segEnd.GetX()) && point.GetX() <= Math.Max(segStart.GetX(
                 ), segEnd.GetX()) && point.GetY() >= Math.Min(segStart.GetY(), segEnd.GetY()) && point.GetY() <= Math.
