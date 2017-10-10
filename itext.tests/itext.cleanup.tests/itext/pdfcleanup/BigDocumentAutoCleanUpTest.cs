@@ -156,7 +156,7 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
+            String errorMessage = cmpTool.CompareVisually(output, cmp, targetDir, diffPrefix + "_");
             if (errorMessage != null) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }
