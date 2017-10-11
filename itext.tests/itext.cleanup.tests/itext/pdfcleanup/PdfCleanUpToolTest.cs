@@ -73,11 +73,11 @@ namespace iText.PdfCleanup {
             String output = outputPath + "page229_01.pdf";
             String cmp = inputPath + "cmp_page229_01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), Color.GRAY), new PdfCleanUpLocation(1
-                , new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), Color.GRAY));
+                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_01");
         }
@@ -90,11 +90,11 @@ namespace iText.PdfCleanup {
             String output = outputPath + "page229-modified-Tc-Tw.pdf";
             String cmp = inputPath + "cmp_page229-modified-Tc-Tw.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), Color.GRAY), new PdfCleanUpLocation(1
-                , new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), Color.GRAY));
+                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_02");
         }
@@ -173,7 +173,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "simpleImmediate.pdf";
             String cmp = inputPath + "cmp_simpleImmediate.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_09");
         }
@@ -186,7 +186,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "simpleImmediate-tm.pdf";
             String cmp = inputPath + "cmp_simpleImmediate-tm.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_10");
         }
@@ -199,7 +199,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "multiUseIndirect.pdf";
             String cmp = inputPath + "cmp_multiUseIndirect.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 605f, 480f - 97f, 645f - 605f), Color.GRAY));
+                new Rectangle(97f, 605f, 480f - 97f, 645f - 605f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_11");
         }
@@ -212,7 +212,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "multiUseImage.pdf";
             String cmp = inputPath + "cmp_multiUseImage.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_12");
         }
@@ -225,7 +225,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "smaskImage.pdf";
             String cmp = inputPath + "cmp_smaskImage.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_13");
         }
@@ -238,7 +238,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "rotatedImg.pdf";
             String cmp = inputPath + "cmp_rotatedImg.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_14");
         }
@@ -445,7 +445,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "lineArtsSimple.pdf";
             String cmp = inputPath + "cmp_lineArtsSimple.pdf";
             CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 80f
-                , 460f, 65f), Color.GRAY)));
+                , 460f, 65f), ColorConstants.GRAY)));
             CompareByContent(cmp, output, outputPath, "diff_35");
         }
 
@@ -465,7 +465,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "bigOne.pdf";
             String cmp = inputPath + "cmp_bigOne.pdf";
             CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(300f, 370f
-                , 215f, 270f), Color.GRAY)));
+                , 215f, 270f), ColorConstants.GRAY)));
             CompareByContent(cmp, output, outputPath, "diff_36");
         }
 
@@ -478,7 +478,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "helloHelvetica.pdf";
             String cmp = inputPath + "cmp_helloHelvetica.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(0f, 0f, 595f, 680f), Color.GRAY));
+                new Rectangle(0f, 0f, 595f, 680f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_37");
         }
@@ -491,7 +491,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "helloHelvetica02.pdf";
             String cmp = inputPath + "cmp_helloHelvetica02.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(0f, 0f, 0f, 0f), Color.GRAY));
+                new Rectangle(0f, 0f, 0f, 0f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_38");
         }
@@ -504,7 +504,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "corruptJpeg.pdf";
             String cmp = inputPath + "cmp_corruptJpeg.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(100, 350, 100, 200), Color.ORANGE));
+                new Rectangle(100, 350, 100, 200), ColorConstants.ORANGE));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_39");
         }
