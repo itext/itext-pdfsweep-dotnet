@@ -48,6 +48,7 @@ using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
@@ -114,6 +115,8 @@ namespace iText.PdfCleanup {
 
         private Stack<PdfCanvas> canvasStack;
 
+        private bool removeAnnotIfPartOverlap = true;
+
         /// <summary>
         /// In
         /// <c>notAppliedGsParams</c>
@@ -169,6 +172,189 @@ namespace iText.PdfCleanup {
         public override void ProcessPageContent(PdfPage page) {
             currentPage = page;
             base.ProcessPageContent(page);
+        }
+
+        /// <summary>Process the annotations of a page.</summary>
+        /// <remarks>
+        /// Process the annotations of a page.
+        /// Default process behaviour is to remove the annotation if there is (partial) overlap with a redaction region
+        /// </remarks>
+        /// <param name="page">the page to process</param>
+        /// <param name="regions">a list of redaction regions</param>
+        public virtual void ProcessPageAnnotations(PdfPage page, IList<Rectangle> regions) {
+            //Iterate over annotations
+            foreach (PdfAnnotation annot in page.GetAnnotations()) {
+                //Check against regions
+                foreach (Rectangle region in regions) {
+                    if (ProcessAnnotation(annot, region)) {
+                        //Individual process methods will return true if the entire annotation needs to be removed
+                        page.RemoveAnnotation(annot);
+                    }
+                }
+            }
+        }
+
+        private bool ProcessAnnotation(PdfAnnotation annotation, Rectangle region) {
+            //TODO(DEVSIX-1605,DEVSIX-1606,DEVSIX-1607,DEVSIX-1608,DEVSIX-1609)
+            removeAnnotIfPartOverlap = true;
+            //Check if the field is a terminal form-field, by checking if the FT entry exists
+            if (annotation.GetPdfObject().Get(PdfName.FT) != null) {
+                return ProcessAnnotationForm(annotation, region);
+            }
+            PdfName annotationType = annotation.GetPdfObject().GetAsName(PdfName.Subtype);
+            PdfArray rectAsArray = annotation.GetRectangle();
+            Rectangle rect = null;
+            if (rectAsArray != null) {
+                rect = rectAsArray.ToRectangle();
+            }
+            //For text and some link annotations, check passed region against rectangle entry
+            if (PdfName.Link.Equals(annotationType)) {
+                PdfArray quadPoints = ((PdfLinkAnnotation)annotation).GetQuadPoints();
+                if (rect != null && UseRectangleForLinkAnnotation(rect, quadPoints)) {
+                    return ProcessAnnotationRectangle(annotation, region, rect);
+                }
+                else {
+                    return ProcessAnnotationQuadPoints(annotation, region, quadPoints);
+                }
+            }
+            else {
+                if (PdfName.Text.Equals(annotationType)) {
+                    return rect != null && ProcessAnnotationRectangle(annotation, region, rect);
+                }
+                else {
+                    if (PdfName.Line.Equals(annotationType)) {
+                        //For line annotations, check against the /L array
+                        return ProcessAnnotationLine(annotation, region);
+                    }
+                    else {
+                        if (annotationType.Equals(PdfName.Highlight)) {
+                            PdfArray quadPoints = ((PdfTextMarkupAnnotation)annotation).GetQuadPoints();
+                            //For highlight annotations, check against the quadpoints array
+                            return ProcessAnnotationQuadPoints(annotation, region, quadPoints);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        //Default to not remove
+        private bool ProcessAnnotationRectangle(PdfAnnotation annotation, Rectangle region, Rectangle annotationRect
+            ) {
+            bool result = false;
+            //Default to not remove
+            //3 possible situations: full overlap, partial overlap, no overlap
+            if (region.Overlaps(annotationRect)) {
+                //full overlap
+                if (region.Contains(annotationRect)) {
+                    result = true;
+                    return result;
+                }
+                //partial overlap
+                Rectangle intersectionRect = region.GetIntersection(annotationRect);
+                if (intersectionRect != null) {
+                    if (removeAnnotIfPartOverlap) {
+                        result = true;
+                        return result;
+                    }
+                }
+            }
+            //TODO(DEVSIX-1605,DEVSIX-1606,DEVSIX-1609)
+            //No overlap, do nothing
+            return result;
+        }
+
+        private bool ProcessAnnotationLine(PdfAnnotation annotation, Rectangle region) {
+            bool result = false;
+            //Default to not remove;
+            //TODO(DEVSIX-1607) Do we need to check Line entry on existence as we do with rect?
+            Rectangle rect = new Rectangle(annotation.GetPdfObject().GetAsArray(PdfName.L).ToRectangle());
+            if (region.Overlaps(rect)) {
+                //Full overlap
+                if (region.Contains(rect)) {
+                    result = true;
+                    return result;
+                }
+                //partial overlap
+                Rectangle intersectionRect = region.GetIntersection(rect);
+                if (intersectionRect != null) {
+                    if (removeAnnotIfPartOverlap) {
+                        result = true;
+                        return result;
+                    }
+                }
+            }
+            //TODO(DEVSIX-1607)
+            //No overlap, do nothing
+            return result;
+        }
+
+        private bool ProcessAnnotationQuadPoints(PdfAnnotation annotation, Rectangle region, PdfArray quadPoints) {
+            //Create rectangles from quadpoints array
+            bool result = false;
+            //Default to not remove;
+            //TODO(DEVSIX-1605, DEVSIX-1608) consider possibility of missing quadPoints
+            IList<Rectangle> boundingRectangles = Rectangle.CreateBoundingRectanglesFromQuadPoint(quadPoints);
+            if (boundingRectangles != null) {
+                foreach (Rectangle boundingRect in boundingRectangles) {
+                    //3 possible situations: full overlap, partial overlap, no overlap
+                    if (region.Overlaps(boundingRect)) {
+                        //full overlap
+                        if (region.Contains(boundingRect)) {
+                            result = true;
+                            return result;
+                        }
+                        //partial overlap
+                        Rectangle intersectionRect = region.GetIntersection(boundingRect);
+                        if (intersectionRect != null) {
+                            if (removeAnnotIfPartOverlap) {
+                                result = true;
+                                return result;
+                            }
+                        }
+                    }
+                }
+            }
+            //TODO(DEVSIX-1605,DEVSIX-1608)
+            //no overlap, do nothing
+            return result;
+        }
+
+        private bool ProcessAnnotationForm(PdfAnnotation annotation, Rectangle region) {
+            bool result = false;
+            //Default to not remove;
+            //Forms with no kids can be processed by their rectangle
+            PdfArray rectAsArray = annotation.GetRectangle();
+            if (rectAsArray != null) {
+                result = ProcessAnnotationRectangle(annotation, region, rectAsArray.ToRectangle());
+                return result;
+            }
+            //TODO{DEVSIX-1609) Partial redaction
+            //Currently, a radiobutton field will get its kids processed (because they appear on a page), but will not be directly touched
+            return result;
+        }
+
+        /// <summary>
+        /// For a link annotation, a quadpoints array can be specified
+        /// but it will be ignored in favour of the rectangle
+        /// if one of the points is located outside the rectangle's boundaries
+        /// </summary>
+        /// <param name="rect">rectangle enry of the link annotation</param>
+        /// <param name="quadPoints"/>
+        /// <returns>True if the rectangle should be used, False if the quadpoint array should be used</returns>
+        private bool UseRectangleForLinkAnnotation(Rectangle rect, PdfArray quadPoints) {
+            if (quadPoints == null) {
+                return true;
+            }
+            bool noPointsOutside = true;
+            for (int i = 0; i < quadPoints.Size(); i += 8) {
+                for (int j = 0; j < 8; j += 2) {
+                    float x = quadPoints.GetAsNumber(i + j).FloatValue();
+                    float y = quadPoints.GetAsNumber(i + j + 1).FloatValue();
+                    noPointsOutside = noPointsOutside && rect.Contains(new Rectangle(x, y, 0, 0));
+                }
+            }
+            return !noPointsOutside;
         }
 
         /// <param name="contentBytes">the bytes of a content stream</param>
