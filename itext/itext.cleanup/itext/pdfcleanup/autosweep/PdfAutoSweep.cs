@@ -252,9 +252,9 @@ namespace iText.PdfCleanup.Autosweep {
                     title = "Annotation:" + rnd.Next();
                 }
                 // convert to annotation
-                PdfAnnotation redact = ((PdfRedactAnnotation)new PdfRedactAnnotation(loc.GetRegion()).SetDefaultAppearance
-                    (new PdfString("Helvetica 12 Tf 0 g"))).SetTitle(new PdfString(title)).Put(PdfName.Subj, PdfName.Redact
-                    ).Put(PdfName.IC, new PdfArray(new float[] { 0f, 0f, 0f })).Put(PdfName.OC, new PdfArray(color));
+                PdfAnnotation redact = new PdfRedactAnnotation(loc.GetRegion()).SetDefaultAppearance(new PdfString("Helvetica 12 Tf 0 g"
+                    )).SetTitle(new PdfString(title)).Put(PdfName.Subj, PdfName.Redact).Put(PdfName.IC, new PdfArray(new float
+                    [] { 0f, 0f, 0f })).Put(PdfName.OC, new PdfArray(color));
                 pdfPage.AddAnnotation(redact);
             }
         }
