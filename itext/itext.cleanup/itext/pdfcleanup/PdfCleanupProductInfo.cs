@@ -1,7 +1,7 @@
 /*
 This file is part of the iText (R) project.
 Copyright (c) 1998-2017 iText Group NV
-Authors: iText Software.
+Authors: Bruno Lowagie, Paulo Soares, et al.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License version 3
@@ -40,28 +40,19 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
-using iText.Kernel.Colors;
-using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using System;
 
-namespace iText.PdfCleanup.Autosweep {
-    /// <summary>
-    /// This class represents a generic cleanup strategy to be used with
-    /// <c>PdfAutoSweep</c>
-    /// ICleanupStrategy must implement Cloneable to ensure a strategy can be reset after having handled a page.
-    /// </summary>
-    public interface ICleanupStrategy : ILocationExtractionStrategy {
-        /// <summary>Get the color in which redaction is to take place</summary>
-        /// <returns/>
-        Color GetRedactionColor(IPdfTextLocation location);
+namespace iText.PdfCleanup {
+    /// <summary>Product info about this iText add-on.</summary>
+    public class PdfCleanupProductInfo {
+        /// <summary>The product name.</summary>
+        public const String PRODUCT_NAME = "pdfSweep";
 
-        /// <summary>
-        /// ICleanupStrategy objects have to be reset at times
-        /// <c>PdfAutoSweep</c>
-        /// will use the same strategy for all pages,
-        /// and expects to receive only the rectangles from the last page as output.
-        /// Hence the reset method.
-        /// </summary>
-        /// <returns>a clone of this Object</returns>
-        ICleanupStrategy Reset();
+        /// <summary>The major version number.</summary>
+        public const int MAJOR_VERSION = 1;
+
+        /// <summary>The minor version number.</summary>
+        public const int MINOR_VERSION = 0;
+        // TODO refactor? move to local fields in order to hide it?
     }
 }
