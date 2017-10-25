@@ -74,16 +74,15 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Get all
-        /// <c>PdfCleanupLocation</c>
+        /// <see cref="iText.PdfCleanup.PdfCleanUpLocation"/>
         /// objects from a given
-        /// <c>PdfPage</c>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// </summary>
         /// <param name="page">
         /// the
-        /// <c>PdfPage</c>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// to be processed
         /// </param>
-        /// <returns/>
         public virtual IList<PdfCleanUpLocation> GetPdfCleanUpLocations(PdfPage page) {
             // get document
             PdfDocument doc = page.GetDocument();
@@ -107,16 +106,15 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Get all
-        /// <c>PdfCleanupLocation</c>
+        /// <see cref="iText.PdfCleanup.PdfCleanUpLocation"/>
         /// objects from a given
-        /// <c>PdfDocument</c>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </summary>
         /// <param name="doc">
         /// the
-        /// <c>PdfDocument</c>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// to be processed
         /// </param>
-        /// <returns/>
         public virtual IList<PdfCleanUpLocation> GetPdfCleanUpLocations(PdfDocument doc) {
             PdfDocumentContentParser parser = new PdfDocumentContentParser(doc);
             IList<PdfCleanUpLocation> toClean = new List<PdfCleanUpLocation>();
@@ -129,12 +127,12 @@ namespace iText.PdfCleanup.Autosweep {
                 }
                 ResetStrategy();
             }
-            JavaCollectionsUtil.Sort(toClean, new _IComparer_132());
+            JavaCollectionsUtil.Sort(toClean, new _IComparer_130());
             return toClean;
         }
 
-        private sealed class _IComparer_132 : IComparer<PdfCleanUpLocation> {
-            public _IComparer_132() {
+        private sealed class _IComparer_130 : IComparer<PdfCleanUpLocation> {
+            public _IComparer_130() {
             }
 
             public int Compare(PdfCleanUpLocation o1, PdfCleanUpLocation o2) {
@@ -154,11 +152,11 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Highlight areas of interest in a given
-        /// <c>PdfDocument</c>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </summary>
         /// <param name="pdfDocument">
         /// the
-        /// <c>PdfDocument</c>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// to be highlighted
         /// </param>
         public virtual void Highlight(PdfDocument pdfDocument) {
@@ -169,11 +167,11 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Highlight areas of interest in a given
-        /// <c>PdfPage</c>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// </summary>
         /// <param name="pdfPage">
         /// the
-        /// <c>PdfPage</c>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// to be highlighted
         /// </param>
         public virtual void Highlight(PdfPage pdfPage) {
@@ -188,11 +186,11 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Perform cleanup of areas of interest on a given
-        /// <c>PdfDocument</c>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// </summary>
         /// <param name="pdfDocument">
         /// the
-        /// <c>PdfDocument</c>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// to be redacted
         /// </param>
         /// <exception cref="System.IO.IOException"/>
@@ -205,11 +203,11 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Perform cleanup of areas of interest on a given
-        /// <c>PdfPage</c>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// </summary>
         /// <param name="pdfPage">
         /// the
-        /// <c>PdfPage</c>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// to be redacted
         /// </param>
         /// <exception cref="System.IO.IOException"/>
@@ -222,7 +220,7 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Perform tentative cleanup of areas of interest on a given
-        /// <Code>PdfDocument</Code>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// This method will add all redaction annotations to the given document, allowing
         /// the end-user to choose which redactions to keep or delete.
         /// </summary>
@@ -235,7 +233,7 @@ namespace iText.PdfCleanup.Autosweep {
 
         /// <summary>
         /// Perform tentative cleanup of areas of interest on a given
-        /// <Code>PdfPage</Code>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// This method will add all redaction annotations to the given page, allowing
         /// the end-user to choose which redactions to keep or delete.
         /// </summary>

@@ -46,12 +46,11 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 namespace iText.PdfCleanup.Autosweep {
     /// <summary>
     /// This class represents a generic cleanup strategy to be used with
-    /// <c>PdfAutoSweep</c>
+    /// <see cref="PdfAutoSweep"/>
     /// ICleanupStrategy must implement Cloneable to ensure a strategy can be reset after having handled a page.
     /// </summary>
     public interface ICleanupStrategy : ILocationExtractionStrategy {
         /// <summary>Get the color in which redaction is to take place</summary>
-        /// <returns/>
         Color GetRedactionColor(IPdfTextLocation location);
 
         /// <summary>
