@@ -51,6 +51,11 @@ namespace iText.PdfCleanup.Autosweep {
     /// </summary>
     public interface ICleanupStrategy : ILocationExtractionStrategy {
         /// <summary>Get the color in which redaction is to take place</summary>
+        /// <param name="location">where to get the redaction color from</param>
+        /// <returns>
+        /// a
+        /// <see cref="iText.Kernel.Colors.Color"/>
+        /// </returns>
         Color GetRedactionColor(IPdfTextLocation location);
 
         /// <summary>

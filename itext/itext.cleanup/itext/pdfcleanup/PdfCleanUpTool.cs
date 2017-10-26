@@ -290,7 +290,7 @@ namespace iText.PdfCleanup {
         /// Set if page annotations will be processed
         /// Default processing behaviour: remove annotation if there is overlap with a redaction region
         /// </summary>
-        /// <param name="processAnnotations">If true annotations will be processed by the PdfCleanUpTool</param>
+        /// <param name="processAnnotations">if page annotations will be processed</param>
         public void SetProcessAnnotations(bool processAnnotations)
         {
             this.processAnnotations = processAnnotations;
