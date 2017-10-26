@@ -371,7 +371,7 @@ namespace iText.PdfCleanup {
 
         // Here we don't pop() canvases by intent. It is the responsibility of the one who utilizes the canvas data
         public override IEventListener GetEventListener() {
-            return (PdfCleanUpEventListener)eventListener;
+            return eventListener;
         }
 
         internal virtual PdfCanvas PopCleanedCanvas() {
