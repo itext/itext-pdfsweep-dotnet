@@ -189,7 +189,7 @@ namespace iText.PdfCleanup {
         private static Type GetClass(string className)
         {
             String licenseKeyClassFullName = null;
-            Assembly assembly = typeof(PdfCleanUpTool).Assembly;
+            Assembly assembly = typeof(PdfCleanUpTool).GetAssembly();
             Attribute keyVersionAttr = assembly.GetCustomAttribute(typeof(KeyVersionAttribute));
             if (keyVersionAttr is KeyVersionAttribute)
             {
