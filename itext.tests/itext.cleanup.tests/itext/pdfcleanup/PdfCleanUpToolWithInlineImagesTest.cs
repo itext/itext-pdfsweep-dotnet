@@ -55,8 +55,7 @@ using iText.Test.Attributes;
 using NUnit.Framework;
 
 namespace iText.PdfCleanup {
-    [Ignore("There's an issue in Cleanup about inlne images. System.Drawing.Image creates a Bitmap image object with fixed pixel format. " +
-            "If you try to get Graphics from such an image you'll get an exception. This should be investigated and the guilty have to feel the wrath of Justice.")]
+    [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
     public class PdfCleanUpToolWithInlineImagesTest : ExtendedITextTest {
 
         private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/PdfCleanUpToolTest/";

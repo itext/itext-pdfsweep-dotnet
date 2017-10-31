@@ -1,60 +1,55 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2017 iText Group NV
+Authors: iText Software.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation with the addition of the
-    following permission added to Section 15 as permitted in Section 7(a):
-    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
-    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
-    OF THIRD PARTY RIGHTS
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation with the addition of the
+following permission added to Section 15 as permitted in Section 7(a):
+FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+OF THIRD PARTY RIGHTS
 
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, see http://www.gnu.org/licenses or write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA, 02110-1301 USA, or download the license from the following URL:
-    http://itextpdf.com/terms-of-use/
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License
+along with this program; if not, see http://www.gnu.org/licenses or write to
+the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA, 02110-1301 USA, or download the license from the following URL:
+http://itextpdf.com/terms-of-use/
 
-    The interactive user interfaces in modified source and object code versions
-    of this program must display Appropriate Legal Notices, as required under
-    Section 5 of the GNU Affero General Public License.
+The interactive user interfaces in modified source and object code versions
+of this program must display Appropriate Legal Notices, as required under
+Section 5 of the GNU Affero General Public License.
 
-    In accordance with Section 7(b) of the GNU Affero General Public License,
-    a covered work must retain the producer line in every PDF that is created
-    or manipulated using iText.
+In accordance with Section 7(b) of the GNU Affero General Public License,
+a covered work must retain the producer line in every PDF that is created
+or manipulated using iText.
 
-    You can be released from the requirements of the license by purchasing
-    a commercial license. Buying such a license is mandatory as soon as you
-    develop commercial activities involving the iText software without
-    disclosing the source code of your own applications.
-    These activities include: offering paid services to customers as an ASP,
-    serving PDFs on the fly in a web application, shipping iText with a closed
-    source product.
+You can be released from the requirements of the license by purchasing
+a commercial license. Buying such a license is mandatory as soon as you
+develop commercial activities involving the iText software without
+disclosing the source code of your own applications.
+These activities include: offering paid services to customers as an ASP,
+serving PDFs on the fly in a web application, shipping iText with a closed
+source product.
 
-    For more information, please contact iText Software Corp. at this
-    address: sales@itextpdf.com */
+For more information, please contact iText Software Corp. at this
+address: sales@itextpdf.com
+*/
 using System;
 using System.Collections.Generic;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
-using System.Collections.Generic;
-using System.Reflection;
-using System.IO;
-using Versions.Attributes;
-using iText.Kernel;
 using iText.Test;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpToolTest : ExtendedITextTest {
-
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/PdfCleanUpToolTest/";
 
@@ -73,11 +68,11 @@ namespace iText.PdfCleanup {
             String output = outputPath + "page229_01.pdf";
             String cmp = inputPath + "cmp_page229_01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), Color.GRAY), new PdfCleanUpLocation(1
-                , new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), Color.GRAY));
+                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_01");
         }
@@ -90,11 +85,11 @@ namespace iText.PdfCleanup {
             String output = outputPath + "page229-modified-Tc-Tw.pdf";
             String cmp = inputPath + "cmp_page229-modified-Tc-Tw.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), Color.GRAY), new PdfCleanUpLocation(1
-                , new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), Color.GRAY), new PdfCleanUpLocation
-                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), Color.GRAY));
+                new Rectangle(240.0f, 602.3f, 275.7f - 240.0f, 614.8f - 602.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(171.3f, 550.3f, 208.4f - 171.3f, 562.8f - 550.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(270.7f, 459.2f, 313.1f - 270.7f, 471.7f - 459.2f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(249.9f, 329.3f, 279.6f - 249.9f, 341.8f - 329.3f), ColorConstants.GRAY), new PdfCleanUpLocation
+                (1, new Rectangle(216.2f, 303.3f, 273.0f - 216.2f, 315.8f - 303.3f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_02");
         }
@@ -173,7 +168,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "simpleImmediate.pdf";
             String cmp = inputPath + "cmp_simpleImmediate.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_09");
         }
@@ -186,7 +181,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "simpleImmediate-tm.pdf";
             String cmp = inputPath + "cmp_simpleImmediate-tm.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_10");
         }
@@ -199,7 +194,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "multiUseIndirect.pdf";
             String cmp = inputPath + "cmp_multiUseIndirect.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 605f, 480f - 97f, 645f - 605f), Color.GRAY));
+                new Rectangle(97f, 605f, 480f - 97f, 645f - 605f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_11");
         }
@@ -212,7 +207,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "multiUseImage.pdf";
             String cmp = inputPath + "cmp_multiUseImage.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_12");
         }
@@ -225,7 +220,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "smaskImage.pdf";
             String cmp = inputPath + "cmp_smaskImage.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_13");
         }
@@ -238,7 +233,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "rotatedImg.pdf";
             String cmp = inputPath + "cmp_rotatedImg.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
-                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), Color.GRAY));
+                new Rectangle(97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_14");
         }
@@ -445,7 +440,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "lineArtsSimple.pdf";
             String cmp = inputPath + "cmp_lineArtsSimple.pdf";
             CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 80f
-                , 460f, 65f), Color.GRAY)));
+                , 460f, 65f), ColorConstants.GRAY)));
             CompareByContent(cmp, output, outputPath, "diff_35");
         }
 
@@ -465,8 +460,48 @@ namespace iText.PdfCleanup {
             String output = outputPath + "bigOne.pdf";
             String cmp = inputPath + "cmp_bigOne.pdf";
             CleanUp(input, output, iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(300f, 370f
-                , 215f, 270f), Color.GRAY)));
+                , 215f, 270f), ColorConstants.GRAY)));
             CompareByContent(cmp, output, outputPath, "diff_36");
+        }
+
+        /// <summary>In this test we check that line style operators (such as 'w') are processed correctly</summary>
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest37() {
+            String input = inputPath + "helloHelvetica.pdf";
+            String output = outputPath + "helloHelvetica.pdf";
+            String cmp = inputPath + "cmp_helloHelvetica.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(0f, 0f, 595f, 680f), ColorConstants.GRAY));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_37");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest38() {
+            String input = inputPath + "helloHelvetica02.pdf";
+            String output = outputPath + "helloHelvetica02.pdf";
+            String cmp = inputPath + "cmp_helloHelvetica02.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(0f, 0f, 0f, 0f), ColorConstants.GRAY));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_38");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest39() {
+            String input = inputPath + "corruptJpeg.pdf";
+            String output = outputPath + "corruptJpeg.pdf";
+            String cmp = inputPath + "cmp_corruptJpeg.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(100, 350, 100, 200), ColorConstants.ORANGE));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_39");
         }
 
         /// <exception cref="System.IO.IOException"/>

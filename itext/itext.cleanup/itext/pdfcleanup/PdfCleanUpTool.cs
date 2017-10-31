@@ -76,15 +76,19 @@ namespace iText.PdfCleanup {
         /// into fixed point numbers by multiplying by this coefficient. Vary it
         /// to adjust the preciseness of the calculations.
         /// </remarks>
+        [Obsolete]
         public static double floatMultiplier = Math.Pow(10, 14);
 
         /// <summary>
         /// Used as the criterion of a good approximation of rounded line joins
         /// and line caps.
         /// </summary>
+        [Obsolete]
         public static double arcTolerance = 0.0025;
 
         private PdfDocument pdfDocument;
+
+        private bool processAnnotations;
 
         /// <summary>Key - page number, value - list of locations related to the page.</summary>
         private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations;
@@ -179,12 +183,13 @@ namespace iText.PdfCleanup {
             if (cleanRedactAnnotations) {
                 AddCleanUpLocationsBasedOnRedactAnnotations();
             }
+            processAnnotations = true;
         }
 
         private static Type GetClass(string className)
         {
             String licenseKeyClassFullName = null;
-            Assembly assembly = typeof(PdfCleanUpTool).Assembly;
+            Assembly assembly = typeof(PdfCleanUpTool).GetAssembly();
             Attribute keyVersionAttr = assembly.GetCustomAttribute(typeof(KeyVersionAttribute));
             if (keyVersionAttr is KeyVersionAttribute)
             {
@@ -271,6 +276,26 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>
+        /// Check if page annotations will be processed
+        /// Default: True
+        /// </summary>
+        /// <returns>True if annotations will be processed by the PdfCleanUpTool</returns>
+        public bool IsProcessAnnotations()
+        {
+            return processAnnotations;
+        }
+
+        /// <summary>
+        /// Set if page annotations will be processed
+        /// Default processing behaviour: remove annotation if there is overlap with a redaction region
+        /// </summary>
+        /// <param name="processAnnotations">if page annotations will be processed</param>
+        public void SetProcessAnnotations(bool processAnnotations)
+        {
+            this.processAnnotations = processAnnotations;
+        }
+
         private void CleanUpPage(int pageNumber, IList<PdfCleanUpLocation> cleanUpLocations) {
             if (cleanUpLocations.Count == 0) {
                 return;
@@ -282,6 +307,11 @@ namespace iText.PdfCleanup {
             PdfPage page = pdfDocument.GetPage(pageNumber);
             PdfCleanUpProcessor cleanUpProcessor = new PdfCleanUpProcessor(regions, pdfDocument);
             cleanUpProcessor.ProcessPageContent(page);
+
+            if (processAnnotations) {
+                cleanUpProcessor.ProcessPageAnnotations(page, regions);
+            }
+
             PdfCanvas pageCleanedContents = cleanUpProcessor.PopCleanedCanvas();
             page.Put(PdfName.Contents, pageCleanedContents.GetContentStream());
             page.SetResources(pageCleanedContents.GetResources());
@@ -369,9 +399,9 @@ namespace iText.PdfCleanup {
                 float y = quadPoints.GetAsNumber(i + 5).FloatValue();
                 float width = quadPoints.GetAsNumber(i + 2).FloatValue() - x;
                 float height = quadPoints.GetAsNumber(i + 3).FloatValue() - y;
+                // QuadPoints in redact annotations have "Z" order
                 rectangles.Add(new Rectangle(x, y, width, height));
             }
-            // QuadPoints have "Z" order
             return rectangles;
         }
 
