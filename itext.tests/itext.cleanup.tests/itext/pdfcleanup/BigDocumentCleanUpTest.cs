@@ -46,6 +46,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
     public class BigDocumentCleanUpTest : ExtendedITextTest {
@@ -75,6 +76,7 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
+        [LogMessage(iText.IO.LogMessageConstant.CREATED_ROOT_TAG_HAS_MAPPING)]
         public virtual void BigTaggedDocument() {
             String input = inputPath + "chapter8_Interactive_features.pdf";
             String output = outputPath + "bigTaggedDocument.pdf";

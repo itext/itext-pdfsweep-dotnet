@@ -50,7 +50,7 @@ namespace iText.PdfCleanup.Autosweep {
     public class RegexBasedCleanupStrategy : RegexBasedLocationExtractionStrategy, ICleanupStrategy {
         private Regex pattern;
 
-        private Color redactionColor = Color.BLACK;
+        private Color redactionColor = ColorConstants.BLACK;
 
         public RegexBasedCleanupStrategy(String regex)
             : base(regex) {
