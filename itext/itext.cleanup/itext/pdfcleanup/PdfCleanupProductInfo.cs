@@ -49,7 +49,7 @@ namespace iText.PdfCleanup {
         public const String PRODUCT_NAME = "pdfSweep";
 
         /// <summary>The major version number.</summary>
-        public const int MAJOR_VERSION = 1;
+        public const int MAJOR_VERSION = 2;
 
         /// <summary>The minor version number.</summary>
         public const int MINOR_VERSION = 0;
