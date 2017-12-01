@@ -78,13 +78,13 @@ namespace iText.PdfCleanup.Autosweep {
                 locations.Put(i, new HashSet<IPdfTextLocation>(rects));
             }
             IList<IPdfTextLocation> rectangles = new List<IPdfTextLocation>(retval);
-            JavaCollectionsUtil.Sort(rectangles, new _IComparer_84());
+            JavaCollectionsUtil.Sort(rectangles, new _IComparer_85());
             // return
             return rectangles;
         }
 
-        private sealed class _IComparer_84 : IComparer<IPdfTextLocation> {
-            public _IComparer_84() {
+        private sealed class _IComparer_85 : IComparer<IPdfTextLocation> {
+            public _IComparer_85() {
             }
 
             public int Compare(IPdfTextLocation l1, IPdfTextLocation l2) {
@@ -105,7 +105,7 @@ namespace iText.PdfCleanup.Autosweep {
                     return strategies[i].GetRedactionColor(location);
                 }
             }
-            return Color.BLACK;
+            return ColorConstants.BLACK;
         }
 
         public virtual void EventOccurred(IEventData data, EventType type) {

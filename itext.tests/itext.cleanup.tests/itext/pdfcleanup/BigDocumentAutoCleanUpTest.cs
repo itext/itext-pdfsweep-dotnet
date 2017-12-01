@@ -77,7 +77,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "redactLipsum.pdf";
             String cmp = inputPath + "cmp_redactLipsum.pdf";
             CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
-            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(Color.GREEN));
+            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
             PdfWriter writer = new PdfWriter(output);
             writer.SetCompressionLevel(0);
             PdfDocument pdf = new PdfDocument(new PdfReader(input), writer);
@@ -209,7 +209,7 @@ namespace iText.PdfCleanup {
         }
 
         public virtual Color GetRedactionColor(IPdfTextLocation rect) {
-            return colorByRectangle.ContainsKey(rect.GetRectangle()) ? colorByRectangle.Get(rect.GetRectangle()) : Color
+            return colorByRectangle.ContainsKey(rect.GetRectangle()) ? colorByRectangle.Get(rect.GetRectangle()) : ColorConstants
                 .BLACK;
         }
 

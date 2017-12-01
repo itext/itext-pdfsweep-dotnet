@@ -68,7 +68,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "cleanAnnotation_full01.pdf";
             String cmp = inputPath + "cmp_cleanAnnotation_full01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            cleanUpLocations.Add(new PdfCleanUpLocation(1, PageSize.A4, Color.WHITE));
+            cleanUpLocations.Add(new PdfCleanUpLocation(1, PageSize.A4, ColorConstants.WHITE));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_Annotation_full");
         }
@@ -81,7 +81,8 @@ namespace iText.PdfCleanup {
             String output = outputPath + "cleanAnnotation_Link01.pdf";
             String cmp = inputPath + "cmp_cleanAnnotation_Link01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            PdfCleanUpLocation linkLoc = new PdfCleanUpLocation(1, new Rectangle(235, 740, 30, 16), Color.BLUE);
+            PdfCleanUpLocation linkLoc = new PdfCleanUpLocation(1, new Rectangle(235, 740, 30, 16), ColorConstants.BLUE
+                );
             cleanUpLocations.Add(linkLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_Annotation_link01");
@@ -95,7 +96,7 @@ namespace iText.PdfCleanup {
             String output = outputPath + "cleanAnnotation_Text01.pdf";
             String cmp = inputPath + "cmp_cleanAnnotation_Text01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            PdfCleanUpLocation textLoc = new PdfCleanUpLocation(1, new Rectangle(150, 650, 0, 0), Color.RED);
+            PdfCleanUpLocation textLoc = new PdfCleanUpLocation(1, new Rectangle(150, 650, 0, 0), ColorConstants.RED);
             cleanUpLocations.Add(textLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_Annotation_text01");
@@ -109,7 +110,8 @@ namespace iText.PdfCleanup {
             String output = outputPath + "cleanAnnotation_Line01.pdf";
             String cmp = inputPath + "cmp_cleanAnnotation_Line01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            PdfCleanUpLocation lineLoc = new PdfCleanUpLocation(1, new Rectangle(20, 20, 555, 0), Color.GREEN);
+            PdfCleanUpLocation lineLoc = new PdfCleanUpLocation(1, new Rectangle(20, 20, 555, 0), ColorConstants.GREEN
+                );
             cleanUpLocations.Add(lineLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_Annotation_line01");
@@ -123,7 +125,8 @@ namespace iText.PdfCleanup {
             String output = outputPath + "cleanAnnotation_highlight01.pdf";
             String cmp = inputPath + "cmp_cleanAnnotation_highlight01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            PdfCleanUpLocation highLightLoc = new PdfCleanUpLocation(1, new Rectangle(105, 500, 70, 10), Color.BLACK);
+            PdfCleanUpLocation highLightLoc = new PdfCleanUpLocation(1, new Rectangle(105, 500, 70, 10), ColorConstants
+                .BLACK);
             cleanUpLocations.Add(highLightLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_text_highlight01");
@@ -137,8 +140,8 @@ namespace iText.PdfCleanup {
             String output = outputPath + "formAnnotation01.pdf";
             String cmp = inputPath + "cmp_formAnnotation01.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            PdfCleanUpLocation highLightLoc = new PdfCleanUpLocation(1, new Rectangle(20, 600, 500, 170), Color.YELLOW
-                );
+            PdfCleanUpLocation highLightLoc = new PdfCleanUpLocation(1, new Rectangle(20, 600, 500, 170), ColorConstants
+                .YELLOW);
             cleanUpLocations.Add(highLightLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_form01");
@@ -152,8 +155,8 @@ namespace iText.PdfCleanup {
             String output = outputPath + "formAnnotation02.pdf";
             String cmp = inputPath + "cmp_formAnnotation02.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            PdfCleanUpLocation highLightLoc = new PdfCleanUpLocation(1, new Rectangle(20, 600, 300, 100), Color.YELLOW
-                );
+            PdfCleanUpLocation highLightLoc = new PdfCleanUpLocation(1, new Rectangle(20, 600, 300, 100), ColorConstants
+                .YELLOW);
             cleanUpLocations.Add(highLightLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_form01");

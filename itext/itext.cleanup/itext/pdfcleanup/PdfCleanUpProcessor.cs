@@ -371,7 +371,7 @@ namespace iText.PdfCleanup {
 
         // Here we don't pop() canvases by intent. It is the responsibility of the one who utilizes the canvas data
         public override IEventListener GetEventListener() {
-            return (PdfCleanUpEventListener)eventListener;
+            return eventListener;
         }
 
         internal virtual PdfCanvas PopCleanedCanvas() {
@@ -580,10 +580,10 @@ namespace iText.PdfCleanup {
                     cleanedText = filterResult.GetFilterResult();
                 }
             }
-            TextRenderInfo text = textChunks[0];
-            // all text chunks even in case of TJ have the same graphics state
             // if text wasn't modified cleanedText is null
             if (cleanedText == null || cleanedText.Size() != 1 || !cleanedText.Get(0).IsNumber()) {
+                TextRenderInfo text = textChunks[0];
+                // all text chunks even in case of TJ have the same graphics state
                 WriteNotAppliedGsParamsForText(text);
                 BeginTextObjectAndOpenNotWrittenTags();
                 WriteNotAppliedTextStateParams(text);
