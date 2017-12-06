@@ -559,6 +559,11 @@ namespace iText.PdfCleanup {
             PdfArray cleanedText = null;
             if ("TJ".Equals(@operator)) {
                 PdfArray originalTJ = (PdfArray)operands[0];
+                if (originalTJ.IsEmpty()) {
+                    // empty TJ neither shows any text nor affects text positioning
+                    // we can safely ignore it
+                    return;
+                }
                 int i = 0;
                 // text chunk index in original TJ
                 PdfTextArray newTJ = new PdfTextArray();
