@@ -76,9 +76,6 @@ namespace iText.PdfCleanup {
         /// <returns>the TextRenderInfo objects that were encountered when processing the last text rendering operation
         ///     </returns>
         internal virtual IList<TextRenderInfo> GetEncounteredText() {
-            if (content.Count == 0) {
-                throw new PdfException(textDataExpected);
-            }
             List<TextRenderInfo> text = new List<TextRenderInfo>(content.Count);
             foreach (IEventData data in content) {
                 if (data is TextRenderInfo) {
