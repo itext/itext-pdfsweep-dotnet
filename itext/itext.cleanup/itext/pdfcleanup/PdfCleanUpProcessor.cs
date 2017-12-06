@@ -555,7 +555,7 @@ namespace iText.PdfCleanup {
         }
 
         private void CleanText(String @operator, IList<PdfObject> operands) {
-            IList<TextRenderInfo> textChunks = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredText();
+            IList<TextRenderInfo> textChunks = null;
             PdfArray cleanedText = null;
             if ("TJ".Equals(@operator)) {
                 PdfArray originalTJ = (PdfArray)operands[0];
@@ -564,6 +564,9 @@ namespace iText.PdfCleanup {
                 PdfTextArray newTJ = new PdfTextArray();
                 foreach (PdfObject e in originalTJ) {
                     if (e.IsString()) {
+                        if (null == textChunks) {
+                            textChunks = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredText();
+                        }
                         PdfArray filteredText = filter.FilterText(textChunks[i++]).GetFilterResult();
                         newTJ.AddAll(filteredText);
                     }
@@ -575,6 +578,7 @@ namespace iText.PdfCleanup {
             }
             else {
                 // if operator is Tj or ' or "
+                textChunks = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredText();
                 PdfCleanUpFilter.FilterResult<PdfArray> filterResult = filter.FilterText(textChunks[0]);
                 if (filterResult.IsModified()) {
                     cleanedText = filterResult.GetFilterResult();
@@ -582,6 +586,9 @@ namespace iText.PdfCleanup {
             }
             // if text wasn't modified cleanedText is null
             if (cleanedText == null || cleanedText.Size() != 1 || !cleanedText.Get(0).IsNumber()) {
+                if (null == textChunks) {
+                    textChunks = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredText();
+                }
                 TextRenderInfo text = textChunks[0];
                 // all text chunks even in case of TJ have the same graphics state
                 WriteNotAppliedGsParamsForText(text);
@@ -592,6 +599,12 @@ namespace iText.PdfCleanup {
             else {
                 // cleaned text is tj array with single number - it means that the whole text chunk was removed
                 CanvasGraphicsState gs = GetCanvas().GetGraphicsState();
+                // process new lines if necessary
+                if ("'".Equals(@operator) || "\"".Equals(@operator)) {
+                    IList<PdfObject> newLineList = new List<PdfObject>();
+                    newLineList.Add(new PdfLiteral("T*"));
+                    textPositioning.AppendPositioningOperator("T*", newLineList);
+                }
                 textPositioning.AppendTjArrayWithSingleNumber(cleanedText, gs.GetFontSize(), gs.GetHorizontalScaling());
             }
         }
