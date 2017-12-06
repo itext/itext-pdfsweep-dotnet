@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>itext7.pdfsweep</id>
-    <version>$version$</version>
+    <version>1.1.1-SNAPSHOT</version>
     <title>iText 7 pdfSweep</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
