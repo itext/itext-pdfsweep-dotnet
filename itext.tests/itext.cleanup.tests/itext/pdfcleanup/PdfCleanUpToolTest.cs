@@ -518,6 +518,45 @@ namespace iText.PdfCleanup {
         }
 
         /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest41() {
+            String input = inputPath + "newLines01.pdf";
+            String output = outputPath + "newLines01.pdf";
+            String cmp = inputPath + "cmp_newLines01.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(70f, 555f, 200f, 10f), ColorConstants.ORANGE));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_41");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest42() {
+            String input = inputPath + "newLines02.pdf";
+            String output = outputPath + "newLines02.pdf";
+            String cmp = inputPath + "cmp_newLines02.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(36f, 733f, 270f, 5f), ColorConstants.ORANGE));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_42");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest43() {
+            String input = inputPath + "newLines03.pdf";
+            String output = outputPath + "newLines03.pdf";
+            String cmp = inputPath + "cmp_newLines03.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = iText.IO.Util.JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, 
+                new Rectangle(36f, 733f, 230f, 5f), ColorConstants.ORANGE));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_43");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
