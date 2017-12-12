@@ -306,7 +306,6 @@ namespace iText.PdfCleanup {
         /// This is the Euclidean distance between the tip of the vector and the origin.
         /// </remarks>
         /// <param name="vector">input vector</param>
-        /// <returns/>
         private static double GetVectorEuclideanNorm(Point vector) {
             return vector.Distance(0, 0);
         }
@@ -330,7 +329,6 @@ namespace iText.PdfCleanup {
         /// <param name="segStart">start of the line segment</param>
         /// <param name="segEnd">end of the line segment</param>
         /// <param name="point">query point</param>
-        /// <returns/>
         private static bool LiesOnSegment(Point segStart, Point segEnd, Point point) {
             return point.GetX() >= Math.Min(segStart.GetX(), segEnd.GetX()) && point.GetX() <= Math.Max(segStart.GetX(
                 ), segEnd.GetX()) && point.GetY() >= Math.Min(segStart.GetY(), segEnd.GetY()) && point.GetY() <= Math.

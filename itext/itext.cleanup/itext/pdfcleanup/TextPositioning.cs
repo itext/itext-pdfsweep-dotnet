@@ -66,7 +66,6 @@ namespace iText.PdfCleanup {
 
         // shift in text space units, which is the result of the removed text
         /// <summary>Get the current leading</summary>
-        /// <returns/>
         internal virtual float GetCurrLeading() {
             if (currLeading != null) {
                 return (float)currLeading;
