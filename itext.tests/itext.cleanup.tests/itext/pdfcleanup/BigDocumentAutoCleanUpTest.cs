@@ -40,11 +40,6 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
-/*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
 using System;
 using System.Collections.Generic;
 using iText.Kernel.Colors;
@@ -57,7 +52,6 @@ using iText.PdfCleanup.Autosweep;
 using iText.Test;
 
 namespace iText.PdfCleanup {
-    /// <author>Joris Schellekens</author>
     public class BigDocumentAutoCleanUpTest {
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/BigDocumentAutoCleanUpTest/";
