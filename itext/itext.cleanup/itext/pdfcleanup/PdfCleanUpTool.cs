@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2018 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -451,12 +451,20 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         private void DrawOverlayText(PdfCanvas canvas, String overlayText, Rectangle annotRect, PdfBoolean repeat, 
             PdfString defaultAppearance, int justification) {
-            IDictionary<String, IList> parsedDA = ParseDAParam(defaultAppearance);
+            IDictionary<String, IList> parsedDA;
+            try
+            {
+                parsedDA = ParseDAParam(defaultAppearance);
+            }catch(NullReferenceException npe)
+            {
+                throw new PdfException(PdfException.DefaultAppearanceNotFound);
+            }
             PdfFont font;
             float fontSize = 12;
             IList fontArgs;
             parsedDA.TryGetValue("Tf", out fontArgs);
-            if (fontArgs != null) {
+            PdfDictionary formDictionary = pdfDocument.GetCatalog().GetPdfObject().GetAsDictionary(PdfName.AcroForm);
+            if (fontArgs != null && formDictionary != null) {
                 font = GetFontFromAcroForm((PdfName)fontArgs[0]);
                 fontSize = ((PdfNumber)fontArgs[1]).FloatValue();
             }

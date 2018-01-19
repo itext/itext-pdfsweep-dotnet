@@ -42,9 +42,11 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
+using iText.Kernel;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Utils;
 using iText.Test;
 
@@ -567,6 +569,39 @@ namespace iText.PdfCleanup {
                 new Rectangle(70f, 565f, 200f, 5f), ColorConstants.ORANGE));
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_44");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest45() {
+            String input = inputPath + "emptyPdf.pdf";
+            String output = outputPath + "emptyPdf.pdf";
+            String cmp = inputPath + "cmp_emptyPdf.pdf";
+            PdfAnnotation redactAnnotation = new PdfRedactAnnotation(new Rectangle(97, 405, 383, 40)).SetOverlayText(new 
+                PdfString("OverlayTest")).SetDefaultAppearance(new PdfString("/Helv 0 Tf 0 g"));
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
+            pdfDocument.GetFirstPage().AddAnnotation(redactAnnotation);
+            new PdfCleanUpTool(pdfDocument, true).CleanUp();
+            pdfDocument.Close();
+            CompareByContent(cmp, output, outputPath, "diff_45");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTest46() {
+            NUnit.Framework.Assert.That(() =>  {
+                String input = inputPath + "emptyPdf.pdf";
+                String output = outputPath + "emptyPdf.pdf";
+                PdfAnnotation redactAnnotation = new PdfRedactAnnotation(new Rectangle(97, 405, 383, 40)).SetOverlayText(new 
+                    PdfString("OverlayTest"));
+                PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
+                pdfDocument.GetFirstPage().AddAnnotation(redactAnnotation);
+                new PdfCleanUpTool(pdfDocument, true).CleanUp();
+                pdfDocument.Close();
+            }
+            , NUnit.Framework.Throws.TypeOf<PdfException>().With.Message.EqualTo(PdfException.DefaultAppearanceNotFound));
+;
         }
 
         /// <exception cref="System.IO.IOException"/>
