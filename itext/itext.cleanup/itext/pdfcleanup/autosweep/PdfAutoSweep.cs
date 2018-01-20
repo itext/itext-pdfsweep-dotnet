@@ -40,11 +40,6 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
-/*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
 using System;
 using System.Collections.Generic;
 using iText.IO.Util;
@@ -137,12 +132,12 @@ namespace iText.PdfCleanup.Autosweep {
                 }
                 ResetStrategy();
             }
-            JavaCollectionsUtil.Sort(toClean, new _IComparer_132());
+            JavaCollectionsUtil.Sort(toClean, new _IComparer_136());
             return toClean;
         }
 
-        private sealed class _IComparer_132 : IComparer<PdfCleanUpLocation> {
-            public _IComparer_132() {
+        private sealed class _IComparer_136 : IComparer<PdfCleanUpLocation> {
+            public _IComparer_136() {
             }
 
             public int Compare(PdfCleanUpLocation o1, PdfCleanUpLocation o2) {

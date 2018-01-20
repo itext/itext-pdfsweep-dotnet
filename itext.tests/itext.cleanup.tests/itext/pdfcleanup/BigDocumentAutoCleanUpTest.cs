@@ -40,11 +40,6 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
-/*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
 using System;
 using System.Collections.Generic;
 using iText.Kernel.Colors;
@@ -57,7 +52,6 @@ using iText.PdfCleanup.Autosweep;
 using iText.Test;
 
 namespace iText.PdfCleanup {
-    /// <author>Joris Schellekens</author>
     public class BigDocumentAutoCleanUpTest {
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/BigDocumentAutoCleanUpTest/";
@@ -86,7 +80,7 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactLipsum_");
+            CompareResults(cmp, output, outputPath, "diff_redactLipsum_");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -108,7 +102,7 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactTonySoprano_");
+            CompareResults(cmp, output, outputPath, "diff_redactTonySoprano_");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -126,7 +120,7 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactIPhoneUserManualMatchColor_");
+            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualMatchColor_");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -144,12 +138,12 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactIPhoneUserManual_");
+            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManual_");
         }
 
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
+        private void CompareResults(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareVisually(output, cmp, targetDir, diffPrefix + "_");
             if (errorMessage != null) {

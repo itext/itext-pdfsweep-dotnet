@@ -300,10 +300,7 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
-        /// <param name="path">path</param>
-        /// <param name="ctm">ctm</param>
         /// <param name="fillingRule">If the subpath is contour, pass any value.</param>
-        /// <returns>filterFillPath</returns>
         protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
             path.CloseAllSubpaths();
             Clipper clipper = new Clipper();
@@ -482,9 +479,6 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary> Get the bounding box of a TextRenderInfo object
-        /// <returns>
-        /// <code>Point[]</code>
-        /// </returns>
         private Point[] GetTextRectangle(TextRenderInfo renderInfo) {
             LineSegment ascent = renderInfo.GetAscentLine();
             LineSegment descent = renderInfo.GetDescentLine();
@@ -494,9 +488,6 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary> Convert a Rectangle object into 4 Points
-        /// <returns>
-        /// <code>Point[]</code>
-        /// </returns>
         private Point[] GetRectangleVertices(Rectangle rect) {
             Point[] points = new Point[] { new Point(rect.GetLeft(), rect.GetBottom()), new Point(rect.GetRight(), rect
                 .GetBottom()), new Point(rect.GetRight(), rect.GetTop()), new Point(rect.GetLeft(), rect.GetTop()) };
@@ -504,9 +495,6 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary> Convert 4 Point objects into a Rectangle
-        /// <returns>
-        /// <code>Rectangle</code>
-        /// </returns>
         private Rectangle GetAsRectangle(Point p1, Point p2, Point p3, Point p4) {
             IList<double> xs = iText.IO.Util.JavaUtil.ArraysAsList(p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX());
             IList<double> ys = iText.IO.Util.JavaUtil.ArraysAsList(p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY());
