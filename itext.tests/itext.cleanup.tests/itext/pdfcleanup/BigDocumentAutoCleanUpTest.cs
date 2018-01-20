@@ -86,7 +86,7 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactLipsum_");
+            CompareResults(cmp, output, outputPath, "diff_redactLipsum_");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -108,7 +108,7 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactTonySoprano_");
+            CompareResults(cmp, output, outputPath, "diff_redactTonySoprano_");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -126,7 +126,7 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactIPhoneUserManualMatchColor_");
+            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualMatchColor_");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -144,12 +144,12 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactIPhoneUserManual_");
+            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManual_");
         }
 
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
+        private void CompareResults(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareVisually(output, cmp, targetDir, diffPrefix + "_");
             if (errorMessage != null) {

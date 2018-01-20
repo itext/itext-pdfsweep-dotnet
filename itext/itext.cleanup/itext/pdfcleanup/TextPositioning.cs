@@ -87,9 +87,7 @@ namespace iText.PdfCleanup {
                     return;
                 }
             }
-            if (removedTextShift != null) {
-                removedTextShift = null;
-            }
+            removedTextShift = null;
             if (prevOperator == null) {
                 firstPositioningOperands = new List<PdfObject>(operands);
                 prevOperator = @operator;
@@ -193,21 +191,24 @@ namespace iText.PdfCleanup {
             ) {
             CanvasGraphicsState canvasGs = canvas.GetGraphicsState();
             bool newLineShowText = "'".Equals(@operator) || "\"".Equals(@operator);
-            if (newLineShowText && canvasGs.GetLeading() != currLeading) {
-                canvas.SetLeading((float)currLeading);
+            if (newLineShowText) {
+                if (canvasGs.GetLeading() != currLeading) {
+                    canvas.SetLeading((float)currLeading);
+                }
+                // after new line operator, removed text shift doesn't matter
+                removedTextShift = null;
             }
-            PdfTextArray tjShiftArray = new PdfTextArray();
+            PdfTextArray tjShiftArray = null;
             if (removedTextShift != null) {
                 float tjShift = (float)removedTextShift * 1000 / (canvasGs.GetFontSize() * canvasGs.GetHorizontalScaling()
                      / 100);
+                tjShiftArray = new PdfTextArray();
                 tjShiftArray.Add(new PdfNumber(tjShift));
             }
             if (cleanedText != null) {
                 if (newLineShowText) {
                     // char spacing and word spacing are set via writeNotAppliedTextStateParams() method
                     canvas.NewlineText();
-                    // after new line operator, removed text shift doesn't matter
-                    removedTextShift = null;
                 }
                 if (removedTextShift != null) {
                     tjShiftArray.AddAll(cleanedText);
