@@ -60,36 +60,36 @@ using iText.Kernel.Pdf.Xobject;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpProcessor : PdfCanvasProcessor {
-        private static readonly ICollection<String> textShowingOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> textShowingOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("TJ", "Tj", "'", "\""));
 
-        private static readonly ICollection<String> pathConstructionOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> pathConstructionOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("m", "l", "c", "v", "y", "h", "re"));
 
-        private static readonly ICollection<String> strokeOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
-            ("S", "s", "B", "B*", "b", "b*"));
+        private static readonly ICollection<String> strokeOperators = new HashSet<String>(JavaUtil.ArraysAsList("S"
+            , "s", "B", "B*", "b", "b*"));
 
-        private static readonly ICollection<String> nwFillOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
-            ("f", "F", "B", "b"));
+        private static readonly ICollection<String> nwFillOperators = new HashSet<String>(JavaUtil.ArraysAsList("f"
+            , "F", "B", "b"));
 
-        private static readonly ICollection<String> eoFillOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
-            ("f*", "B*", "b*"));
+        private static readonly ICollection<String> eoFillOperators = new HashSet<String>(JavaUtil.ArraysAsList("f*"
+            , "B*", "b*"));
 
         private static readonly ICollection<String> pathPaintingOperators = new HashSet<String>();
 
-        private static readonly ICollection<String> clippingPathOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> clippingPathOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("W", "W*"));
 
-        private static readonly ICollection<String> lineStyleOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> lineStyleOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("w", "J", "j", "M", "d"));
 
-        private static readonly ICollection<String> strokeColorOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> strokeColorOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("CS", "SC", "SCN", "G", "RG", "K"));
 
-        private static readonly ICollection<String> fillColorOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> fillColorOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("cs", "sc", "scn", "g", "rg", "k"));
 
-        private static readonly ICollection<String> textPositioningOperators = new HashSet<String>(iText.IO.Util.JavaUtil.ArraysAsList
+        private static readonly ICollection<String> textPositioningOperators = new HashSet<String>(JavaUtil.ArraysAsList
             ("Td", "TD", "Tm", "T*", "TL"));
 
         private static readonly ICollection<String> ignoredOperators = new HashSet<String>();
@@ -104,8 +104,8 @@ namespace iText.PdfCleanup {
             ignoredOperators.AddAll(pathConstructionOperators);
             ignoredOperators.AddAll(clippingPathOperators);
             ignoredOperators.AddAll(lineStyleOperators);
-            ignoredOperators.AddAll(iText.IO.Util.JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
-            ignoredOperators.AddAll(iText.IO.Util.JavaUtil.ArraysAsList("BMC", "BDC"));
+            ignoredOperators.AddAll(JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
+            ignoredOperators.AddAll(JavaUtil.ArraysAsList("BMC", "BDC"));
         }
 
         private PdfDocument document;

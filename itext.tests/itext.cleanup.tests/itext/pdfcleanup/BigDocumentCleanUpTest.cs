@@ -42,6 +42,7 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
+using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
@@ -67,8 +68,8 @@ namespace iText.PdfCleanup {
             String input = inputPath + "iphone_user_guide_untagged.pdf";
             String output = outputPath + "bigUntaggedDocument.pdf";
             String cmp = inputPath + "cmp_bigUntaggedDocument.pdf";
-            IList<Rectangle> rects = iText.IO.Util.JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle
-                (300f, 370f, 215f, 260f));
+            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
+                , 215f, 260f));
             CleanUp(input, output, InitLocations(rects, 130));
             CompareByContent(cmp, output, outputPath, "diff_bigUntagged_");
         }
@@ -81,8 +82,8 @@ namespace iText.PdfCleanup {
             String input = inputPath + "chapter8_Interactive_features.pdf";
             String output = outputPath + "bigTaggedDocument.pdf";
             String cmp = inputPath + "cmp_bigTaggedDocument.pdf";
-            IList<Rectangle> rects = iText.IO.Util.JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle
-                (300f, 370f, 215f, 270f));
+            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
+                , 215f, 270f));
             CleanUp(input, output, InitLocations(rects, 131));
             CompareByContent(cmp, output, outputPath, "diff_bigTagged_");
         }
@@ -94,7 +95,7 @@ namespace iText.PdfCleanup {
             String input = inputPath + "textPositioning.pdf";
             String output = outputPath + "textPositioning.pdf";
             String cmp = inputPath + "cmp_textPositioning.pdf";
-            IList<Rectangle> rects = iText.IO.Util.JavaUtil.ArraysAsList(new Rectangle(0f, 0f, 1f, 1f));
+            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(0f, 0f, 1f, 1f));
             // just to enable cleanup processing of the pages
             CleanUp(input, output, InitLocations(rects, 163));
             CompareByContent(cmp, output, outputPath, "diff_txtPos_");

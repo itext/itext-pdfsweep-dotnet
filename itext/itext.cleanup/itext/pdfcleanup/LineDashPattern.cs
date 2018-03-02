@@ -42,6 +42,7 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
+using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 
@@ -167,7 +168,7 @@ namespace iText.PdfCleanup {
             for (int i = 1; i < dashArray.Size(); i += 2) {
                 unitsOffSum += dashArray.GetAsNumber(i).FloatValue();
             }
-            return iText.IO.Util.JavaUtil.FloatCompare(unitsOffSum, 0) == 0;
+            return JavaUtil.FloatCompare(unitsOffSum, 0) == 0;
         }
 
         private void InitFirst(float phase) {
@@ -250,8 +251,8 @@ namespace iText.PdfCleanup {
                             nextPoint = GetNextPoint(subpathApprox[i - 1], subpathApprox[i], remainingDist);
                             remainingDist = ApplyDash(dashedPath, subpathApprox[i - 1], subpathApprox[i], nextPoint, remainingIsGap);
                         }
-                        while (iText.IO.Util.JavaUtil.FloatCompare(remainingDist, 0) == 0 && !dashedPath.GetCurrentPoint().Equals(
-                            subpathApprox[i])) {
+                        while (JavaUtil.FloatCompare(remainingDist, 0) == 0 && !dashedPath.GetCurrentPoint().Equals(subpathApprox[
+                            i])) {
                             LineDashPattern.DashArrayElem currentElem = lineDashPattern.Next();
                             nextPoint = GetNextPoint(nextPoint != null ? nextPoint : subpathApprox[i - 1], subpathApprox[i], currentElem
                                 .GetVal());
