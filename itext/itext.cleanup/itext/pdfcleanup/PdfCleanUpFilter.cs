@@ -1,49 +1,51 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+Copyright (c) 1998-2017 iText Group NV
+Authors: iText Software.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation with the addition of the
-    following permission added to Section 15 as permitted in Section 7(a):
-    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
-    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
-    OF THIRD PARTY RIGHTS
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation with the addition of the
+following permission added to Section 15 as permitted in Section 7(a):
+FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+OF THIRD PARTY RIGHTS
 
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, see http://www.gnu.org/licenses or write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA, 02110-1301 USA, or download the license from the following URL:
-    http://itextpdf.com/terms-of-use/
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License
+along with this program; if not, see http://www.gnu.org/licenses or write to
+the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA, 02110-1301 USA, or download the license from the following URL:
+http://itextpdf.com/terms-of-use/
 
-    The interactive user interfaces in modified source and object code versions
-    of this program must display Appropriate Legal Notices, as required under
-    Section 5 of the GNU Affero General Public License.
+The interactive user interfaces in modified source and object code versions
+of this program must display Appropriate Legal Notices, as required under
+Section 5 of the GNU Affero General Public License.
 
-    In accordance with Section 7(b) of the GNU Affero General Public License,
-    a covered work must retain the producer line in every PDF that is created
-    or manipulated using iText.
+In accordance with Section 7(b) of the GNU Affero General Public License,
+a covered work must retain the producer line in every PDF that is created
+or manipulated using iText.
 
-    You can be released from the requirements of the license by purchasing
-    a commercial license. Buying such a license is mandatory as soon as you
-    develop commercial activities involving the iText software without
-    disclosing the source code of your own applications.
-    These activities include: offering paid services to customers as an ASP,
-    serving PDFs on the fly in a web application, shipping iText with a closed
-    source product.
+You can be released from the requirements of the license by purchasing
+a commercial license. Buying such a license is mandatory as soon as you
+develop commercial activities involving the iText software without
+disclosing the source code of your own applications.
+These activities include: offering paid services to customers as an ASP,
+serving PDFs on the fly in a web application, shipping iText with a closed
+source product.
 
-    For more information, please contact iText Software Corp. at this
-    address: sales@itextpdf.com */
+For more information, please contact iText Software Corp. at this
+address: sales@itextpdf.com
+*/
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel.Geom;
@@ -73,14 +75,10 @@ namespace iText.PdfCleanup {
         private IList<Rectangle> regions;
 
         public PdfCleanUpFilter(IList<Rectangle> regions) {
-            //import org.apache.commons.imaging.ImageFormats;
-            //import org.apache.commons.imaging.ImageInfo;
-            //import org.apache.commons.imaging.Imaging;
-            //import org.apache.commons.imaging.ImagingConstants;
-            //import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
             this.regions = regions;
         }
 
+        /// <summary>Generic class representing the result of filtering an object of type T</summary>
         public class FilterResult<T> {
             private bool isModified;
 
@@ -91,15 +89,20 @@ namespace iText.PdfCleanup {
                 this.filterResult = filterResult;
             }
 
+            /// <summary>Get whether the object was modified or not</summary>
+            /// <returns>true if the object was modified, false otherwise</returns>
             public virtual bool IsModified() {
                 return isModified;
             }
 
+            /// <summary>Get the result after filtering</summary>
             public virtual T GetFilterResult() {
                 return filterResult;
             }
         }
 
+        /// <summary>Filter a TextRenderInfo object</summary>
+        /// <param name="text">the TextRenderInfo to be filtered</param>
         public virtual PdfCleanUpFilter.FilterResult<PdfArray> FilterText(TextRenderInfo text) {
             PdfTextArray textArray = new PdfTextArray();
             if (IsTextNotToBeCleaned(text)) {
@@ -117,21 +120,36 @@ namespace iText.PdfCleanup {
             return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
         }
 
+        internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(ImageRenderInfo image, PdfDocument
+             document) {
+            return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(image), document);
+        }
+
+        /// <summary>Filter an ImageRenderInfo object</summary>
+        /// <param name="image">the ImageRenderInfo object to be filtered</param>
         public virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image) {
-            IList<Rectangle> areasToBeCleaned = GetImageAreasToBeCleaned(image);
-            if (areasToBeCleaned == null) {
+            return FilterImage(image, GetImageAreasToBeCleaned(image));
+        }
+
+        internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(FilteredImagesCache.FilteredImageKey
+             imageKey) {
+            return FilterImage(imageKey.GetImageRenderInfo(), imageKey.GetCleanedAreas());
+        }
+
+        internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image, IList<Rectangle
+            > imageAreasToBeCleaned) {
+            if (imageAreasToBeCleaned == null) {
                 return new PdfCleanUpFilter.FilterResult<ImageData>(true, null);
             }
             else {
-                if (areasToBeCleaned.Count == 0) {
-                    return new PdfCleanUpFilter.FilterResult<ImageData>(false, ImageDataFactory.Create(image.GetImage().GetImageBytes
-                        ()));
+                if (imageAreasToBeCleaned.IsEmpty()) {
+                    return new PdfCleanUpFilter.FilterResult<ImageData>(false, null);
                 }
             }
             byte[] filteredImageBytes;
             try {
                 byte[] originalImageBytes = image.GetImage().GetImageBytes();
-                filteredImageBytes = ProcessImage(originalImageBytes, areasToBeCleaned);
+                filteredImageBytes = ProcessImage(originalImageBytes, imageAreasToBeCleaned);
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
@@ -139,6 +157,8 @@ namespace iText.PdfCleanup {
             return new PdfCleanUpFilter.FilterResult<ImageData>(true, ImageDataFactory.Create(filteredImageBytes));
         }
 
+        /// <summary>Filter a PathRenderInfo object</summary>
+        /// <param name="path">the PathRenderInfo object to be filtered</param>
         public virtual Path FilterStrokePath(PathRenderInfo path) {
             PdfArray dashPattern = path.GetLineDashPattern();
             LineDashPattern lineDashPattern = new LineDashPattern(dashPattern.GetAsArray(0), dashPattern.GetAsNumber(1
@@ -147,10 +167,14 @@ namespace iText.PdfCleanup {
                 (), path.GetMiterLimit(), lineDashPattern);
         }
 
+        /// <summary>Filter a PathRenderInfo object</summary>
+        /// <param name="path">the PathRenderInfo object to be filtered</param>
         public virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
             return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
         }
 
+        /// <summary>Returns whether the given TextRenderInfo object needs to be cleaned up</summary>
+        /// <param name="renderInfo">the input TextRenderInfo object</param>
         private bool IsTextNotToBeCleaned(TextRenderInfo renderInfo) {
             Point[] textRect = GetTextRectangle(renderInfo);
             foreach (Rectangle region in regions) {
@@ -162,13 +186,17 @@ namespace iText.PdfCleanup {
             return true;
         }
 
+        /// <summary>Return true if two given rectangles (specified by an array of points) intersect</summary>
+        /// <param name="rect1">the first rectangle</param>
+        /// <param name="rect2">the second rectangle</param>
+        /// <returns>true if the rectangles intersect, false otherwise</returns>
         private bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
             Clipper clipper = new Clipper();
             ClipperBridge.AddRectToClipper(clipper, rect1, PolyType.SUBJECT);
             ClipperBridge.AddRectToClipper(clipper, rect2, PolyType.CLIP);
             Paths paths = new Paths();
             clipper.Execute(ClipType.INTERSECTION, paths, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-            return paths.Count > 0;
+            return !paths.IsEmpty();
         }
 
         /// <summary>Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
@@ -218,8 +246,11 @@ namespace iText.PdfCleanup {
             return GetAsRectangle(points[0], points[1], points[2], points[3]);
         }
 
+        /// <summary>Clean up an image using a List of Rectangles that need to be redacted</summary>
+        /// <param name="imageBytes">the image to be cleaned up</param>
+        /// <param name="areasToBeCleaned">the List of Rectangles that need to be redacted out of the image</param>
         private byte[] ProcessImage(byte[] imageBytes, IList<Rectangle> areasToBeCleaned) {
-            if (areasToBeCleaned.Count == 0) {
+            if (areasToBeCleaned.IsEmpty()) {
                 return imageBytes;
             }
             using (Stream imageStream = new MemoryStream(imageBytes))
@@ -251,6 +282,9 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>Clean up a BufferedImage using a List of Rectangles that need to be redacted</summary>
+        /// <param name="image">the image to be cleaned up</param>
+        /// <param name="areasToBeCleaned">the List of Rectangles that need to be redacted out of the image</param>
         private void CleanImage(Image image, IList<Rectangle> areasToBeCleaned) {
             Graphics g = Graphics.FromImage(image);
             // A rectangle in the areasToBeCleaned list is treated to be in standard [0,1]x[0,1] image space
@@ -392,6 +426,8 @@ namespace iText.PdfCleanup {
             return squares;
         }
 
+        /// <summary>Approximates a given Path with a List of Point objects</summary>
+        /// <param name="path">input path</param>
         private static IList<Point> GetPathApproximation(Path path) {
             IList<Point> approx = new ApproxPoints();
             foreach (Subpath subpath in path.GetSubpaths()) {
@@ -440,24 +476,27 @@ namespace iText.PdfCleanup {
             return rotatedSquareVertices;
         }
 
+        /// <summary>Approximate a circle with 4 Bezier curves (one for each 90 degrees sector)</summary>
+        /// <param name="center">center of the circle</param>
+        /// <param name="radius">radius of the circle</param>
         private static BezierCurve[] ApproximateCircle(Point center, double radius) {
             // The circle is split into 4 sectors. Arc of each sector
             // is approximated  with bezier curve separately.
             BezierCurve[] approximation = new BezierCurve[4];
             double x = center.GetX();
             double y = center.GetY();
-            approximation[0] = new BezierCurve(iText.IO.Util.JavaUtil.ArraysAsList(new Point(x, y + radius), new Point
-                (x + radius * CIRCLE_APPROXIMATION_CONST, y + radius), new Point(x + radius, y + radius * CIRCLE_APPROXIMATION_CONST
+            approximation[0] = new BezierCurve(JavaUtil.ArraysAsList(new Point(x, y + radius), new Point(x + radius * 
+                CIRCLE_APPROXIMATION_CONST, y + radius), new Point(x + radius, y + radius * CIRCLE_APPROXIMATION_CONST
                 ), new Point(x + radius, y)));
-            approximation[1] = new BezierCurve(iText.IO.Util.JavaUtil.ArraysAsList(new Point(x + radius, y), new Point
-                (x + radius, y - radius * CIRCLE_APPROXIMATION_CONST), new Point(x + radius * CIRCLE_APPROXIMATION_CONST
-                , y - radius), new Point(x, y - radius)));
-            approximation[2] = new BezierCurve(iText.IO.Util.JavaUtil.ArraysAsList(new Point(x, y - radius), new Point
-                (x - radius * CIRCLE_APPROXIMATION_CONST, y - radius), new Point(x - radius, y - radius * CIRCLE_APPROXIMATION_CONST
+            approximation[1] = new BezierCurve(JavaUtil.ArraysAsList(new Point(x + radius, y), new Point(x + radius, y
+                 - radius * CIRCLE_APPROXIMATION_CONST), new Point(x + radius * CIRCLE_APPROXIMATION_CONST, y - radius
+                ), new Point(x, y - radius)));
+            approximation[2] = new BezierCurve(JavaUtil.ArraysAsList(new Point(x, y - radius), new Point(x - radius * 
+                CIRCLE_APPROXIMATION_CONST, y - radius), new Point(x - radius, y - radius * CIRCLE_APPROXIMATION_CONST
                 ), new Point(x - radius, y)));
-            approximation[3] = new BezierCurve(iText.IO.Util.JavaUtil.ArraysAsList(new Point(x - radius, y), new Point
-                (x - radius, y + radius * CIRCLE_APPROXIMATION_CONST), new Point(x - radius * CIRCLE_APPROXIMATION_CONST
-                , y + radius), new Point(x, y + radius)));
+            approximation[3] = new BezierCurve(JavaUtil.ArraysAsList(new Point(x - radius, y), new Point(x - radius, y
+                 + radius * CIRCLE_APPROXIMATION_CONST), new Point(x - radius * CIRCLE_APPROXIMATION_CONST, y + radius
+                ), new Point(x, y + radius)));
             return approximation;
         }
 
@@ -478,7 +517,8 @@ namespace iText.PdfCleanup {
             return transformed;
         }
 
-        /// <summary> Get the bounding box of a TextRenderInfo object
+        /// <summary>Get the bounding box of a TextRenderInfo object</summary>
+        /// <param name="renderInfo">input TextRenderInfo object</param>
         private Point[] GetTextRectangle(TextRenderInfo renderInfo) {
             LineSegment ascent = renderInfo.GetAscentLine();
             LineSegment descent = renderInfo.GetDescentLine();
@@ -487,28 +527,32 @@ namespace iText.PdfCleanup {
                 ().Get(1)), new Point(descent.GetStartPoint().Get(0), descent.GetStartPoint().Get(1)) };
         }
 
-        /// <summary> Convert a Rectangle object into 4 Points
+        /// <summary>Convert a Rectangle object into 4 Points</summary>
+        /// <param name="rect">input Rectangle</param>
         private Point[] GetRectangleVertices(Rectangle rect) {
             Point[] points = new Point[] { new Point(rect.GetLeft(), rect.GetBottom()), new Point(rect.GetRight(), rect
                 .GetBottom()), new Point(rect.GetRight(), rect.GetTop()), new Point(rect.GetLeft(), rect.GetTop()) };
             return points;
         }
 
-        /// <summary> Convert 4 Point objects into a Rectangle
+        /// <summary>Convert 4 Point objects into a Rectangle</summary>
+        /// <param name="p1">first Point</param>
+        /// <param name="p2">second Point</param>
+        /// <param name="p3">third Point</param>
+        /// <param name="p4">fourth Point</param>
         private Rectangle GetAsRectangle(Point p1, Point p2, Point p3, Point p4) {
-            IList<double> xs = iText.IO.Util.JavaUtil.ArraysAsList(p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX());
-            IList<double> ys = iText.IO.Util.JavaUtil.ArraysAsList(p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY());
-            double left = System.Linq.Enumerable.Min(xs);
-            double bottom = System.Linq.Enumerable.Min(ys);
-            double right = System.Linq.Enumerable.Max(xs);
-            double top = System.Linq.Enumerable.Max(ys);
+            IList<double> xs = JavaUtil.ArraysAsList(p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX());
+            IList<double> ys = JavaUtil.ArraysAsList(p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY());
+            double left = Enumerable.Min(xs);
+            double bottom = Enumerable.Min(ys);
+            double right = Enumerable.Max(xs);
+            double top = Enumerable.Max(ys);
             return new Rectangle((float)left, (float)bottom, (float)(right - left), (float)(top - bottom));
         }
 
-        /// <summary>Calculate the intersection of 2 Rectangles
-        /// <returns>
-        /// <code>Rectangle</code> representing the intersection of 2 Rectangles
-        /// </returns>
+        /// <summary>Calculate the intersection of 2 Rectangles</summary>
+        /// <param name="rect1">first Rectangle</param>
+        /// <param name="rect2">second Rectangle</param>
         private Rectangle GetRectanglesIntersection(Rectangle rect1, Rectangle rect2) {
             float x1 = Math.Max(rect1.GetLeft(), rect2.GetLeft());
             float y1 = Math.Max(rect1.GetBottom(), rect2.GetBottom());
@@ -563,8 +607,7 @@ namespace iText.PdfCleanup {
             }
 
             internal virtual bool Contains(Point point) {
-                return iText.IO.Util.JavaUtil.FloatCompare(Math.Abs(A * (float)point.GetX() + B * (float)point.GetY() + C)
-                    , 0.1f) < 0;
+                return JavaUtil.FloatCompare(Math.Abs(A * (float)point.GetX() + B * (float)point.GetY() + C), 0.1f) < 0;
             }
         }
     }

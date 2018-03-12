@@ -156,6 +156,8 @@ namespace iText.PdfCleanup {
 
         private TextPositioning textPositioning;
 
+        private FilteredImagesCache filteredImagesCache;
+
         internal PdfCleanUpProcessor(IList<Rectangle> cleanUpRegions, PdfDocument document)
             : base(new PdfCleanUpEventListener()) {
             this.document = document;
@@ -193,6 +195,10 @@ namespace iText.PdfCleanup {
                     }
                 }
             }
+        }
+
+        internal virtual void SetFilteredImagesCache(FilteredImagesCache cache) {
+            this.filteredImagesCache = cache;
         }
 
         private bool ProcessAnnotation(PdfAnnotation annotation, Rectangle region) {
@@ -528,8 +534,7 @@ namespace iText.PdfCleanup {
                                                                     }
                                                                     else {
                                                                         if ("sh".Equals(@operator)) {
-                                                                            PdfShading shading = PdfShading.MakeShading(GetResources().GetResource(PdfName.Shading).GetAsDictionary((PdfName
-                                                                                )operands[0]));
+                                                                            PdfShading shading = GetResources().GetShading((PdfName)operands[0]);
                                                                             GetCanvas().PaintShading(shading);
                                                                         }
                                                                         else {
@@ -687,17 +692,22 @@ namespace iText.PdfCleanup {
             PdfStream imageStream = GetXObjectStream((PdfName)operands[0]);
             if (PdfName.Image.Equals(imageStream.GetAsName(PdfName.Subtype))) {
                 ImageRenderInfo encounteredImage = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredImage();
-                PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(encounteredImage);
-                PdfImageXObject imageToWrite = null;
-                if (imageFilterResult.IsModified()) {
-                    ImageData filteredImage = imageFilterResult.GetFilterResult();
-                    if (filteredImage != null) {
-                        imageToWrite = new PdfImageXObject(filteredImage);
-                        CopySMaskData(encounteredImage.GetImage().GetPdfObject(), imageToWrite.GetPdfObject());
+                FilteredImagesCache.FilteredImageKey filteredImageKey = filter.CreateFilteredImageKey(encounteredImage, document
+                    );
+                PdfImageXObject imageToWrite = GetFilteredImagesCache().Get(filteredImageKey);
+                if (imageToWrite == null) {
+                    PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(filteredImageKey);
+                    if (imageFilterResult.IsModified()) {
+                        ImageData filteredImage = imageFilterResult.GetFilterResult();
+                        if (filteredImage != null) {
+                            imageToWrite = new PdfImageXObject(filteredImage);
+                            CopySMaskData(encounteredImage.GetImage().GetPdfObject(), imageToWrite.GetPdfObject());
+                            GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
+                        }
                     }
-                }
-                else {
-                    imageToWrite = encounteredImage.GetImage();
+                    else {
+                        imageToWrite = encounteredImage.GetImage();
+                    }
                 }
                 if (imageToWrite != null) {
                     float[] ctm = PollNotAppliedCtm();
@@ -708,10 +718,20 @@ namespace iText.PdfCleanup {
             }
         }
 
+        private FilteredImagesCache GetFilteredImagesCache() {
+            return filteredImagesCache != null ? filteredImagesCache : new FilteredImagesCache();
+        }
+
         private void CleanInlineImage() {
             ImageRenderInfo encounteredImage = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredImage();
             PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(encounteredImage);
-            ImageData filteredImage = imageFilterResult.GetFilterResult();
+            ImageData filteredImage;
+            if (imageFilterResult.IsModified()) {
+                filteredImage = imageFilterResult.GetFilterResult();
+            }
+            else {
+                filteredImage = ImageDataFactory.Create(encounteredImage.GetImage().GetImageBytes());
+            }
             if (filteredImage != null) {
                 bool? imageMaskFlag = encounteredImage.GetImage().GetPdfObject().GetAsBool(PdfName.ImageMask);
                 if (imageMaskFlag != null && (bool)imageMaskFlag) {
