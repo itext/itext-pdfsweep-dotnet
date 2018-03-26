@@ -59,6 +59,7 @@ using iText.Kernel.Pdf.Xobject;
 using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
+using Common.Logging;
 using Versions.Attributes;
 
 namespace iText.PdfCleanup {
@@ -210,7 +211,7 @@ namespace iText.PdfCleanup {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -219,6 +220,9 @@ namespace iText.PdfCleanup {
                     catch
                     {
                         // empty
+                    }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LogManager.GetLogger(typeof(PdfCleanUpTool)).Error(fileLoadExceptionMessage);
                     }
                 }
             }
