@@ -60,6 +60,7 @@ using iText.Layout.Properties;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using iText.IO.Log;
 using Versions.Attributes;
 using iText.Kernel;
 
@@ -209,7 +210,7 @@ namespace iText.PdfCleanup {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -218,6 +219,9 @@ namespace iText.PdfCleanup {
                     catch
                     {
                         // empty
+                    }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LoggerFactory.GetLogger(typeof(PdfCleanUpTool)).Error(fileLoadExceptionMessage);
                     }
                 }
             }
