@@ -1,48 +1,50 @@
 /*
-    This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
-    Authors: iText Software.
+This file is part of the iText (R) project.
+    Copyright (c) 1998-2018 iText Group NV
+Authors: iText Software.
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License version 3
-    as published by the Free Software Foundation with the addition of the
-    following permission added to Section 15 as permitted in Section 7(a):
-    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
-    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
-    OF THIRD PARTY RIGHTS
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation with the addition of the
+following permission added to Section 15 as permitted in Section 7(a):
+FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+OF THIRD PARTY RIGHTS
 
-    This program is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU Affero General Public License for more details.
-    You should have received a copy of the GNU Affero General Public License
-    along with this program; if not, see http://www.gnu.org/licenses or write to
-    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA, 02110-1301 USA, or download the license from the following URL:
-    http://itextpdf.com/terms-of-use/
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License
+along with this program; if not, see http://www.gnu.org/licenses or write to
+the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA, 02110-1301 USA, or download the license from the following URL:
+http://itextpdf.com/terms-of-use/
 
-    The interactive user interfaces in modified source and object code versions
-    of this program must display Appropriate Legal Notices, as required under
-    Section 5 of the GNU Affero General Public License.
+The interactive user interfaces in modified source and object code versions
+of this program must display Appropriate Legal Notices, as required under
+Section 5 of the GNU Affero General Public License.
 
-    In accordance with Section 7(b) of the GNU Affero General Public License,
-    a covered work must retain the producer line in every PDF that is created
-    or manipulated using iText.
+In accordance with Section 7(b) of the GNU Affero General Public License,
+a covered work must retain the producer line in every PDF that is created
+or manipulated using iText.
 
-    You can be released from the requirements of the license by purchasing
-    a commercial license. Buying such a license is mandatory as soon as you
-    develop commercial activities involving the iText software without
-    disclosing the source code of your own applications.
-    These activities include: offering paid services to customers as an ASP,
-    serving PDFs on the fly in a web application, shipping iText with a closed
-    source product.
+You can be released from the requirements of the license by purchasing
+a commercial license. Buying such a license is mandatory as soon as you
+develop commercial activities involving the iText software without
+disclosing the source code of your own applications.
+These activities include: offering paid services to customers as an ASP,
+serving PDFs on the fly in a web application, shipping iText with a closed
+source product.
 
-    For more information, please contact iText Software Corp. at this
-    address: sales@itextpdf.com */
+For more information, please contact iText Software Corp. at this
+address: sales@itextpdf.com
+*/
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using iText.IO.Source;
 using iText.IO.Util;
@@ -57,11 +59,8 @@ using iText.Kernel.Pdf.Xobject;
 using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
-using System.Collections.Generic;
-using System.Reflection;
-using System.IO;
+using Common.Logging;
 using Versions.Attributes;
-using iText.Kernel;
 
 namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
@@ -76,14 +75,14 @@ namespace iText.PdfCleanup {
         /// into fixed point numbers by multiplying by this coefficient. Vary it
         /// to adjust the preciseness of the calculations.
         /// </remarks>
-        [Obsolete]
+        [System.ObsoleteAttribute]
         public static double floatMultiplier = Math.Pow(10, 14);
 
         /// <summary>
         /// Used as the criterion of a good approximation of rounded line joins
         /// and line caps.
         /// </summary>
-        [Obsolete]
+        [System.ObsoleteAttribute]
         public static double arcTolerance = 0.0025;
 
         private PdfDocument pdfDocument;
@@ -98,6 +97,8 @@ namespace iText.PdfCleanup {
         /// Values - list of regions defined by redact annotation
         /// </summary>
         private IDictionary<PdfRedactAnnotation, IList<Rectangle>> redactAnnotations;
+
+        private FilteredImagesCache filteredImagesCache;
 
         private const String PRODUCT_NAME = "pdfSweep";
 
@@ -128,11 +129,11 @@ namespace iText.PdfCleanup {
         /// Creates a
         /// <see cref="PdfCleanUpTool"/>
         /// object. If
-        /// 
+        /// <paramref name="cleanRedactAnnotations"/>
         /// is true,
         /// regions to be erased are extracted from the redact annotations contained inside the given document.
         /// Those redact annotations will be removed from the resultant document. If
-        /// 
+        /// <paramref name="cleanRedactAnnotations"/>
         /// is false,
         /// then no regions for erasing are specified. In that case use
         /// <see cref="AddCleanupLocation(PdfCleanUpLocation)"/>
@@ -180,6 +181,7 @@ namespace iText.PdfCleanup {
             }
             this.pdfDocument = pdfDocument;
             this.pdfCleanUpLocations = new Dictionary<int, IList<PdfCleanUpLocation>>();
+            this.filteredImagesCache = new FilteredImagesCache();
             if (cleanRedactAnnotations) {
                 AddCleanUpLocationsBasedOnRedactAnnotations();
             }
@@ -209,7 +211,7 @@ namespace iText.PdfCleanup {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -218,6 +220,9 @@ namespace iText.PdfCleanup {
                     catch
                     {
                         // empty
+                    }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LogManager.GetLogger(typeof(PdfCleanUpTool)).Error(fileLoadExceptionMessage);
                     }
                 }
             }
@@ -235,7 +240,7 @@ namespace iText.PdfCleanup {
         /// </summary>
         /// <param name="cleanUpLocations">
         /// list of locations to be cleaned up
-        /// <seealso>PdfCleanUpLocation</seealso>
+        /// <see cref="PdfCleanUpLocation"/>
         /// </param>
         /// <param name="pdfDocument">
         /// A
@@ -251,11 +256,10 @@ namespace iText.PdfCleanup {
         }
 
         public virtual iText.PdfCleanup.PdfCleanUpTool AddCleanupLocation(PdfCleanUpLocation cleanUpLocation) {
-            IList<PdfCleanUpLocation> pgLocations; 
-            this.pdfCleanUpLocations.TryGetValue(cleanUpLocation.GetPage(), out pgLocations);
+            IList<PdfCleanUpLocation> pgLocations = this.pdfCleanUpLocations.Get(cleanUpLocation.GetPage());
             if (pgLocations == null) {
                 pgLocations = new List<PdfCleanUpLocation>();
-                this.pdfCleanUpLocations[cleanUpLocation.GetPage()] = pgLocations;
+                this.pdfCleanUpLocations.Put(cleanUpLocation.GetPage(), pgLocations);
             }
             pgLocations.Add(cleanUpLocation);
             return this;
@@ -265,7 +269,7 @@ namespace iText.PdfCleanup {
         /// Cleans the document by erasing all the areas which are either provided or
         /// extracted from redaction annotations.
         /// </summary>
-        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.IO.IOException">IOException</exception>
         public virtual void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -274,6 +278,8 @@ namespace iText.PdfCleanup {
                 // if it isn't null, then we are in "extract locations from redact annots" mode
                 RemoveRedactAnnots();
             }
+            
+            pdfCleanUpLocations.Clear();
         }
 
         /// <summary>
@@ -296,6 +302,9 @@ namespace iText.PdfCleanup {
             this.processAnnotations = processAnnotations;
         }
 
+        /// <summary>Cleans a page from the document by erasing all the areas which are provided or</summary>
+        /// <param name="pageNumber">the page to be cleaned up</param>
+        /// <param name="cleanUpLocations">the locations to be cleaned up</param>
         private void CleanUpPage(int pageNumber, IList<PdfCleanUpLocation> cleanUpLocations) {
             if (cleanUpLocations.Count == 0) {
                 return;
@@ -306,18 +315,20 @@ namespace iText.PdfCleanup {
             }
             PdfPage page = pdfDocument.GetPage(pageNumber);
             PdfCleanUpProcessor cleanUpProcessor = new PdfCleanUpProcessor(regions, pdfDocument);
+            cleanUpProcessor.SetFilteredImagesCache(filteredImagesCache);
             cleanUpProcessor.ProcessPageContent(page);
-
             if (processAnnotations) {
                 cleanUpProcessor.ProcessPageAnnotations(page, regions);
             }
-
             PdfCanvas pageCleanedContents = cleanUpProcessor.PopCleanedCanvas();
             page.Put(PdfName.Contents, pageCleanedContents.GetContentStream());
             page.SetResources(pageCleanedContents.GetResources());
             ColorCleanedLocations(pageCleanedContents, cleanUpLocations);
         }
 
+        /// <summary>Draws colored rectangles on the PdfCanvas corresponding to the PdfCleanUpLocation objects</summary>
+        /// <param name="canvas">the PdfCanvas on which to draw</param>
+        /// <param name="cleanUpLocations">the PdfCleanUpLocations</param>
         private void ColorCleanedLocations(PdfCanvas canvas, IList<PdfCleanUpLocation> cleanUpLocations) {
             foreach (PdfCleanUpLocation location in cleanUpLocations) {
                 if (location.GetCleanUpColor() != null) {
@@ -326,6 +337,9 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>Draws a colored rectangle on the PdfCanvas correponding to a PdfCleanUpLocation</summary>
+        /// <param name="canvas">the PdfCanvas on which to draw</param>
+        /// <param name="location">the PdfCleanUpLocation</param>
         private void AddColoredRectangle(PdfCanvas canvas, PdfCleanUpLocation location) {
             if (pdfDocument.IsTagged()) {
                 canvas.OpenTag(new CanvasArtifact());
@@ -345,11 +359,6 @@ namespace iText.PdfCleanup {
         /// Adds clean up locations to be erased by extracting regions from the redact annotations
         /// contained inside the given document. Those redact annotations will be removed from the resultant document.
         /// </remarks>
-        /// <returns>
-        /// current
-        /// <see cref="PdfCleanUpTool"/>
-        /// instance.
-        /// </returns>
         private void AddCleanUpLocationsBasedOnRedactAnnotations() {
             redactAnnotations = new LinkedDictionary<PdfRedactAnnotation, IList<Rectangle>>();
             for (int i = 1; i <= pdfDocument.GetNumberOfPages(); ++i) {
@@ -380,7 +389,7 @@ namespace iText.PdfCleanup {
                 regions = new List<Rectangle>();
                 regions.Add(redactAnnotation.GetRectangle().ToRectangle());
             }
-            redactAnnotations[redactAnnotation] = regions;
+            redactAnnotations.Put(redactAnnotation, regions);
             int page = pdfDocument.GetPageNumber(redactAnnotation.GetPage());
             Color cleanUpColor = redactAnnotation.GetInteriorColor();
             PdfDictionary ro = redactAnnotation.GetRedactRolloverAppearance();
@@ -392,6 +401,8 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>Convert a PdfArray of floats into a List of Rectangle objects</summary>
+        /// <param name="quadPoints">input PdfArray</param>
         private IList<Rectangle> TranslateQuadPointsToRectangles(PdfArray quadPoints) {
             IList<Rectangle> rectangles = new List<Rectangle>();
             for (int i = 0; i < quadPoints.Size(); i += 8) {
@@ -405,6 +416,10 @@ namespace iText.PdfCleanup {
             return rectangles;
         }
 
+        /// <summary>
+        /// Remove the redaction annotations
+        /// This method is called after the annotations are processed.
+        /// </summary>
         /// <exception cref="System.IO.IOException"/>
         private void RemoveRedactAnnots() {
             foreach (PdfRedactAnnotation annotation in redactAnnotations.Keys) {
@@ -419,7 +434,7 @@ namespace iText.PdfCleanup {
                 PdfString overlayText = annotation.GetOverlayText();
                 Rectangle annotRect = annotation.GetRectangle().ToRectangle();
                 if (redactRolloverAppearance != null) {
-                    DrawRolloverAppearance(canvas, redactRolloverAppearance, annotRect, redactAnnotations[annotation]);
+                    DrawRolloverAppearance(canvas, redactRolloverAppearance, annotRect, redactAnnotations.Get(annotation));
                 }
                 else {
                     if (overlayText != null && !String.IsNullOrEmpty(overlayText.ToUnicodeString())) {
@@ -451,12 +466,18 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         private void DrawOverlayText(PdfCanvas canvas, String overlayText, Rectangle annotRect, PdfBoolean repeat, 
             PdfString defaultAppearance, int justification) {
-            IDictionary<String, IList> parsedDA = ParseDAParam(defaultAppearance);
+            IDictionary<String, IList> parsedDA;
+            try {
+                parsedDA = ParseDAParam(defaultAppearance);
+            }
+            catch (NullReferenceException) {
+                throw new PdfException(PdfException.DefaultAppearanceNotFound);
+            }
             PdfFont font;
             float fontSize = 12;
-            IList fontArgs;
-            parsedDA.TryGetValue("Tf", out fontArgs);
-            if (fontArgs != null) {
+            IList fontArgs = parsedDA.Get("Tf");
+            PdfDictionary formDictionary = pdfDocument.GetCatalog().GetPdfObject().GetAsDictionary(PdfName.AcroForm);
+            if (fontArgs != null && formDictionary != null) {
                 font = GetFontFromAcroForm((PdfName)fontArgs[0]);
                 fontSize = ((PdfNumber)fontArgs[1]).FloatValue();
             }
@@ -532,13 +553,14 @@ namespace iText.PdfCleanup {
                             key = "FillColor";
                         }
                     }
-                    commandArguments[key] = currentArguments;
+                    commandArguments.Put(key, currentArguments);
                     currentArguments = new ArrayList();
                 }
                 else {
                     switch (tokeniser.GetTokenType()) {
                         case PdfTokenizer.TokenType.Number: {
-                            currentArguments.Add(new PdfNumber(Convert.ToSingle(tokeniser.GetStringValue(), CultureInfo.InvariantCulture)));
+                            currentArguments.Add(new PdfNumber(System.Convert.ToSingle(tokeniser.GetStringValue(), System.Globalization.CultureInfo.InvariantCulture
+                                )));
                             break;
                         }
 
