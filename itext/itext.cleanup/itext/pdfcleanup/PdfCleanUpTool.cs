@@ -60,6 +60,7 @@ using iText.Layout.Properties;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using iText.IO.Log;
 using Versions.Attributes;
 using iText.Kernel;
 
@@ -209,7 +210,7 @@ namespace iText.PdfCleanup {
                 {
                     fileLoadExceptionMessage = fileLoadException.Message;
                 }
-                if (fileLoadExceptionMessage != null)
+                if (type == null)
                 {
                     try
                     {
@@ -218,6 +219,9 @@ namespace iText.PdfCleanup {
                     catch
                     {
                         // empty
+                    }
+                    if (type == null && fileLoadExceptionMessage != null) {
+                        LoggerFactory.GetLogger(typeof(PdfCleanUpTool)).Error(fileLoadExceptionMessage);
                     }
                 }
             }
@@ -451,12 +455,21 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         private void DrawOverlayText(PdfCanvas canvas, String overlayText, Rectangle annotRect, PdfBoolean repeat, 
             PdfString defaultAppearance, int justification) {
-            IDictionary<String, IList> parsedDA = ParseDAParam(defaultAppearance);
+            IDictionary<String, IList> parsedDA;
+            try
+            {
+                parsedDA = ParseDAParam(defaultAppearance);
+            }
+            catch (NullReferenceException npe)
+            {
+                throw new PdfException(PdfException.DefaultAppearanceNotFound);
+            }
             PdfFont font;
             float fontSize = 12;
             IList fontArgs;
             parsedDA.TryGetValue("Tf", out fontArgs);
-            if (fontArgs != null) {
+            PdfDictionary formDictionary = pdfDocument.GetCatalog().GetPdfObject().GetAsDictionary(PdfName.AcroForm);
+            if (fontArgs != null && formDictionary != null) {
                 font = GetFontFromAcroForm((PdfName)fontArgs[0]);
                 fontSize = ((PdfNumber)fontArgs[1]).FloatValue();
             }
