@@ -143,6 +143,23 @@ namespace iText.PdfCleanup {
 
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void RedactIPhoneUserManualColored() {
+            String input = inputPath + "iphone_user_guide_untagged_small.pdf";
+            String output = outputPath + "redactIPhoneUserManualColored.pdf";
+            String cmp = inputPath + "cmp_redactIPhoneUserManualColored.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy("(iphone)|(iPhone)").SetRedactionColor(ColorConstants.GREEN));
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.CleanUp(pdf);
+            pdf.Close();
+            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualColored_");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
         private void CompareResults(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareVisually(output, cmp, targetDir, diffPrefix + "_");

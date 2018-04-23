@@ -72,7 +72,7 @@ namespace iText.PdfCleanup.Autosweep {
         }
 
         public virtual ICleanupStrategy Reset() {
-            return new iText.PdfCleanup.Autosweep.RegexBasedCleanupStrategy(pattern);
+            return new iText.PdfCleanup.Autosweep.RegexBasedCleanupStrategy(pattern).SetRedactionColor(redactionColor);
         }
     }
 }
