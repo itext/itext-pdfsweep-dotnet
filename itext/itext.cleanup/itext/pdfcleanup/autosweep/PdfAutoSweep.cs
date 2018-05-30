@@ -132,12 +132,12 @@ namespace iText.PdfCleanup.Autosweep {
                 }
                 ResetStrategy();
             }
-            JavaCollectionsUtil.Sort(toClean, new _IComparer_136());
+            JavaCollectionsUtil.Sort(toClean, new _IComparer_137());
             return toClean;
         }
 
-        private sealed class _IComparer_136 : IComparer<PdfCleanUpLocation> {
-            public _IComparer_136() {
+        private sealed class _IComparer_137 : IComparer<PdfCleanUpLocation> {
+            public _IComparer_137() {
             }
 
             public int Compare(PdfCleanUpLocation o1, PdfCleanUpLocation o2) {
@@ -252,7 +252,7 @@ namespace iText.PdfCleanup.Autosweep {
         public virtual void TentativeCleanUp(PdfPage pdfPage) {
             IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
             // random title generation
-            Random rnd = new Random(System.DateTime.Now.Millisecond);
+            Random rnd = new Random(SystemUtil.GetTimeBasedSeed());
             ICollection<String> usedTitles = new HashSet<String>();
             foreach (PdfCleanUpLocation loc in cleanUpLocations) {
                 float[] color = loc.GetCleanUpColor().GetColorValue();
