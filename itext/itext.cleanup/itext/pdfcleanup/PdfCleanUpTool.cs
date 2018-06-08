@@ -60,6 +60,8 @@ using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
 using Common.Logging;
+using iText.Kernel.Counter;
+using iText.PdfCleanup.Events;
 using Versions.Attributes;
 
 namespace iText.PdfCleanup {
@@ -280,6 +282,7 @@ namespace iText.PdfCleanup {
             }
             
             pdfCleanUpLocations.Clear();
+            EventCounterHandler.GetInstance().OnEvent(PdfSweepEvent.CLEANUP, GetType());
         }
 
         /// <summary>
