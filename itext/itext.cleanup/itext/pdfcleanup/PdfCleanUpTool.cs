@@ -45,6 +45,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using iText.IO.Source;
 using iText.IO.Util;
@@ -272,6 +273,7 @@ namespace iText.PdfCleanup {
         /// extracted from redaction annotations.
         /// </summary>
         /// <exception cref="System.IO.IOException">IOException</exception>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public virtual void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
