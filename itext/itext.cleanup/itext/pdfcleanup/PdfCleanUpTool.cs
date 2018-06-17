@@ -45,7 +45,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using iText.IO.Source;
 using iText.IO.Util;
@@ -62,6 +61,7 @@ using iText.Layout.Layout;
 using iText.Layout.Properties;
 using Common.Logging;
 using iText.Kernel.Counter;
+using iText.Kernel.Counter.Event;
 using iText.PdfCleanup.Events;
 using Versions.Attributes;
 
@@ -91,6 +91,8 @@ namespace iText.PdfCleanup {
         private PdfDocument pdfDocument;
 
         private bool processAnnotations;
+
+        private IMetaInfo cleanupMetaInfo;
 
         /// <summary>Key - page number, value - list of locations related to the page.</summary>
         private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations;
@@ -269,11 +271,21 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>
+        /// Sets the cleanup meta info that will be passed to the <see cref="EventCounter"/>
+        /// with <see cref="PdfSweepEvent"/> and can be used to determine event origin.
+        /// <param name="metaInfo">the meta info to set.</param>
+        /// <returns>this instance</returns>
+        /// </summary>
+        public PdfCleanUpTool SetEventCountingMetaInfo(IMetaInfo metaInfo) {
+            this.cleanupMetaInfo = metaInfo;
+            return this;
+        }
+
+        /// <summary>
         /// Cleans the document by erasing all the areas which are either provided or
         /// extracted from redaction annotations.
         /// </summary>
         /// <exception cref="System.IO.IOException">IOException</exception>
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public virtual void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -284,7 +296,7 @@ namespace iText.PdfCleanup {
             }
             
             pdfCleanUpLocations.Clear();
-            EventCounterHandler.GetInstance().OnEvent(PdfSweepEvent.CLEANUP, GetType());
+            EventCounterHandler.GetInstance().OnEvent(PdfSweepEvent.CLEANUP, cleanupMetaInfo, GetType());
         }
 
         /// <summary>
