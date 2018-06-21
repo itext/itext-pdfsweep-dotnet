@@ -105,12 +105,6 @@ namespace iText.PdfCleanup {
 
         private FilteredImagesCache filteredImagesCache;
 
-        private const String PRODUCT_NAME = "pdfSweep";
-
-        private const int PRODUCT_MAJOR = 1;
-
-        private const int PRODUCT_MINOR = 0;
-
         /// <summary>
         /// Creates a
         /// <see cref="PdfCleanUpTool"/>
@@ -168,7 +162,13 @@ namespace iText.PdfCleanup {
                     Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
                     Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
                     Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                    object[] objects = new object[] { "pdfSweep", 1, 0, array };
+                    object[] objects = new object[]
+                    {
+                        PdfCleanupProductInfo.PRODUCT_NAME,
+                        PdfCleanupProductInfo.MAJOR_VERSION,
+                        PdfCleanupProductInfo.MINOR_VERSION,
+                        array
+                    };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                     m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
