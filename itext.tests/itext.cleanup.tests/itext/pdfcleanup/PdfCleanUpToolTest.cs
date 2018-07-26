@@ -605,6 +605,20 @@ namespace iText.PdfCleanup {
 ;
         }
 
+        //Test will be fixed in DEVSIX-2056
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTestFontColor() {
+            String filename = "fontCleanup.pdf";
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath + filename), new PdfWriter(outputPath + filename
+                ));
+            new PdfCleanUpTool(pdfDoc, true).CleanUp();
+            pdfDoc.Close();
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(outputPath + filename, inputPath + "cmp_" 
+                + filename, outputPath, "diff_"));
+        }
+
         /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
