@@ -1,4 +1,5 @@
 /*
+
 This file is part of the iText (R) project.
 Copyright (c) 1998-2018 iText Group NV
 Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -41,18 +42,26 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
+using iText.Kernel.Counter;
+using iText.Kernel.Counter.Event;
 
-namespace iText.PdfCleanup {
-    /// <summary>Product info about this iText add-on.</summary>
-    public class PdfCleanupProductInfo {
-        /// <summary>The product name.</summary>
-        public const String PRODUCT_NAME = "pdfSweep";
+namespace iText.PdfCleanup.Events {
+    public class PdfSweepEvent : IGenericEvent {
+        public static readonly iText.PdfCleanup.Events.PdfSweepEvent CLEANUP = new iText.PdfCleanup.Events.PdfSweepEvent
+            ("cleanup");
 
-        /// <summary>The major version number.</summary>
-        public const int MAJOR_VERSION = 2;
+        private readonly String subtype;
 
-        /// <summary>The minor version number.</summary>
-        public const int MINOR_VERSION = 0;
-        // TODO refactor? move to local fields in order to hide it?
+        private PdfSweepEvent(String subtype) {
+            this.subtype = subtype;
+        }
+
+        public virtual String GetEventType() {
+            return "sweep-" + subtype;
+        }
+
+        public virtual String GetOriginId() {
+            return NamespaceConstant.PDF_SWEEP;
+        }
     }
 }

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2017 iText Group NV
+Copyright (c) 1998-2018 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ namespace iText.PdfCleanup.Autosweep {
         }
 
         public virtual ICleanupStrategy Reset() {
-            return new iText.PdfCleanup.Autosweep.RegexBasedCleanupStrategy(pattern);
+            return new iText.PdfCleanup.Autosweep.RegexBasedCleanupStrategy(pattern).SetRedactionColor(redactionColor);
         }
     }
 }

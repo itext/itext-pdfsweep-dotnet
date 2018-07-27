@@ -60,6 +60,9 @@ using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
 using Common.Logging;
+using iText.Kernel.Counter;
+using iText.Kernel.Counter.Event;
+using iText.PdfCleanup.Events;
 using Versions.Attributes;
 
 namespace iText.PdfCleanup {
@@ -89,6 +92,8 @@ namespace iText.PdfCleanup {
 
         private bool processAnnotations;
 
+        private IMetaInfo cleanupMetaInfo;
+
         /// <summary>Key - page number, value - list of locations related to the page.</summary>
         private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations;
 
@@ -99,12 +104,6 @@ namespace iText.PdfCleanup {
         private IDictionary<PdfRedactAnnotation, IList<Rectangle>> redactAnnotations;
 
         private FilteredImagesCache filteredImagesCache;
-
-        private const String PRODUCT_NAME = "pdfSweep";
-
-        private const int PRODUCT_MAJOR = 1;
-
-        private const int PRODUCT_MINOR = 0;
 
         /// <summary>
         /// Creates a
@@ -163,7 +162,13 @@ namespace iText.PdfCleanup {
                     Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
                     Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
                     Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                    object[] objects = new object[] { "pdfSweep", 1, 0, array };
+                    object[] objects = new object[]
+                    {
+                        PdfCleanupProductInfo.PRODUCT_NAME,
+                        PdfCleanupProductInfo.MAJOR_VERSION,
+                        PdfCleanupProductInfo.MINOR_VERSION,
+                        array
+                    };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
                     m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
@@ -266,6 +271,17 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>
+        /// Sets the cleanup meta info that will be passed to the <see cref="EventCounter"/>
+        /// with <see cref="PdfSweepEvent"/> and can be used to determine event origin.
+        /// <param name="metaInfo">the meta info to set.</param>
+        /// <returns>this instance</returns>
+        /// </summary>
+        public PdfCleanUpTool SetEventCountingMetaInfo(IMetaInfo metaInfo) {
+            this.cleanupMetaInfo = metaInfo;
+            return this;
+        }
+
+        /// <summary>
         /// Cleans the document by erasing all the areas which are either provided or
         /// extracted from redaction annotations.
         /// </summary>
@@ -280,6 +296,7 @@ namespace iText.PdfCleanup {
             }
             
             pdfCleanUpLocations.Clear();
+            EventCounterHandler.GetInstance().OnEvent(PdfSweepEvent.CLEANUP, cleanupMetaInfo, GetType());
         }
 
         /// <summary>
