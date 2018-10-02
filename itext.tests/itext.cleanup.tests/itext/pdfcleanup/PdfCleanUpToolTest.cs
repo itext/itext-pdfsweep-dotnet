@@ -601,7 +601,7 @@ namespace iText.PdfCleanup {
                 new PdfCleanUpTool(pdfDocument, true).CleanUp();
                 pdfDocument.Close();
             }
-            , NUnit.Framework.Throws.TypeOf<PdfException>().With.Message.EqualTo(PdfException.DefaultAppearanceNotFound));
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.DefaultAppearanceNotFound))
 ;
         }
 
