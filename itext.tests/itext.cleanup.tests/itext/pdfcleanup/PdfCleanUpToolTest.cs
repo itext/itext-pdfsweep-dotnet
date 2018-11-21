@@ -50,6 +50,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Utils;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpToolTest : ExtendedITextTest {
@@ -617,6 +618,36 @@ namespace iText.PdfCleanup {
             pdfDoc.Close();
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(outputPath + filename, inputPath + "cmp_" 
                 + filename, outputPath, "diff_"));
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
+        public virtual void NoPropertiesInResourcesTest() {
+            String fileName = "noPropertiesInResourcesTest";
+            String input = inputPath + fileName + ".pdf";
+            String output = outputPath + fileName + ".pdf";
+            String cmp = inputPath + "cmp_" + fileName + ".pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle
+                (0, 0, 595, 842), ColorConstants.RED));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_" + fileName);
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
+        public virtual void IncorrectBDCToBMCTest() {
+            String fileName = "incorrectBDCToBMCTest";
+            String input = inputPath + fileName + ".pdf";
+            String output = outputPath + fileName + ".pdf";
+            String cmp = inputPath + "cmp_" + fileName + ".pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle
+                (0, 0, 10, 10), ColorConstants.RED));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_" + fileName);
         }
 
         /// <exception cref="System.IO.IOException"/>
