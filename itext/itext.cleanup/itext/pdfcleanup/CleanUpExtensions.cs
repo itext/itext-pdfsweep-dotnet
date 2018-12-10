@@ -136,6 +136,23 @@ namespace iText.PdfCleanup {
         public static bool IsEmptys(this ICollection collection) {
             return 0 == collection.Count;
         }
+
+        public static T[] ToArray<T>(this ICollection<T> col, T[] toArray) {
+            T[] r;
+            int colSize = col.Count;
+            if (colSize <= toArray.Length) {
+                col.CopyTo(toArray, 0);
+                if (colSize != toArray.Length) {
+                    toArray[colSize] = default(T);
+                }
+                r = toArray;
+            } else {
+                r = new T[colSize];
+                col.CopyTo(r, 0);
+            }
+
+            return r;
+        }
         
         #if !NETSTANDARD1_6
         public static Attribute GetCustomAttribute(this Assembly assembly, Type attributeType) {

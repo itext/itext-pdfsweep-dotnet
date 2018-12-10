@@ -186,17 +186,49 @@ namespace iText.PdfCleanup {
             return true;
         }
 
-        /// <summary>Return true if two given rectangles (specified by an array of points) intersect</summary>
-        /// <param name="rect1">the first rectangle</param>
-        /// <param name="rect2">the second rectangle</param>
+        /// <summary>Return true if two given rectangles (specified by an array of points) intersect.</summary>
+        /// <param name="rect1">the first rectanglee, considered as a subject of intersection. Even if it's width is zero,
+        /// it still can be intersected by second rectangle.</param>
+        /// <param name="rect2">the second rectangle, considered as intersecting rectangle. If it has zero width rectangles
+        /// are never considered as intersecting.</param>
         /// <returns>true if the rectangles intersect, false otherwise</returns>
-        private bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
+        internal static bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
             Clipper clipper = new Clipper();
-            ClipperBridge.AddRectToClipper(clipper, rect1, PolyType.SUBJECT);
-            ClipperBridge.AddRectToClipper(clipper, rect2, PolyType.CLIP);
-            Paths paths = new Paths();
-            clipper.Execute(ClipType.INTERSECTION, paths, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-            return !paths.IsEmpty();
+            ClipperBridge.AddPolygonToClipper(clipper, rect2, PolyType.CLIP);
+            // According to clipper documentation:
+            // The function will return false if the path is invalid for clipping. A path is invalid for clipping when:
+            // - it has less than 2 vertices;
+            // - it has 2 vertices but is not an open path;
+            // - the vertices are all co-linear and it is not an open path.
+            // Reference: http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Classes/ClipperBase/Methods/AddPath.htm
+            // If addition returns false, this means that there are less than 3 distinct points, because of rectangle zero width.
+            // Let's in this case specify the path as polyline, because we still want to know if redaction area
+            // intersects even with zero-width rectangles.
+            bool intersectionSubjectAdded = ClipperBridge.AddPolygonToClipper(clipper, rect1, PolyType.SUBJECT);
+            if (intersectionSubjectAdded) {
+                // working with paths is considered to be a bit faster in terms of performance.
+                Paths paths = new Paths();
+                clipper.Execute(ClipType.INTERSECTION, paths, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
+                return !paths.IsEmpty();
+            } else {
+                int rect1Size = rect1.Length;
+                intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
+                if (!intersectionSubjectAdded) {
+                    // According to the comment above,
+                    // this could have happened only if all four passed points are actually the same point.
+                    // Adding here a point really close to the original point, to make sure it's not covered by the
+                    // intersecting rectangle.
+                    double smallDiff = 0.01;
+                    IList<Point> rect1List = new List<Point>(JavaUtil.ArraysAsList(rect1));
+                    rect1List.Add(new Point(rect1[0].GetX() + smallDiff, rect1[0].GetY()));
+                    rect1 = rect1List.ToArray(new Point[rect1Size]);
+                    intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
+                    System.Diagnostics.Debug.Assert(intersectionSubjectAdded);
+                }
+                PolyTree polyTree = new PolyTree();
+                clipper.Execute(ClipType.INTERSECTION, polyTree, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
+                return !Clipper.PolyTreeToPaths(polyTree).IsEmpty();
+            }
         }
 
         /// <summary>Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
