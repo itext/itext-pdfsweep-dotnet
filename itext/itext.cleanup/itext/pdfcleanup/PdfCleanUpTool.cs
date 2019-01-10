@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-    Copyright (c) 1998-2018 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -335,7 +335,7 @@ namespace iText.PdfCleanup {
             cleanUpProcessor.SetFilteredImagesCache(filteredImagesCache);
             cleanUpProcessor.ProcessPageContent(page);
             if (processAnnotations) {
-                cleanUpProcessor.ProcessPageAnnotations(page, regions);
+                cleanUpProcessor.ProcessPageAnnotations(page, regions, redactAnnotations != null);
             }
             PdfCanvas pageCleanedContents = cleanUpProcessor.PopCleanedCanvas();
             page.Put(PdfName.Contents, pageCleanedContents.GetContentStream());
@@ -441,11 +441,14 @@ namespace iText.PdfCleanup {
         private void RemoveRedactAnnots() {
             foreach (PdfRedactAnnotation annotation in redactAnnotations.Keys) {
                 PdfPage page = annotation.GetPage();
-                page.RemoveAnnotation(annotation);
-                PdfPopupAnnotation popup = annotation.GetPopup();
-                if (popup != null) {
-                    page.RemoveAnnotation(popup);
+                if (page != null) {
+                    page.RemoveAnnotation(annotation);
+                    PdfPopupAnnotation popup = annotation.GetPopup();
+                    if (popup != null) {
+                        page.RemoveAnnotation(popup);
+                    }
                 }
+
                 PdfCanvas canvas = new PdfCanvas(page);
                 PdfStream redactRolloverAppearance = annotation.GetRedactRolloverAppearance();
                 PdfString overlayText = annotation.GetOverlayText();

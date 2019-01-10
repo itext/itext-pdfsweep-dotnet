@@ -46,15 +46,16 @@ using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
+using iText.PdfCleanup;
 using iText.Test;
 using iText.Test.Attributes;
 
-namespace iText.PdfCleanup {
-    public class BigDocumentCleanUpTest : ExtendedITextTest {
+namespace iText.PdfCleanup.Text {
+    public class CleanUpTextTest : ExtendedITextTest {
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
-            .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/BigDocumentCleanUpTest/";
+            .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/text/CleanUpTextTest/";
 
-        private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/BigDocumentCleanUpTest/";
+        private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/text/CleanUpTextTest/";
 
         [NUnit.Framework.OneTimeSetUp]
         public static void Before() {
@@ -64,66 +65,30 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        public virtual void BigUntaggedDocument() {
-            String input = inputPath + "iphone_user_guide_untagged.pdf";
-            String output = outputPath + "bigUntaggedDocument.pdf";
-            String cmp = inputPath + "cmp_bigUntaggedDocument.pdf";
-            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
-                , 215f, 260f));
-            CleanUp(input, output, InitLocations(rects, 130));
-            CompareByContent(cmp, output, outputPath, "diff_bigUntagged_");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.CREATED_ROOT_TAG_HAS_MAPPING)]
-        public virtual void BigTaggedDocument() {
-            String input = inputPath + "chapter8_Interactive_features.pdf";
-            String output = outputPath + "bigTaggedDocument.pdf";
-            String cmp = inputPath + "cmp_bigTaggedDocument.pdf";
-            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
-                , 215f, 270f));
-            CleanUp(input, output, InitLocations(rects, 131));
-            CompareByContent(cmp, output, outputPath, "diff_bigTagged_");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
-        public virtual void TextPositioning() {
-            String input = inputPath + "textPositioning.pdf";
-            String output = outputPath + "textPositioning.pdf";
-            String cmp = inputPath + "cmp_textPositioning.pdf";
-            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(0f, 0f, 1f, 1f));
-            // just to enable cleanup processing of the pages
-            CleanUp(input, output, InitLocations(rects, 163));
-            CompareByContent(cmp, output, outputPath, "diff_txtPos_");
+        [LogMessage(iText.IO.LogMessageConstant.FONT_DICTIONARY_WITH_NO_FONT_DESCRIPTOR)]
+        [LogMessage(iText.IO.LogMessageConstant.FONT_DICTIONARY_WITH_NO_WIDTHS)]
+        public virtual void CleanZeroWidthTextInvalidFont() {
+            String input = inputPath + "cleanZeroWidthTextInvalidFont.pdf";
+            String output = outputPath + "cleanZeroWidthTextInvalidFont.pdf";
+            String cmp = inputPath + "cmp_cleanZeroWidthTextInvalidFont.pdf";
+            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(50, 50, 500, 500))));
+            CompareByContent(cmp, output, outputPath);
         }
 
         /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations);
+            PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
+                (pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
             pdfDocument.Close();
         }
 
-        private IList<PdfCleanUpLocation> InitLocations(IList<Rectangle> rects, int pagesNum) {
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-            for (int i = 0; i < pagesNum; ++i) {
-                for (int j = 0; j < rects.Count; ++j) {
-                    cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, rects[j]));
-                }
-            }
-            return cleanUpLocations;
-        }
-
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
+        private void CompareByContent(String cmp, String output, String targetDir) {
             CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
+            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir);
             if (errorMessage != null) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }

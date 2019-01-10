@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("iText")]
-[assembly: AssemblyCopyright("Copyright (c) 1998-2018 iText Group NV")]
+[assembly: AssemblyCopyright("Copyright (c) 1998-2019 iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: InternalsVisibleTo("itext.cleanup.tests,PublicKey=0024000004800000940000000602000000240000525" +
@@ -21,8 +21,8 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("ec333396-8945-4d69-b626-475b4e2ede61")]
 
-[assembly: AssemblyVersion("2.0.2.0")]
-[assembly: AssemblyFileVersion("2.0.2.0")]
-[assembly: AssemblyInformationalVersion("2.0.2")]
+[assembly: AssemblyVersion("2.0.3.0")]
+[assembly: AssemblyFileVersion("2.0.3.0")]
+[assembly: AssemblyInformationalVersion("2.0.3")]
 
-[assembly: Versions.Attributes.KeyVersion("3.0.3.0")]
+[assembly: Versions.Attributes.KeyVersion("3.0.4.0")]

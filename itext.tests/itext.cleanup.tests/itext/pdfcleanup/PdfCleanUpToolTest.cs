@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2018 iText Group NV
+Copyright (c) 1998-2019 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Utils;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpToolTest : ExtendedITextTest {
@@ -601,8 +602,52 @@ namespace iText.PdfCleanup {
                 new PdfCleanUpTool(pdfDocument, true).CleanUp();
                 pdfDocument.Close();
             }
-            , NUnit.Framework.Throws.TypeOf<PdfException>().With.Message.EqualTo(PdfException.DefaultAppearanceNotFound));
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.DefaultAppearanceNotFound))
 ;
+        }
+
+        //Test will be fixed in DEVSIX-2056
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTestFontColor() {
+            String filename = "fontCleanup.pdf";
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath + filename), new PdfWriter(outputPath + filename
+                ));
+            new PdfCleanUpTool(pdfDoc, true).CleanUp();
+            pdfDoc.Close();
+            NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(outputPath + filename, inputPath + "cmp_" 
+                + filename, outputPath, "diff_"));
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
+        public virtual void NoPropertiesInResourcesTest() {
+            String fileName = "noPropertiesInResourcesTest";
+            String input = inputPath + fileName + ".pdf";
+            String output = outputPath + fileName + ".pdf";
+            String cmp = inputPath + "cmp_" + fileName + ".pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle
+                (0, 0, 595, 842), ColorConstants.RED));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_" + fileName);
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
+        public virtual void IncorrectBDCToBMCTest() {
+            String fileName = "incorrectBDCToBMCTest";
+            String input = inputPath + fileName + ".pdf";
+            String output = outputPath + fileName + ".pdf";
+            String cmp = inputPath + "cmp_" + fileName + ".pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle
+                (0, 0, 10, 10), ColorConstants.RED));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath, "diff_" + fileName);
         }
 
         /// <exception cref="System.IO.IOException"/>

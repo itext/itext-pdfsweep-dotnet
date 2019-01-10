@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2018 iText Group NV
+Copyright (c) 1998-2019 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -120,6 +120,21 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
+        public virtual void CleanLineAnnotation02() {
+            String input = inputPath + "lineAnnotationLeaders.pdf";
+            String output = outputPath + "cleanLineAnnotation02.pdf";
+            String cmp = inputPath + "cmp_cleanLineAnnotation02.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            PdfCleanUpLocation lineLoc = new PdfCleanUpLocation(1, new Rectangle(100, 560, 200, 30), ColorConstants.GREEN
+                );
+            cleanUpLocations.Add(lineLoc);
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath);
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
         public virtual void CleanHighlightAnnotation01() {
             String input = inputPath + "cleanAnnotation.pdf";
             String output = outputPath + "cleanAnnotation_highlight01.pdf";
@@ -130,6 +145,45 @@ namespace iText.PdfCleanup {
             cleanUpLocations.Add(highLightLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_text_highlight01");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanStrikeOutAnnotation01() {
+            String input = inputPath + "strikeOutAnnotQuadOutsideRect.pdf";
+            String output = outputPath + "cleanStrikeOutAnnotation01.pdf";
+            String cmp = inputPath + "cmp_cleanStrikeOutAnnotation01.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            cleanUpLocations.Add(new PdfCleanUpLocation(1, new Rectangle(10, 490, 10, 30), ColorConstants.BLACK));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath);
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanStrikeOutAnnotation02() {
+            String input = inputPath + "strikeOutAnnotQuadOutsideRect.pdf";
+            String output = outputPath + "cleanStrikeOutAnnotation02.pdf";
+            String cmp = inputPath + "cmp_cleanStrikeOutAnnotation02.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            cleanUpLocations.Add(new PdfCleanUpLocation(1, new Rectangle(0, 0, 200, 200), ColorConstants.BLACK));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath);
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void CleanFreeTextAnnotation01() {
+            String input = inputPath + "freeTextAnnotation.pdf";
+            String output = outputPath + "cleanFreeTextAnnotation01.pdf";
+            String cmp = inputPath + "cmp_cleanFreeTextAnnotation01.pdf";
+            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            cleanUpLocations.Add(new PdfCleanUpLocation(1, new Rectangle(100, 560, 200, 30), ColorConstants.BLACK));
+            CleanUp(input, output, cleanUpLocations);
+            CompareByContent(cmp, output, outputPath);
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -159,7 +213,7 @@ namespace iText.PdfCleanup {
                 .YELLOW);
             cleanUpLocations.Add(highLightLoc);
             CleanUp(input, output, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff_form01");
+            CompareByContent(cmp, output, outputPath, "diff_form02");
         }
 
         /// <exception cref="System.IO.IOException"/>
@@ -169,6 +223,12 @@ namespace iText.PdfCleanup {
                 (pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
             pdfDocument.Close();
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        private void CompareByContent(String cmp, String output, String targetDir) {
+            CompareByContent(cmp, output, targetDir, null);
         }
 
         /// <exception cref="System.IO.IOException"/>
