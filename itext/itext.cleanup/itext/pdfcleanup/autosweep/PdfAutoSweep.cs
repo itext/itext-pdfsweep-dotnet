@@ -252,7 +252,7 @@ namespace iText.PdfCleanup.Autosweep {
         public virtual void TentativeCleanUp(PdfPage pdfPage) {
             IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
             // random title generation
-            Random rnd = new Random(SystemUtil.GetTimeBasedSeed());
+            Random rnd = new Random(SystemUtil.GetTimeBasedIntSeed());
             ICollection<String> usedTitles = new HashSet<String>();
             foreach (PdfCleanUpLocation loc in cleanUpLocations) {
                 float[] color = loc.GetCleanUpColor().GetColorValue();
