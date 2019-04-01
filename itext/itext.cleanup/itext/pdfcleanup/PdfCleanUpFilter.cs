@@ -46,8 +46,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using Common.Logging;
 using iText.IO.Image;
 using iText.IO.Util;
+using iText.Kernel;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
@@ -61,6 +63,8 @@ using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iT
 namespace iText.PdfCleanup {
     public class PdfCleanUpFilter {
         private static readonly Color? CLEANED_AREA_FILL_COLOR = Color.White;
+
+        private static float EPS = 1e-4f;
 
         /* There is no exact representation of the circle using Bezier curves.
          * But, for a Bezier curve with n segments the optimal distance to the control points,
@@ -238,8 +242,18 @@ namespace iText.PdfCleanup {
             Clipper clipper = new Clipper();
             ClipperBridge.AddPath(clipper, path, PolyType.SUBJECT);
             foreach (Rectangle rectangle in regions) {
-                Point[] transfRectVertices = TransformPoints(ctm, true, GetRectangleVertices(rectangle));
-                ClipperBridge.AddRectToClipper(clipper, transfRectVertices, PolyType.CLIP);
+                try {
+                    Point[] transfRectVertices = TransformPoints(ctm, true, GetRectangleVertices(rectangle));
+                    ClipperBridge.AddRectToClipper(clipper, transfRectVertices, PolyType.CLIP);
+                }
+                catch (PdfException e) {
+                    if (!(e.GetBaseException() is NoninvertibleTransformException)) {
+                        throw e;
+                    } else {
+                        ILog logger = LogManager.GetLogger(typeof(PdfCleanUpFilter));
+                        logger.Error(MessageFormatUtil.Format(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX));
+                    }
+                }
             }
 
             PolyFillType fillType = PolyFillType.NON_ZERO;
@@ -260,7 +274,51 @@ namespace iText.PdfCleanup {
         /// <returns>true if the rectangles intersect, false otherwise</returns>
         internal static bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
             Clipper clipper = new Clipper();
-            ClipperBridge.AddPolygonToClipper(clipper, rect2, PolyType.CLIP);
+            // If the redaction area is degenerate, the result will be false
+            if (!ClipperBridge.AddPolygonToClipper(clipper, rect2, PolyType.CLIP))
+            {
+                // If the content area is not degenerate (and the redaction area is), let's return false:
+                // even if they overlaps somehow, we do not consider it as an intersection.
+                // If the content area is degenerate, let's process this case specifically
+                if (!ClipperBridge.AddPolygonToClipper(clipper, rect1, PolyType.SUBJECT))
+                {
+                    // Clipper fails to process degenerate redaction areas. However that's vital for pdfAutoSweep,
+                    // because in some cases (for example, noninvertible cm) the text's area might be degenerate,
+                    // but we still need to sweep the content.
+                    // The idea is as follows:
+                    // a) if the degenerate redaction area represents a point, there is no intersection
+                    // b) if the degenerate redaction area represents a line, let's check that there the redaction line
+                    // equals to one of the edges of the content's area. That is implemented in respect to area generation,
+                    // because the redaction line corresponds to the descent line of the content.
+                    if (!ClipperBridge.AddPolylineSubjectToClipper(clipper, rect2))
+                    {
+                        return false;
+                    }
+                    if (rect1.Length != rect2.Length)
+                    {
+                        return false;
+                    }
+                    Point startPoint = rect2[0];
+                    Point endPoint = rect2[0];
+                    for (int i = 1; i < rect2.Length; i++)
+                    {
+                        if (rect2[i].Distance(startPoint) > EPS)
+                        {
+                            endPoint = rect2[i];
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < rect1.Length; i++)
+                    {
+                        if (IsPointOnALineSegment(rect1[i], startPoint, endPoint, true))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
             // According to clipper documentation:
             // The function will return false if the path is invalid for clipping. A path is invalid for clipping when:
             // - it has less than 2 vertices;
@@ -296,6 +354,45 @@ namespace iText.PdfCleanup {
                 return !Clipper.PolyTreeToPaths(polyTree).IsEmpty();
             }
         }
+
+        private static bool IsPointOnALineSegment(Point currPoint, Point linePoint1, Point linePoint2, bool isBetweenLinePoints)
+        {
+            double dxc = currPoint.x - linePoint1.x;
+            double dyc = currPoint.y - linePoint1.y;
+
+            double dxl = linePoint2.x - linePoint1.x;
+            double dyl = linePoint2.y - linePoint1.y;
+
+            double cross = dxc * dyl - dyc * dxl;
+
+            // if point is on a line, let's check whether it's between provided line points
+            if (Math.Abs(cross) <= EPS)
+            {
+                if (isBetweenLinePoints)
+                {
+                    if (Math.Abs(dxl) >= Math.Abs(dyl))
+                    {
+                        return dxl > 0 ?
+                            linePoint1.x - EPS <= currPoint.x && currPoint.x <= linePoint2.x + EPS :
+                            linePoint2.x - EPS <= currPoint.x && currPoint.x <= linePoint1.x + EPS;
+                    }
+                    else
+                    {
+                        return dyl > 0 ?
+                            linePoint1.y - EPS <= currPoint.y && currPoint.y <= linePoint2.y + EPS :
+                            linePoint2.y - EPS <= currPoint.y && currPoint.y <= linePoint1.y + EPS;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
 
         /// <returns>Image boundary rectangle in device space.</returns>
         private static Rectangle CalcImageRect(ImageRenderInfo renderInfo) {
@@ -547,7 +644,7 @@ namespace iText.PdfCleanup {
                 try {
                     t = t.CreateInverse();
                 } catch (NoninvertibleTransformException e) {
-                    throw new Exception(e.Message);
+                    throw new PdfException(PdfException.NoninvertibleMatrixCannotBeProcessed, e);
                 }
             }
 
