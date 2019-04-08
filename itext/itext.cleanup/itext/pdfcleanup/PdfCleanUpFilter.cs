@@ -55,6 +55,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
+using iText.Kernel.Pdf.Xobject;
 using Path = iText.Kernel.Geom.Path;
 using Point = iText.Kernel.Geom.Point;
 using Rectangle = iText.Kernel.Geom.Rectangle;
@@ -75,6 +76,10 @@ namespace iText.PdfCleanup {
          * However, a better approximation is possible using 0.55191502449
          */
         private const double CIRCLE_APPROXIMATION_CONST = 0.55191502449;
+
+        private static ICollection<PdfName> NOT_SUPPORTED_FILTERS_FOR_DIRECT_CLEANUP = JavaCollectionsUtil.UnmodifiableSet(new LinkedHashSet<PdfName>(JavaUtil.ArraysAsList(
+            PdfName.JBIG2Decode, PdfName.DCTDecode, PdfName.JPXDecode))
+        );
 
         private IList<Rectangle> regions;
 
@@ -103,24 +108,22 @@ namespace iText.PdfCleanup {
             return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
         }
 
-        internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(ImageRenderInfo image, PdfDocument
-            document) {
-            return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(image), document);
+        internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, Matrix imageCtm, PdfDocument document) {
+            return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(imageCtm), document);
         }
 
         /// <summary>Filter an ImageRenderInfo object</summary>
         /// <param name="image">the ImageRenderInfo object to be filtered</param>
         public virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image) {
-            return FilterImage(image, GetImageAreasToBeCleaned(image));
+            return FilterImage(image.GetImage(), GetImageAreasToBeCleaned(image.GetImageCtm()));
         }
 
         internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(FilteredImagesCache.FilteredImageKey
             imageKey) {
-            return FilterImage(imageKey.GetImageRenderInfo(), imageKey.GetCleanedAreas());
+            return FilterImage(imageKey.GetImageXObject(), imageKey.GetCleanedAreas());
         }
 
-        private PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image, IList<Rectangle
-        > imageAreasToBeCleaned) {
+        private PdfCleanUpFilter.FilterResult<ImageData> FilterImage(PdfImageXObject image, IList<Rectangle> imageAreasToBeCleaned) {
             if (imageAreasToBeCleaned == null) {
                 return new PdfCleanUpFilter.FilterResult<ImageData>(true, null);
             } else {
@@ -131,8 +134,22 @@ namespace iText.PdfCleanup {
 
             byte[] filteredImageBytes;
             try {
-                byte[] originalImageBytes = image.GetImage().GetImageBytes();
-                filteredImageBytes = ProcessImage(originalImageBytes, imageAreasToBeCleaned);
+                if (ImageSupportsDirectCleanup(image)) {
+                    byte[] imageStreamBytes = ProcessImageDirectly(image, imageAreasToBeCleaned);
+                    // Creating imageXObject clone in order to avoid modification of the original XObject in the document.
+                    // We require to set filtered image bytes to the image XObject only for the sake of simplifying code:
+                    // in this method we return ImageData, so in order to convert PDF image to the common image format we
+                    // reuse PdfImageXObject#getImageBytes method.
+                    // I think this is acceptable here, because monochrome and grayscale images are not very common,
+                    // so the overhead would be not that big. But anyway, this should be refactored in future if this
+                    // direct image bytes cleaning approach would be found useful and will be preserved in future.
+                    PdfImageXObject tempImageClone = new PdfImageXObject((PdfStream) image.GetPdfObject().Clone());
+                    tempImageClone.GetPdfObject().SetData(imageStreamBytes);
+                    filteredImageBytes = tempImageClone.GetImageBytes();
+                } else {
+                    byte[] originalImageBytes = image.GetImageBytes();
+                    filteredImageBytes = ProcessImage(originalImageBytes, imageAreasToBeCleaned);
+                }
             } catch (Exception e) {
                 throw new Exception(e.Message);
             }
@@ -180,8 +197,8 @@ namespace iText.PdfCleanup {
         /// <see cref="iText.Kernel.Geom.Rectangle"/>
         /// objects otherwise.
         /// </returns>
-        private IList<Rectangle> GetImageAreasToBeCleaned(ImageRenderInfo image) {
-            Rectangle imageRect = CalcImageRect(image);
+        private IList<Rectangle> GetImageAreasToBeCleaned(Matrix imageCtm) {
+            Rectangle imageRect = CalcImageRect(imageCtm);
             if (imageRect == null) {
                 return null;
             }
@@ -195,7 +212,7 @@ namespace iText.PdfCleanup {
                         return null;
                     }
 
-                    areasToBeCleaned.Add(TransformRectIntoImageCoordinates(intersectionRect, image.GetImageCtm()));
+                    areasToBeCleaned.Add(TransformRectIntoImageCoordinates(intersectionRect, imageCtm));
                 }
             }
 
@@ -392,16 +409,40 @@ namespace iText.PdfCleanup {
             return false;
         }
 
+        internal static bool ImageSupportsDirectCleanup(PdfImageXObject image) {
+            PdfObject filter = image.GetPdfObject().Get(PdfName.Filter);
+            bool supportedFilterForDirectCleanup = IsSupportedFilterForDirectImageCleanup(filter);
+            bool deviceGrayOrNoCS = PdfName.DeviceGray.Equals(image.GetPdfObject().GetAsName(PdfName.ColorSpace))
+                                       || !image.GetPdfObject().ContainsKey(PdfName.ColorSpace);
+            return deviceGrayOrNoCS && supportedFilterForDirectCleanup;
+        }
+
+        private static bool IsSupportedFilterForDirectImageCleanup(PdfObject filter) {
+            if (filter == null) {
+                return true;
+            }
+            if (filter.IsName()) {
+                return !NOT_SUPPORTED_FILTERS_FOR_DIRECT_CLEANUP.Contains(filter);
+            } else if (filter.IsArray()) {
+                PdfArray filterArray = (PdfArray) filter;
+                for (int i = 0; i < filterArray.Size(); ++i) {
+                    if (NOT_SUPPORTED_FILTERS_FOR_DIRECT_CLEANUP.Contains(filterArray.GetAsName(i))) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
 
 
         /// <returns>Image boundary rectangle in device space.</returns>
-        private static Rectangle CalcImageRect(ImageRenderInfo renderInfo) {
-            Matrix ctm = renderInfo.GetImageCtm();
-            if (ctm == null) {
+        private static Rectangle CalcImageRect(Matrix imageCtm) {
+            if (imageCtm == null) {
                 return null;
             }
 
-            Point[] points = TransformPoints(ctm, false, new Point(0, 0), new Point(0, 1), new Point(1, 0), new Point(
+            Point[] points = TransformPoints(imageCtm, false, new Point(0, 0), new Point(0, 1), new Point(1, 0), new Point(
                 1, 1));
             return GetAsRectangle(points[0], points[1], points[2], points[3]);
         }
@@ -446,6 +487,69 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>
+        /// Filters image content using direct manipulation over PDF image samples stream. Implemented according to ISO 32000-2,
+        /// "8.9.3 Sample representation".
+        /// </summary>
+        /// <param name="image">image XObject which will be filtered</param>
+        /// <param name="imageAreasToBeCleaned">list of rectangle areas for clean up with coordinates in (0,1)x(0,1) space</param>
+        /// <returns>raw bytes of the PDF image samples stream which is already cleaned.</returns>
+        private byte[] ProcessImageDirectly(PdfImageXObject image, IList<Rectangle> imageAreasToBeCleaned) {
+            int X = 0;
+            int Y = 1;
+            int W = 2;
+            int H = 3;
+
+            byte[] originalImageBytes = image.GetPdfObject().GetBytes();
+
+            PdfNumber bpcVal = image.GetPdfObject().GetAsNumber(PdfName.BitsPerComponent);
+            if (bpcVal == null) {
+                throw new ArgumentException("/BitsPerComponent entry is required for image dictionaries.");
+            }
+
+            int bpc = bpcVal.IntValue();
+            if (bpc != 1 && bpc != 2 && bpc != 4 && bpc != 8 && bpc != 16) {
+                throw new ArgumentException("/BitsPerComponent only allowed values are: 1, 2, 4, 8 and 16.");
+            }
+
+            double bytesInComponent = (double) bpc / 8;
+            int firstComponentInByte = 0;
+            if (bpc < 16) {
+                for (int i = 0; i < bpc; ++i) {
+                    firstComponentInByte += (int) Math.Pow(2, 7 - i);
+                }
+            }
+
+            double width = image.GetWidth();
+            double height = image.GetHeight();
+            int rowPadding = 0;
+            if ((width * bpc) % 8 > 0) {
+                rowPadding = (int) (8 - (width * bpc) % 8);
+            }
+
+            foreach (Rectangle rect in imageAreasToBeCleaned) {
+                int[] cleanImgRect = GetImageRectToClean(rect, (int) width, (int) height);
+                for (int j = cleanImgRect[Y]; j < cleanImgRect[Y] + cleanImgRect[H]; ++j) {
+                    for (int i = cleanImgRect[X]; i < cleanImgRect[X] + cleanImgRect[W]; ++i) {
+                        // based on assumption that numOfComponents always equals 1, because this method is only for monochrome and grayscale images
+                        double pixelPos = j * ((width * bpc + rowPadding) / 8) + i * bytesInComponent;
+                        int pixelByteInd = (int) pixelPos;
+                        byte byteWithSample = originalImageBytes[pixelByteInd];
+
+                        if (bpc == 16) {
+                            originalImageBytes[pixelByteInd] = 0;
+                            originalImageBytes[pixelByteInd + 1] = 0;
+                        } else {
+                            int reset = ~(firstComponentInByte >> (int) ((pixelPos - pixelByteInd) * 8)) & 0xFF;
+                            originalImageBytes[pixelByteInd] = (byte) (byteWithSample & reset);
+                        }
+                    }
+                }
+            }
+
+            return originalImageBytes;
+        }
+
         /// <summary>Clean up a BufferedImage using a List of Rectangles that need to be redacted</summary>
         /// <param name="image">the image to be cleaned up</param>
         /// <param name="areasToBeCleaned">the List of Rectangles that need to be redacted out of the image</param>
@@ -455,16 +559,26 @@ namespace iText.PdfCleanup {
             // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
             // invert and shear the y axe.
             foreach (Rectangle rect in areasToBeCleaned) {
-                int scaledBottomY = (int) System.Math.Ceiling(rect.GetBottom() * image.Height);
-                int scaledTopY = (int) Math.Floor(rect.GetTop() * image.Height);
-                int x = (int) System.Math.Ceiling(rect.GetLeft() * image.Width);
-                int y = scaledTopY * -1 + image.Height;
-                int width = (int) Math.Floor(rect.GetRight() * image.Width) - x;
-                int height = scaledTopY - scaledBottomY;
-                g.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR.Value), x, y, width, height);
+                int imgHeight = image.Height;
+                int imgWidth = image.Width;
+                int[] scaledRectToClean = GetImageRectToClean(rect, imgWidth, imgHeight);
+
+                g.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR.Value), scaledRectToClean[0], scaledRectToClean[1], scaledRectToClean[2], scaledRectToClean[3]);
             }
 
             g.Dispose();
+        }
+
+        private static int[] GetImageRectToClean(Rectangle rect, int imgWidth, int imgHeight) {
+            int scaledBottomY = (int) System.Math.Ceiling(rect.GetBottom() * imgHeight);
+            int scaledTopY = (int) Math.Floor(rect.GetTop() * imgHeight);
+            
+            int x = (int) System.Math.Ceiling(rect.GetLeft() * imgWidth);
+            int y = imgHeight - scaledTopY;
+            int w = (int) Math.Floor(rect.GetRight() * imgWidth) - x;
+            int h = scaledTopY - scaledBottomY;
+            
+            return new int[] {x, y, w, h};
         }
 
         /// <summary>Converts specified degenerate subpaths to circles.</summary>

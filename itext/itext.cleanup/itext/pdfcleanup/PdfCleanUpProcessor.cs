@@ -676,29 +676,80 @@ namespace iText.PdfCleanup {
             PdfStream imageStream = GetXObjectStream((PdfName)operands[0]);
             if (PdfName.Image.Equals(imageStream.GetAsName(PdfName.Subtype))) {
                 ImageRenderInfo encounteredImage = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredImage();
-                FilteredImagesCache.FilteredImageKey filteredImageKey = filter.CreateFilteredImageKey(encounteredImage, document
-                    );
-                PdfImageXObject imageToWrite = GetFilteredImagesCache().Get(filteredImageKey);
-                if (imageToWrite == null) {
-                    PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(filteredImageKey);
-                    if (imageFilterResult.IsModified()) {
-                        ImageData filteredImage = imageFilterResult.GetFilterResult();
-                        if (filteredImage != null) {
-                            imageToWrite = new PdfImageXObject(filteredImage);
-                            CopySMaskData(encounteredImage.GetImage().GetPdfObject(), imageToWrite.GetPdfObject());
-                            GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
-                        }
-                    }
-                    else {
-                        imageToWrite = encounteredImage.GetImage();
-                    }
-                }
+                FilteredImagesCache.FilteredImageKey key = filter.CreateFilteredImageKey(encounteredImage.GetImage(), encounteredImage
+                    .GetImageCtm(), document);
+                PdfImageXObject imageToWrite = GetFilteredImage(key, encounteredImage.GetImageCtm());
                 if (imageToWrite != null) {
                     float[] ctm = PollNotAppliedCtm();
                     WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
                     GetCanvas().AddXObject(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
                 }
+            }
+        }
+
+        private PdfImageXObject GetFilteredImage(FilteredImagesCache.FilteredImageKey filteredImageKey, Matrix ctmForMasksFiltering
+            ) {
+            PdfImageXObject originalImage = filteredImageKey.GetImageXObject();
+            PdfImageXObject imageToWrite = GetFilteredImagesCache().Get(filteredImageKey);
+            if (imageToWrite == null) {
+                PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(filteredImageKey);
+                if (imageFilterResult.IsModified()) {
+                    ImageData filteredImageData = imageFilterResult.GetFilterResult();
+                    if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
+                        if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
+                            ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                            logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                        }
+                        else {
+                            filteredImageData.MakeMask();
+                        }
+                    }
+                    if (filteredImageData != null) {
+                        imageToWrite = new PdfImageXObject(filteredImageData);
+                        GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
+                        if (ctmForMasksFiltering != null && !filteredImageData.IsMask()) {
+                            FilterImageMask(originalImage, PdfName.SMask, ctmForMasksFiltering, imageToWrite);
+                            FilterImageMask(originalImage, PdfName.Mask, ctmForMasksFiltering, imageToWrite);
+                            PdfArray colourKeyMaskingArr = originalImage.GetPdfObject().GetAsArray(PdfName.Mask);
+                            if (colourKeyMaskingArr != null) {
+                                // In general we should be careful about images that might have changed their color space
+                                // or have been converted to lossy format during filtering.
+                                // However we have been copying Mask entry non-conditionally before and also I'm not sure
+                                // that cases described above indeed take place.
+                                imageToWrite.Put(PdfName.Mask, colourKeyMaskingArr);
+                            }
+                            if (originalImage.GetPdfObject().ContainsKey(PdfName.SMaskInData)) {
+                                // This entry will likely lose meaning after image conversion to bitmap and back again, but let's leave as is for now.
+                                imageToWrite.Put(PdfName.SMaskInData, originalImage.GetPdfObject().Get(PdfName.SMaskInData));
+                            }
+                        }
+                    }
+                }
+                else {
+                    imageToWrite = originalImage;
+                }
+            }
+            return imageToWrite;
+        }
+
+        private void FilterImageMask(PdfImageXObject originalImage, PdfName maskKey, Matrix ctmForMasksFiltering, 
+            PdfImageXObject imageToWrite) {
+            PdfStream maskStream = originalImage.GetPdfObject().GetAsStream(maskKey);
+            if (maskStream == null || ctmForMasksFiltering == null) {
+                return;
+            }
+            PdfImageXObject maskImageXObject = new PdfImageXObject(maskStream);
+            if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(maskImageXObject)) {
+                ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                return;
+            }
+            FilteredImagesCache.FilteredImageKey k = filter.CreateFilteredImageKey(maskImageXObject, ctmForMasksFiltering
+                , document);
+            PdfImageXObject maskToWrite = GetFilteredImage(k, null);
+            if (maskToWrite != null) {
+                imageToWrite.GetPdfObject().Put(maskKey, maskToWrite.GetPdfObject());
             }
         }
 
@@ -733,18 +784,6 @@ namespace iText.PdfCleanup {
         // accepts Image as parameter. That's why we can't write image just as it was in original file, we convert it to Image.
         // IMPORTANT: If writing of pdf stream of not changed inline image will be implemented, don't forget to ensure that
         // inline image color space is present in new resources if necessary.
-        private void CopySMaskData(PdfStream imageStream, PdfStream filteredImageStream) {
-            if (imageStream.ContainsKey(PdfName.SMask)) {
-                filteredImageStream.Put(PdfName.SMask, imageStream.Get(PdfName.SMask));
-            }
-            if (imageStream.ContainsKey(PdfName.Mask)) {
-                filteredImageStream.Put(PdfName.Mask, imageStream.Get(PdfName.Mask));
-            }
-            if (imageStream.ContainsKey(PdfName.SMaskInData)) {
-                filteredImageStream.Put(PdfName.SMaskInData, imageStream.Get(PdfName.SMaskInData));
-            }
-        }
-
         private void WritePath() {
             PathRenderInfo path = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredPath();
             bool stroke = (path.GetOperation() & PathRenderInfo.STROKE) == PathRenderInfo.STROKE;

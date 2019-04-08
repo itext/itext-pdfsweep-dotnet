@@ -220,9 +220,9 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest13() {
-            String input = inputPath + "smaskImage.pdf";
-            String output = outputPath + "smaskImage.pdf";
-            String cmp = inputPath + "cmp_smaskImage.pdf";
+            String input = inputPath + "maskImage.pdf";
+            String output = outputPath + "maskImage.pdf";
+            String cmp = inputPath + "cmp_maskImage.pdf";
             IList<PdfCleanUpLocation> cleanUpLocations = JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle
                 (97f, 405f, 480f - 97f, 445f - 405f), ColorConstants.GRAY));
             CleanUp(input, output, cleanUpLocations);
