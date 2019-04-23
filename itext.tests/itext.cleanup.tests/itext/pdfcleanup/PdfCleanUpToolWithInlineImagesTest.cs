@@ -55,12 +55,11 @@ using iText.Test.Attributes;
 using NUnit.Framework;
 
 namespace iText.PdfCleanup {
-    [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
     public class PdfCleanUpToolWithInlineImagesTest : ExtendedITextTest {
 
-        private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/PdfCleanUpToolTest/";
+        private static readonly String inputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/../../resources/itext/pdfcleanup/PdfCleanUpToolWithInlineImagesTest/";
 
-        private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/PdfCleanUpToolTest/";
+        private static readonly String outputPath = NUnit.Framework.TestContext.CurrentContext.TestDirectory + "/test/itext/pdfcleanup/PdfCleanUpToolWithInlineImagesTest/";
 
         [NUnit.Framework.TestFixtureSetUp]
         public static void Before() {
@@ -71,6 +70,7 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
+        [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
         public virtual void CleanUpTest28() {
             String input = inputPath + "inlineImages.pdf";
             String output = outputPath + "inlineImages_partial.pdf";
@@ -84,6 +84,7 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
+        [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
         public virtual void CleanUpTest29() {
             String input = inputPath + "inlineImages.pdf";
             String output = outputPath + "inlineImages_partial2.pdf";

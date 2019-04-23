@@ -78,13 +78,13 @@ namespace iText.PdfCleanup.Autosweep {
                 locations.Put(i, new HashSet<IPdfTextLocation>(rects));
             }
             IList<IPdfTextLocation> rectangles = new List<IPdfTextLocation>(retval);
-            JavaCollectionsUtil.Sort(rectangles, new _IComparer_85());
+            JavaCollectionsUtil.Sort(rectangles, new _IComparer_93());
             // return
             return rectangles;
         }
 
-        private sealed class _IComparer_85 : IComparer<IPdfTextLocation> {
-            public _IComparer_85() {
+        private sealed class _IComparer_93 : IComparer<IPdfTextLocation> {
+            public _IComparer_93() {
             }
 
             public int Compare(IPdfTextLocation l1, IPdfTextLocation l2) {

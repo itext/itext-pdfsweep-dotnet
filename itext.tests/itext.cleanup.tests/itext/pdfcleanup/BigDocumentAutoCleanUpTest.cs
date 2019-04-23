@@ -66,26 +66,6 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        public virtual void RedactLipsum() {
-            String input = inputPath + "Lipsum.pdf";
-            String output = outputPath + "redactLipsum.pdf";
-            String cmp = inputPath + "cmp_redactLipsum.pdf";
-            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
-            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
-            PdfWriter writer = new PdfWriter(output);
-            writer.SetCompressionLevel(0);
-            PdfDocument pdf = new PdfDocument(new PdfReader(input), writer);
-            // sweep
-            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
-            autoSweep.CleanUp(pdf);
-            pdf.Close();
-            // compare
-            CompareResults(cmp, output, outputPath, "diff_redactLipsum_");
-        }
-
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
-        [NUnit.Framework.Test]
         public virtual void RedactTonySoprano() {
             String input = inputPath + "TheSopranos.pdf";
             String output = outputPath + "redactTonySoprano.pdf";

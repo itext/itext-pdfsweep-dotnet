@@ -62,36 +62,36 @@ using iText.Kernel.Pdf.Xobject;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpProcessor : PdfCanvasProcessor {
-        private static readonly ICollection<String> textShowingOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> TEXT_SHOWING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("TJ", "Tj", "'", "\""));
 
-        private static readonly ICollection<String> pathConstructionOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> PATH_CONSTRUCTION_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("m", "l", "c", "v", "y", "h", "re"));
 
-        private static readonly ICollection<String> strokeOperators = new HashSet<String>(JavaUtil.ArraysAsList("S"
+        private static readonly ICollection<String> STROKE_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList("S"
             , "s", "B", "B*", "b", "b*"));
 
-        private static readonly ICollection<String> nwFillOperators = new HashSet<String>(JavaUtil.ArraysAsList("f"
-            , "F", "B", "b"));
+        private static readonly ICollection<String> NW_FILL_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList(
+            "f", "F", "B", "b"));
 
-        private static readonly ICollection<String> eoFillOperators = new HashSet<String>(JavaUtil.ArraysAsList("f*"
-            , "B*", "b*"));
+        private static readonly ICollection<String> EO_FILL_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList(
+            "f*", "B*", "b*"));
 
-        private static readonly ICollection<String> pathPaintingOperators = new HashSet<String>();
+        private static readonly ICollection<String> PATH_PAINTING_OPERATORS = new HashSet<String>();
 
-        private static readonly ICollection<String> clippingPathOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> CLIPPING_PATH_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("W", "W*"));
 
-        private static readonly ICollection<String> lineStyleOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> LINE_STYLE_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("w", "J", "j", "M", "d"));
 
-        private static readonly ICollection<String> strokeColorOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> STROKE_COLOR_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("CS", "SC", "SCN", "G", "RG", "K"));
 
-        private static readonly ICollection<String> fillColorOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> FILL_COLOR_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("cs", "sc", "scn", "g", "rg", "k"));
 
-        private static readonly ICollection<String> textPositioningOperators = new HashSet<String>(JavaUtil.ArraysAsList
+        private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("Td", "TD", "Tm", "T*", "TL"));
 
         private static readonly ICollection<String> ignoredOperators = new HashSet<String>();
@@ -99,13 +99,13 @@ namespace iText.PdfCleanup {
         static PdfCleanUpProcessor() {
             // TL actually is not a text positioning operator, but we need to process it with them
             // these operators are processed via PdfCanvasProcessor graphics state and event listener
-            pathPaintingOperators.AddAll(strokeOperators);
-            pathPaintingOperators.AddAll(nwFillOperators);
-            pathPaintingOperators.AddAll(eoFillOperators);
-            pathPaintingOperators.Add("n");
-            ignoredOperators.AddAll(pathConstructionOperators);
-            ignoredOperators.AddAll(clippingPathOperators);
-            ignoredOperators.AddAll(lineStyleOperators);
+            PATH_PAINTING_OPERATORS.AddAll(STROKE_OPERATORS);
+            PATH_PAINTING_OPERATORS.AddAll(NW_FILL_OPERATORS);
+            PATH_PAINTING_OPERATORS.AddAll(EO_FILL_OPERATORS);
+            PATH_PAINTING_OPERATORS.Add("n");
+            ignoredOperators.AddAll(PATH_CONSTRUCTION_OPERATORS);
+            ignoredOperators.AddAll(CLIPPING_PATH_OPERATORS);
+            ignoredOperators.AddAll(LINE_STYLE_OPERATORS);
             ignoredOperators.AddAll(JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
             ignoredOperators.AddAll(JavaUtil.ArraysAsList("BMC", "BDC"));
         }
@@ -446,7 +446,7 @@ namespace iText.PdfCleanup {
         }
 
         private void FilterContent(String @operator, IList<PdfObject> operands) {
-            if (textShowingOperators.Contains(@operator)) {
+            if (TEXT_SHOWING_OPERATORS.Contains(@operator)) {
                 CleanText(@operator, operands);
             }
             else {
@@ -458,7 +458,7 @@ namespace iText.PdfCleanup {
                         CleanInlineImage();
                     }
                     else {
-                        if (pathPaintingOperators.Contains(@operator)) {
+                        if (PATH_PAINTING_OPERATORS.Contains(@operator)) {
                             WritePath();
                         }
                         else {
@@ -487,7 +487,7 @@ namespace iText.PdfCleanup {
                                             textPositioning.Clear();
                                         }
                                         else {
-                                            if (textPositioningOperators.Contains(@operator)) {
+                                            if (TEXT_POSITIONING_OPERATORS.Contains(@operator)) {
                                                 textPositioning.AppendPositioningOperator(@operator, operands);
                                             }
                                             else {
@@ -496,7 +496,7 @@ namespace iText.PdfCleanup {
                                                     RemoveOrCloseTag();
                                                 }
                                                 else {
-                                                    if (lineStyleOperators.Contains(@operator)) {
+                                                    if (LINE_STYLE_OPERATORS.Contains(@operator)) {
                                                         notAppliedGsParams.Peek().lineStyleOperators.Put(@operator, new List<PdfObject>(operands));
                                                     }
                                                     else {
@@ -509,11 +509,11 @@ namespace iText.PdfCleanup {
                                                                 notAppliedGsParams.Peek().ctms.Add(new List<PdfObject>(operands));
                                                             }
                                                             else {
-                                                                if (strokeColorOperators.Contains(@operator)) {
+                                                                if (STROKE_COLOR_OPERATORS.Contains(@operator)) {
                                                                     notAppliedGsParams.Peek().strokeColor = GetGraphicsState().GetStrokeColor();
                                                                 }
                                                                 else {
-                                                                    if (fillColorOperators.Contains(@operator)) {
+                                                                    if (FILL_COLOR_OPERATORS.Contains(@operator)) {
                                                                         notAppliedGsParams.Peek().fillColor = GetGraphicsState().GetFillColor();
                                                                     }
                                                                     else {
@@ -676,29 +676,80 @@ namespace iText.PdfCleanup {
             PdfStream imageStream = GetXObjectStream((PdfName)operands[0]);
             if (PdfName.Image.Equals(imageStream.GetAsName(PdfName.Subtype))) {
                 ImageRenderInfo encounteredImage = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredImage();
-                FilteredImagesCache.FilteredImageKey filteredImageKey = filter.CreateFilteredImageKey(encounteredImage, document
-                    );
-                PdfImageXObject imageToWrite = GetFilteredImagesCache().Get(filteredImageKey);
-                if (imageToWrite == null) {
-                    PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(filteredImageKey);
-                    if (imageFilterResult.IsModified()) {
-                        ImageData filteredImage = imageFilterResult.GetFilterResult();
-                        if (filteredImage != null) {
-                            imageToWrite = new PdfImageXObject(filteredImage);
-                            CopySMaskData(encounteredImage.GetImage().GetPdfObject(), imageToWrite.GetPdfObject());
-                            GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
-                        }
-                    }
-                    else {
-                        imageToWrite = encounteredImage.GetImage();
-                    }
-                }
+                FilteredImagesCache.FilteredImageKey key = filter.CreateFilteredImageKey(encounteredImage.GetImage(), encounteredImage
+                    .GetImageCtm(), document);
+                PdfImageXObject imageToWrite = GetFilteredImage(key, encounteredImage.GetImageCtm());
                 if (imageToWrite != null) {
                     float[] ctm = PollNotAppliedCtm();
                     WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
                     GetCanvas().AddXObject(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
                 }
+            }
+        }
+
+        private PdfImageXObject GetFilteredImage(FilteredImagesCache.FilteredImageKey filteredImageKey, Matrix ctmForMasksFiltering
+            ) {
+            PdfImageXObject originalImage = filteredImageKey.GetImageXObject();
+            PdfImageXObject imageToWrite = GetFilteredImagesCache().Get(filteredImageKey);
+            if (imageToWrite == null) {
+                PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(filteredImageKey);
+                if (imageFilterResult.IsModified()) {
+                    ImageData filteredImageData = imageFilterResult.GetFilterResult();
+                    if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
+                        if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
+                            ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                            logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                        }
+                        else {
+                            filteredImageData.MakeMask();
+                        }
+                    }
+                    if (filteredImageData != null) {
+                        imageToWrite = new PdfImageXObject(filteredImageData);
+                        GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
+                        if (ctmForMasksFiltering != null && !filteredImageData.IsMask()) {
+                            FilterImageMask(originalImage, PdfName.SMask, ctmForMasksFiltering, imageToWrite);
+                            FilterImageMask(originalImage, PdfName.Mask, ctmForMasksFiltering, imageToWrite);
+                            PdfArray colourKeyMaskingArr = originalImage.GetPdfObject().GetAsArray(PdfName.Mask);
+                            if (colourKeyMaskingArr != null) {
+                                // In general we should be careful about images that might have changed their color space
+                                // or have been converted to lossy format during filtering.
+                                // However we have been copying Mask entry non-conditionally before and also I'm not sure
+                                // that cases described above indeed take place.
+                                imageToWrite.Put(PdfName.Mask, colourKeyMaskingArr);
+                            }
+                            if (originalImage.GetPdfObject().ContainsKey(PdfName.SMaskInData)) {
+                                // This entry will likely lose meaning after image conversion to bitmap and back again, but let's leave as is for now.
+                                imageToWrite.Put(PdfName.SMaskInData, originalImage.GetPdfObject().Get(PdfName.SMaskInData));
+                            }
+                        }
+                    }
+                }
+                else {
+                    imageToWrite = originalImage;
+                }
+            }
+            return imageToWrite;
+        }
+
+        private void FilterImageMask(PdfImageXObject originalImage, PdfName maskKey, Matrix ctmForMasksFiltering, 
+            PdfImageXObject imageToWrite) {
+            PdfStream maskStream = originalImage.GetPdfObject().GetAsStream(maskKey);
+            if (maskStream == null || ctmForMasksFiltering == null) {
+                return;
+            }
+            PdfImageXObject maskImageXObject = new PdfImageXObject(maskStream);
+            if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(maskImageXObject)) {
+                ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                return;
+            }
+            FilteredImagesCache.FilteredImageKey k = filter.CreateFilteredImageKey(maskImageXObject, ctmForMasksFiltering
+                , document);
+            PdfImageXObject maskToWrite = GetFilteredImage(k, null);
+            if (maskToWrite != null) {
+                imageToWrite.GetPdfObject().Put(maskKey, maskToWrite.GetPdfObject());
             }
         }
 
@@ -733,18 +784,6 @@ namespace iText.PdfCleanup {
         // accepts Image as parameter. That's why we can't write image just as it was in original file, we convert it to Image.
         // IMPORTANT: If writing of pdf stream of not changed inline image will be implemented, don't forget to ensure that
         // inline image color space is present in new resources if necessary.
-        private void CopySMaskData(PdfStream imageStream, PdfStream filteredImageStream) {
-            if (imageStream.ContainsKey(PdfName.SMask)) {
-                filteredImageStream.Put(PdfName.SMask, imageStream.Get(PdfName.SMask));
-            }
-            if (imageStream.ContainsKey(PdfName.Mask)) {
-                filteredImageStream.Put(PdfName.Mask, imageStream.Get(PdfName.Mask));
-            }
-            if (imageStream.ContainsKey(PdfName.SMaskInData)) {
-                filteredImageStream.Put(PdfName.SMaskInData, imageStream.Get(PdfName.SMaskInData));
-            }
-        }
-
         private void WritePath() {
             PathRenderInfo path = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredPath();
             bool stroke = (path.GetOperation() & PathRenderInfo.STROKE) == PathRenderInfo.STROKE;

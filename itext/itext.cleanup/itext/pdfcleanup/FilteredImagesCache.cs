@@ -44,7 +44,6 @@ using System.Collections.Generic;
 using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Xobject;
 
 namespace iText.PdfCleanup {
@@ -52,9 +51,9 @@ namespace iText.PdfCleanup {
         private IDictionary<PdfIndirectReference, IList<FilteredImagesCache.FilteredImageKey>> cache = new Dictionary
             <PdfIndirectReference, IList<FilteredImagesCache.FilteredImageKey>>();
 
-        internal static FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(ImageRenderInfo image, IList<Rectangle
+        internal static FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, IList<Rectangle
             > areasToBeCleaned, PdfDocument document) {
-            PdfStream imagePdfObject = image.GetImage().GetPdfObject();
+            PdfStream imagePdfObject = image.GetPdfObject();
             if (imagePdfObject.GetIndirectReference() == null) {
                 imagePdfObject.MakeIndirect(document);
             }
@@ -121,14 +120,14 @@ namespace iText.PdfCleanup {
         }
 
         internal class FilteredImageKey {
-            private ImageRenderInfo image;
+            private PdfImageXObject image;
 
             private IList<Rectangle> cleanedAreas;
 
             private PdfImageXObject filteredImage;
 
-            internal FilteredImageKey(ImageRenderInfo imageInfo, IList<Rectangle> cleanedAreas) {
-                this.image = imageInfo;
+            internal FilteredImageKey(PdfImageXObject image, IList<Rectangle> cleanedAreas) {
+                this.image = image;
                 this.cleanedAreas = cleanedAreas;
             }
 
@@ -136,12 +135,12 @@ namespace iText.PdfCleanup {
                 return cleanedAreas;
             }
 
-            internal virtual ImageRenderInfo GetImageRenderInfo() {
+            internal virtual PdfImageXObject GetImageXObject() {
                 return image;
             }
 
             internal virtual PdfIndirectReference GetImageIndRef() {
-                return image.GetImage().GetPdfObject().GetIndirectReference();
+                return image.GetPdfObject().GetIndirectReference();
             }
 
             internal virtual PdfImageXObject GetFilteredImage() {
