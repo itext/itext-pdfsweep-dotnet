@@ -17,6 +17,6 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("2.0.4.0")]
 [assembly: AssemblyFileVersion("2.0.4.0")]
-[assembly: AssemblyInformationalVersion("2.0.4-SNAPSHOT")]
+[assembly: AssemblyInformationalVersion("2.0.4")]
 
 [assembly: NUnit.Framework.Timeout(300000)]
