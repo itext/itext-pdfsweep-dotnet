@@ -606,7 +606,6 @@ namespace iText.PdfCleanup {
 ;
         }
 
-        //Test will be fixed in DEVSIX-2056
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
