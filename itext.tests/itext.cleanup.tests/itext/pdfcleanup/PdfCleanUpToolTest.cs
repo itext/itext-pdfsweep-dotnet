@@ -710,6 +710,42 @@ namespace iText.PdfCleanup {
         }
 
         /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void SimpleCleanUpOnRotatedPages() {
+            String fileName = "simpleCleanUpOnRotatedPages";
+            String input = inputPath + "documentWithRotatedPages.pdf";
+            String output = outputPath + fileName + ".pdf";
+            String cmp = inputPath + "cmp_" + fileName + ".pdf";
+            IList<PdfCleanUpLocation> locationsList = new List<PdfCleanUpLocation>();
+            for (int i = 0; i < 4; i++) {
+                locationsList.Add(new PdfCleanUpLocation(i + 1, new Rectangle(100, 100, 200, 100), ColorConstants.GREEN));
+            }
+            CleanUp(input, output, locationsList);
+            CompareByContent(cmp, output, outputPath, "diff_pathAndIncorrectCMTest");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
+        public virtual void SimpleCleanUpOnRotatedPagesIgnoreRotation() {
+            String fileName = "simpleCleanUpOnRotatedPagesIgnoreRotation";
+            String input = inputPath + "documentWithRotatedPages.pdf";
+            String output = outputPath + fileName + ".pdf";
+            String cmp = inputPath + "cmp_" + fileName + ".pdf";
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
+            IList<PdfCleanUpLocation> locationsList = new List<PdfCleanUpLocation>();
+            for (int i = 0; i < 4; i++) {
+                locationsList.Add(new PdfCleanUpLocation(i + 1, Rectangle.GetRectangleOnRotatedPage(new Rectangle(100, 100
+                    , 200, 100), pdfDocument.GetPage(i + 1)), ColorConstants.GREEN));
+            }
+            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, locationsList);
+            cleaner.CleanUp();
+            pdfDocument.Close();
+            CompareByContent(cmp, output, outputPath, "diff_pathAndIncorrectCMTest");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool

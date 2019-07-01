@@ -444,7 +444,7 @@ namespace iText.PdfCleanup {
 
             Point[] points = TransformPoints(imageCtm, false, new Point(0, 0), new Point(0, 1), new Point(1, 0), new Point(
                 1, 1));
-            return GetAsRectangle(points[0], points[1], points[2], points[3]);
+            return Rectangle.CalculateBBox(iText.IO.Util.JavaUtil.ArraysAsList(points));
         }
 
         /// <summary>Transforms the given Rectangle into the image coordinate system which is [0,1]x[0,1] by default</summary>
@@ -453,7 +453,7 @@ namespace iText.PdfCleanup {
                 .GetLeft(), rect.GetTop()), new Point(rect.GetRight(), rect.GetBottom()), new Point(rect.GetRight(),
                 rect
                     .GetTop()));
-            return GetAsRectangle(points[0], points[1], points[2], points[3]);
+            return Rectangle.CalculateBBox(iText.IO.Util.JavaUtil.ArraysAsList(points));
         }
 
         /// <summary>Clean up an image using a List of Rectangles that need to be redacted</summary>
@@ -789,21 +789,6 @@ namespace iText.PdfCleanup {
                 new Point(rect.GetRight(), rect.GetTop()), new Point(rect.GetLeft(), rect.GetTop())
             };
             return points;
-        }
-
-        /// <summary>Convert 4 Point objects into a Rectangle</summary>
-        /// <param name="p1">first Point</param>
-        /// <param name="p2">second Point</param>
-        /// <param name="p3">third Point</param>
-        /// <param name="p4">fourth Point</param>
-        private static Rectangle GetAsRectangle(Point p1, Point p2, Point p3, Point p4) {
-            IList<double> xs = JavaUtil.ArraysAsList(p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX());
-            IList<double> ys = JavaUtil.ArraysAsList(p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY());
-            double left = Enumerable.Min(xs);
-            double bottom = Enumerable.Min(ys);
-            double right = Enumerable.Max(xs);
-            double top = Enumerable.Max(ys);
-            return new Rectangle((float) left, (float) bottom, (float) (right - left), (float) (top - bottom));
         }
 
         /// <summary>Calculate the intersection of 2 Rectangles</summary>
