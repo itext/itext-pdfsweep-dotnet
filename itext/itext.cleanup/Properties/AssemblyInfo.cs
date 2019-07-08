@@ -25,4 +25,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("2.0.5.0")]
 [assembly: AssemblyInformationalVersion("2.0.5-SNAPSHOT")]
 
-[assembly: Versions.Attributes.KeyVersion("3.0.4.0")]
+[assembly: Versions.Attributes.KeyVersion("3.0.5.0")]
