@@ -565,11 +565,11 @@ namespace iText.PdfCleanup {
             while (tokeniser.NextToken()) {
                 if (tokeniser.GetTokenType() == PdfTokenizer.TokenType.Other) {
                     String key = tokeniser.GetStringValue();
-                    if (key.Equals("RG") || key.Equals("G") || key.Equals("K")) {
+                    if ("RG".Equals(key) || "G".Equals(key) || "K".Equals(key)) {
                         key = "StrokeColor";
                     }
                     else {
-                        if (key.Equals("rg") || key.Equals("g") || key.Equals("k")) {
+                        if ("rg".Equals(key) || "g".Equals(key) || "k".Equals(key)) {
                             key = "FillColor";
                         }
                     }
