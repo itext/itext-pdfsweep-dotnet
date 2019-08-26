@@ -112,6 +112,19 @@ namespace iText.PdfCleanup {
         /// <exception cref="System.IO.IOException"/>
         /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
+        public virtual void CleanUpTestSvg() {
+            // TODO: update cmp file after DEVSIX-3185 fixed
+            String input = inputPath + "line_chart.pdf";
+            String output = outputPath + "line_chart.pdf";
+            String cmp = inputPath + "cmp_line_chart.pdf";
+            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 780f, 60f, 45f), 
+                ColorConstants.GRAY)));
+            CompareByContent(cmp, output, outputPath, "diff_Svg");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
         public virtual void CleanUpTest04() {
             String input = inputPath + "hello_05.pdf";
             String output = outputPath + "hello_05.pdf";
