@@ -130,10 +130,10 @@ namespace iText.PdfCleanup {
         /// On "q" operator new
         /// <c>NotAppliedGsParams</c>
         /// is pushed to the stack and on "Q" it is popped.
-        /// <p>
+        /// <para />
         /// When operators are applied, they are written from the outer to inner nesting level, separated by "q".
         /// After being written the stack is cleared.
-        /// <p>
+        /// <para />
         /// Graphics state parameters are applied in two ways:
         /// <ul>
         /// <li>
@@ -1004,20 +1004,20 @@ namespace iText.PdfCleanup {
         /// <remarks>
         /// Single instance of this class represents not applied graphics state params of the single q/Q nesting level.
         /// For example:
-        /// <p>
+        /// <para />
         /// 0 g
         /// 1 0 0 1 25 50 cm
-        /// <p>
+        /// <para />
         /// q
-        /// <p>
+        /// <para />
         /// 5 w
         /// /Gs1 gs
         /// 13 g
-        /// <p>
+        /// <para />
         /// Q
-        /// <p>
+        /// <para />
         /// 1 0 0 RG
-        /// <p>
+        /// <para />
         /// Operators "0 g", "1 0 0 1 25 50 cm" and "1 0 0 RG" belong to the outer q/Q nesting level;
         /// Operators "5 w", "/Gs1 gs", "13 g" belong to the inner q/Q nesting level.
         /// Operators of every level of the q/Q nesting are stored in different instances of this class.
