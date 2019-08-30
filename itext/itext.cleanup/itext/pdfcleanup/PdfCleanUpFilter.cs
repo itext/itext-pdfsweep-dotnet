@@ -133,25 +133,21 @@ namespace iText.PdfCleanup {
             }
 
             byte[] filteredImageBytes;
-            try {
-                if (ImageSupportsDirectCleanup(image)) {
-                    byte[] imageStreamBytes = ProcessImageDirectly(image, imageAreasToBeCleaned);
-                    // Creating imageXObject clone in order to avoid modification of the original XObject in the document.
-                    // We require to set filtered image bytes to the image XObject only for the sake of simplifying code:
-                    // in this method we return ImageData, so in order to convert PDF image to the common image format we
-                    // reuse PdfImageXObject#getImageBytes method.
-                    // I think this is acceptable here, because monochrome and grayscale images are not very common,
-                    // so the overhead would be not that big. But anyway, this should be refactored in future if this
-                    // direct image bytes cleaning approach would be found useful and will be preserved in future.
-                    PdfImageXObject tempImageClone = new PdfImageXObject((PdfStream) image.GetPdfObject().Clone());
-                    tempImageClone.GetPdfObject().SetData(imageStreamBytes);
-                    filteredImageBytes = tempImageClone.GetImageBytes();
-                } else {
-                    byte[] originalImageBytes = image.GetImageBytes();
-                    filteredImageBytes = ProcessImage(originalImageBytes, imageAreasToBeCleaned);
-                }
-            } catch (Exception e) {
-                throw new Exception(e.Message);
+            if (ImageSupportsDirectCleanup(image)) {
+                byte[] imageStreamBytes = ProcessImageDirectly(image, imageAreasToBeCleaned);
+                // Creating imageXObject clone in order to avoid modification of the original XObject in the document.
+                // We require to set filtered image bytes to the image XObject only for the sake of simplifying code:
+                // in this method we return ImageData, so in order to convert PDF image to the common image format we
+                // reuse PdfImageXObject#getImageBytes method.
+                // I think this is acceptable here, because monochrome and grayscale images are not very common,
+                // so the overhead would be not that big. But anyway, this should be refactored in future if this
+                // direct image bytes cleaning approach would be found useful and will be preserved in future.
+                PdfImageXObject tempImageClone = new PdfImageXObject((PdfStream) image.GetPdfObject().Clone());
+                tempImageClone.GetPdfObject().SetData(imageStreamBytes);
+                filteredImageBytes = tempImageClone.GetImageBytes();
+            } else {
+                byte[] originalImageBytes = image.GetImageBytes();
+                filteredImageBytes = ProcessImage(originalImageBytes, imageAreasToBeCleaned);
             }
 
             return new PdfCleanUpFilter.FilterResult<ImageData>(true, ImageDataFactory.Create(filteredImageBytes));
