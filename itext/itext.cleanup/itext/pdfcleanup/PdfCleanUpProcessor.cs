@@ -135,16 +135,18 @@ namespace iText.PdfCleanup {
         /// After being written the stack is cleared.
         /// <para />
         /// Graphics state parameters are applied in two ways:
-        /// <ul>
-        /// <li>
+        /// <list type="bullet">
+        /// <item><description>
         /// first - right before writing text content, text state in current gs is compare to the text state of the text
         /// render info gs and difference is applied to current gs;
-        /// </li>
-        /// <li>
+        /// 
+        /// </description></item>
+        /// <item><description>
         /// second - through list of the not applied gs params. Right before writing some content, this list is checked,
         /// and if something affecting content is stored in this list it will be applied.
-        /// </li>
-        /// </ul>
+        /// 
+        /// </description></item>
+        /// </list>
         /// </summary>
         private LinkedList<PdfCleanUpProcessor.NotAppliedGsParams> notAppliedGsParams;
 
