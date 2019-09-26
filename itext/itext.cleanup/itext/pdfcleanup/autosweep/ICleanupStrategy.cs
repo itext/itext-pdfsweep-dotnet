@@ -63,8 +63,14 @@ namespace iText.PdfCleanup.Autosweep {
         /// <c>PdfAutoSweep</c>
         /// will use the same strategy for all pages,
         /// and expects to receive only the rectangles from the last page as output.
-        /// Hence the reset method.
         /// </summary>
+        /// <remarks>
+        /// ICleanupStrategy objects have to be reset at times
+        /// <c>PdfAutoSweep</c>
+        /// will use the same strategy for all pages,
+        /// and expects to receive only the rectangles from the last page as output.
+        /// Hence the reset method.
+        /// </remarks>
         /// <returns>a clone of this Object</returns>
         ICleanupStrategy Reset();
     }

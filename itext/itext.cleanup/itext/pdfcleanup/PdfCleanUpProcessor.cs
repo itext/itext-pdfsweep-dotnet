@@ -124,6 +124,11 @@ namespace iText.PdfCleanup {
         /// In
         /// <c>notAppliedGsParams</c>
         /// field not written graphics state params are stored.
+        /// </summary>
+        /// <remarks>
+        /// In
+        /// <c>notAppliedGsParams</c>
+        /// field not written graphics state params are stored.
         /// Stack represents gs params on different levels of the q/Q nesting (see
         /// <see cref="NotAppliedGsParams"/>
         /// ).
@@ -147,7 +152,7 @@ namespace iText.PdfCleanup {
         /// 
         /// </description></item>
         /// </list>
-        /// </summary>
+        /// </remarks>
         private LinkedList<PdfCleanUpProcessor.NotAppliedGsParams> notAppliedGsParams;
 
         private LinkedList<CanvasTag> notWrittenTags;
