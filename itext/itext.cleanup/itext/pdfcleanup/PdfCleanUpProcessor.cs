@@ -144,12 +144,10 @@ namespace iText.PdfCleanup {
         /// <item><description>
         /// first - right before writing text content, text state in current gs is compare to the text state of the text
         /// render info gs and difference is applied to current gs;
-        /// 
         /// </description></item>
         /// <item><description>
         /// second - through list of the not applied gs params. Right before writing some content, this list is checked,
         /// and if something affecting content is stored in this list it will be applied.
-        /// 
         /// </description></item>
         /// </list>
         /// </remarks>
