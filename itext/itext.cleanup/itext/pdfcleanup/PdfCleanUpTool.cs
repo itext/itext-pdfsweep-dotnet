@@ -285,7 +285,6 @@ namespace iText.PdfCleanup {
         /// Cleans the document by erasing all the areas which are either provided or
         /// extracted from redaction annotations.
         /// </summary>
-        /// <exception cref="System.IO.IOException">IOException</exception>
         public virtual void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -437,7 +436,6 @@ namespace iText.PdfCleanup {
         /// Remove the redaction annotations
         /// This method is called after the annotations are processed.
         /// </summary>
-        /// <exception cref="System.IO.IOException"/>
         private void RemoveRedactAnnots() {
             foreach (PdfRedactAnnotation annotation in redactAnnotations.Keys) {
                 PdfPage page = annotation.GetPage();
@@ -483,7 +481,6 @@ namespace iText.PdfCleanup {
             }
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void DrawOverlayText(PdfCanvas canvas, String overlayText, Rectangle annotRect, PdfBoolean repeat, 
             PdfString defaultAppearance, int justification) {
             IDictionary<String, IList> parsedDA;
@@ -556,7 +553,6 @@ namespace iText.PdfCleanup {
             }
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private IDictionary<String, IList> ParseDAParam(PdfString DA) {
             IDictionary<String, IList> commandArguments = new Dictionary<String, IList>();
             PdfTokenizer tokeniser = new PdfTokenizer(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource

@@ -66,8 +66,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
         [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
@@ -81,8 +79,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_28");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
         public virtual void CleanUpTest29() {
@@ -95,8 +91,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_29");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
         public virtual void CleanUpTest31() {
@@ -107,7 +101,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_31");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -116,8 +109,6 @@ namespace iText.PdfCleanup {
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
