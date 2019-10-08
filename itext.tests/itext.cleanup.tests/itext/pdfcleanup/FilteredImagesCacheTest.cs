@@ -60,8 +60,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void FilteredImagesCacheTest01() {
             // basic test with reusing of xobjects
@@ -78,8 +76,6 @@ namespace iText.PdfCleanup {
             AssertNumberXObjects(output, 1);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void FilteredImagesCacheTest02() {
             // reusing when several clean areas (different on different pages)
@@ -111,8 +107,6 @@ namespace iText.PdfCleanup {
             AssertNumberXObjects(output, 5);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void FilteredImagesCacheTest03() {
             // same areas, different src images
@@ -129,8 +123,6 @@ namespace iText.PdfCleanup {
             AssertNumberXObjects(output, 2);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void FilteredImagesCacheTest04() {
             // same image with different scaling and the same resultant image area
@@ -157,8 +149,6 @@ namespace iText.PdfCleanup {
             AssertNumberXObjects(output, 1);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void FilteredImagesCacheFlushingTest01() {
             String input = inputPath + "severalImageXObjectOccurrences.pdf";
@@ -179,8 +169,6 @@ namespace iText.PdfCleanup {
             AssertNumberXObjects(output, 1);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void FilteredImagesCacheFlushingTest02() {
             String input = inputPath + "severalImageXObjectOccurrences.pdf";
@@ -201,13 +189,11 @@ namespace iText.PdfCleanup {
             AssertNumberXObjects(output, 1);
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(PdfDocument pdfDocument, IList<PdfCleanUpLocation> cleanUpLocations) {
             new PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void AssertNumberXObjects(String output, int n) {
             PdfDocument doc = new PdfDocument(new PdfReader(output));
             int xObjCount = 0;
@@ -224,8 +210,6 @@ namespace iText.PdfCleanup {
             NUnit.Framework.Assert.AreEqual(n, xObjCount);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

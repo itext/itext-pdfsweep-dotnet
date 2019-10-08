@@ -64,8 +64,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest01() {
             String input = inputPath + "page229.pdf";
@@ -81,8 +79,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_01");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest02() {
             String input = inputPath + "page229-modified-Tc-Tw.pdf";
@@ -98,8 +94,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_02");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest03() {
             String input = inputPath + "page166_03.pdf";
@@ -109,8 +103,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_03");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTestSvg() {
             // TODO: update cmp file after DEVSIX-3185 fixed
@@ -122,8 +114,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_Svg");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest04() {
             String input = inputPath + "hello_05.pdf";
@@ -133,8 +123,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_04");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest05() {
             String input = inputPath + "BigImage-jpg.pdf";
@@ -144,8 +132,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_05");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest06() {
             String input = inputPath + "BigImage-png.pdf";
@@ -155,8 +141,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_06");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest07() {
             String input = inputPath + "BigImage-tif.pdf";
@@ -166,8 +150,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_07");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest08() {
             String input = inputPath + "BigImage-tif-lzw.pdf";
@@ -177,8 +159,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_08");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest09() {
             String input = inputPath + "simpleImmediate.pdf";
@@ -190,8 +170,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_09");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest10() {
             String input = inputPath + "simpleImmediate-tm.pdf";
@@ -203,8 +181,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_10");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest11() {
             String input = inputPath + "multiUseIndirect.pdf";
@@ -216,8 +192,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_11");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest12() {
             String input = inputPath + "multiUseImage.pdf";
@@ -229,8 +203,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_12");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest13() {
             String input = inputPath + "maskImage.pdf";
@@ -242,8 +214,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_13");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest14() {
             String input = inputPath + "rotatedImg.pdf";
@@ -255,8 +225,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_14");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest15() {
             String input = inputPath + "lineArtsCompletely.pdf";
@@ -266,8 +234,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_15");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest16() {
             String input = inputPath + "lineArtsPartially.pdf";
@@ -277,8 +243,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_16");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest17() {
             String input = inputPath + "dashedStyledClosedBezier.pdf";
@@ -288,8 +252,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_17");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest18() {
             String input = inputPath + "styledLineArts.pdf";
@@ -299,8 +261,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_18");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest19() {
             String input = inputPath + "dashedBezier.pdf";
@@ -310,8 +270,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_19");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest20() {
             String input = inputPath + "closedBezier.pdf";
@@ -321,8 +279,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_20");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest21() {
             String input = inputPath + "clippingNWRule.pdf";
@@ -332,8 +288,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_21");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest22() {
             String input = inputPath + "dashedClosedRotatedTriangles.pdf";
@@ -343,8 +297,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_22");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest23() {
             String input = inputPath + "miterTest.pdf";
@@ -354,8 +306,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_23");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest24() {
             String input = inputPath + "degenerateCases.pdf";
@@ -365,8 +315,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_24");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest25() {
             String input = inputPath + "absentICentry.pdf";
@@ -376,8 +324,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_25");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest26() {
             String input = inputPath + "lotOfDashes.pdf";
@@ -387,8 +333,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_26");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest27() {
             String input = inputPath + "clipPathReduction.pdf";
@@ -400,8 +344,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_27");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest30() {
             String input = inputPath + "inlineImages.pdf";
@@ -413,8 +355,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_30");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest32() {
             String input = inputPath + "page229.pdf";
@@ -425,8 +365,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_32");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest33() {
             String input = inputPath + "viewer_prefs_dict_table.pdf";
@@ -437,8 +375,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_33");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest34() {
             String input = inputPath + "new_york_times.pdf";
@@ -449,8 +385,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_34");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest35() {
             String input = inputPath + "lineArtsSimple.pdf";
@@ -469,8 +403,6 @@ namespace iText.PdfCleanup {
         /// Because of this, in case of the big font sizes such situations might occur, that even though visually glyph is
         /// rather away from the cleanup location we still get it removed because it's bbox intersects with cleanup area rectangle.
         /// </remarks>
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest36() {
             String input = inputPath + "bigOne.pdf";
@@ -482,8 +414,6 @@ namespace iText.PdfCleanup {
         }
 
         /// <summary>In this test we check that line style operators (such as 'w') are processed correctly</summary>
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest37() {
             String input = inputPath + "helloHelvetica.pdf";
@@ -495,8 +425,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_37");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest38() {
             String input = inputPath + "helloHelvetica02.pdf";
@@ -508,8 +436,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_38");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest39() {
             String input = inputPath + "corruptJpeg.pdf";
@@ -521,8 +447,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_39");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest40() {
             String input = inputPath + "emptyTj01.pdf";
@@ -534,8 +458,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_40");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest41() {
             String input = inputPath + "newLines01.pdf";
@@ -547,8 +469,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_41");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest42() {
             String input = inputPath + "newLines02.pdf";
@@ -560,8 +480,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_42");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest43() {
             String input = inputPath + "newLines03.pdf";
@@ -573,8 +491,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_43");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest44() {
             String input = inputPath + "emptyTj02.pdf";
@@ -586,8 +502,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_44");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest45() {
             String input = inputPath + "emptyPdf.pdf";
@@ -602,7 +516,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_45");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTest46() {
             NUnit.Framework.Assert.That(() =>  {
@@ -619,8 +532,6 @@ namespace iText.PdfCleanup {
 ;
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanUpTestFontColor() {
             String filename = "fontCleanup.pdf";
@@ -632,8 +543,6 @@ namespace iText.PdfCleanup {
                 + filename, outputPath, "diff_"));
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
         public virtual void NoPropertiesInResourcesTest() {
@@ -647,8 +556,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_" + fileName);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
         public virtual void IncorrectBDCToBMCTest() {
@@ -662,8 +569,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_" + fileName);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
         public virtual void NoninvertibleMatrixRemoveAllTest() {
@@ -676,8 +581,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_noninvertibleMatrixRemoveAllTest");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
         public virtual void NoninvertibleMatrixRemoveAllTest02() {
@@ -691,8 +594,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_noninvertibleMatrixRemoveAllTest");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
         public virtual void NoninvertibleMatrixRemoveNothingTest() {
@@ -705,8 +606,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_noninvertibleMatrixRemoveNothingTest");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 7)]
         public virtual void PathAndIncorrectCMTest() {
@@ -722,8 +621,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_pathAndIncorrectCMTest");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void SimpleCleanUpOnRotatedPages() {
             String fileName = "simpleCleanUpOnRotatedPages";
@@ -738,8 +635,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_pathAndIncorrectCMTest");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void SimpleCleanUpOnRotatedPagesIgnoreRotation() {
             String fileName = "simpleCleanUpOnRotatedPagesIgnoreRotation";
@@ -758,7 +653,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_pathAndIncorrectCMTest");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -767,8 +661,6 @@ namespace iText.PdfCleanup {
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

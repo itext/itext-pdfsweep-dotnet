@@ -60,8 +60,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void RedactLipsum() {
             String input = inputPath + "Lipsum.pdf";
@@ -80,8 +78,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_redactLipsum_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 2)]
         public virtual void RedactPdfWithNoninvertibleMatrix() {
@@ -99,8 +95,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_redactPdfWithNoninvertibleMatrix_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

@@ -63,8 +63,6 @@ namespace iText.PdfCleanup {
             ITextTest.CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void RedactTonySoprano() {
             String input = inputPath + "TheSopranos.pdf";
@@ -85,8 +83,6 @@ namespace iText.PdfCleanup {
             CompareResults(cmp, output, outputPath, "diff_redactTonySoprano_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void RedactIPhoneUserManualMatchColor() {
             String input = inputPath + "iphone_user_guide_untagged.pdf";
@@ -103,8 +99,6 @@ namespace iText.PdfCleanup {
             CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualMatchColor_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void RedactIPhoneUserManual() {
             String input = inputPath + "iphone_user_guide_untagged.pdf";
@@ -121,8 +115,6 @@ namespace iText.PdfCleanup {
             CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManual_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void RedactIPhoneUserManualColored() {
             String input = inputPath + "iphone_user_guide_untagged_small.pdf";
@@ -138,8 +130,6 @@ namespace iText.PdfCleanup {
             CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualColored_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareResults(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareVisually(output, cmp, targetDir, diffPrefix + "_");

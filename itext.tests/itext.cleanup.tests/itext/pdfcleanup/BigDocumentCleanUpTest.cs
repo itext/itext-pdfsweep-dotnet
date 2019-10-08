@@ -61,8 +61,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void BigUntaggedDocument() {
             String input = inputPath + "iphone_user_guide_untagged.pdf";
@@ -74,8 +72,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_bigUntagged_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.CREATED_ROOT_TAG_HAS_MAPPING)]
         public virtual void BigTaggedDocument() {
@@ -88,8 +84,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_bigTagged_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void TextPositioning() {
             String input = inputPath + "textPositioning.pdf";
@@ -101,7 +95,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_txtPos_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations);
@@ -119,8 +112,6 @@ namespace iText.PdfCleanup {
             return cleanUpLocations;
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

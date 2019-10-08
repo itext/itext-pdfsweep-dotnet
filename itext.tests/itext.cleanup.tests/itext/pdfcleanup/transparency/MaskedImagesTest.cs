@@ -63,43 +63,31 @@ namespace iText.PdfCleanup.Transparency {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyImageMask() {
             RunTest("imageIsMask");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyMask() {
             RunTest("imageMask");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMask() {
             RunTest("imageSMask");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMaskAIS() {
             RunTest("imageSMaskAIS");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyColorKeyMaskArray() {
             RunTest("imageColorKeyMaskArray");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyTextOnTransparentField() {
             String fileName = "textOnTransparentField";
@@ -118,8 +106,6 @@ namespace iText.PdfCleanup.Transparency {
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(output, cmp, outputPath));
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private static void RunTest(String fileName) {
             String input = inputPath + fileName + ".pdf";
             String output = outputPath + fileName + "_cleaned.pdf";

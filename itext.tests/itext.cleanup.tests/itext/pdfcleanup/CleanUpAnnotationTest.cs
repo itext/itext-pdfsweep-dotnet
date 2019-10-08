@@ -60,8 +60,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanFull01() {
             String input = inputPath + "cleanAnnotation.pdf";
@@ -73,8 +71,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_Annotation_full");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanLinkAnnotation01() {
             String input = inputPath + "cleanAnnotation.pdf";
@@ -88,8 +84,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_Annotation_link01");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanTextAnnotation01() {
             String input = inputPath + "cleanAnnotation.pdf";
@@ -102,8 +96,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_Annotation_text01");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanLineAnnotation01() {
             String input = inputPath + "cleanAnnotation.pdf";
@@ -117,8 +109,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_Annotation_line01");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanLineAnnotation02() {
             String input = inputPath + "lineAnnotationLeaders.pdf";
@@ -132,8 +122,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanHighlightAnnotation01() {
             String input = inputPath + "cleanAnnotation.pdf";
@@ -147,8 +135,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_text_highlight01");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanStrikeOutAnnotation01() {
             String input = inputPath + "strikeOutAnnotQuadOutsideRect.pdf";
@@ -160,8 +146,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanStrikeOutAnnotation02() {
             String input = inputPath + "strikeOutAnnotQuadOutsideRect.pdf";
@@ -173,8 +157,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanFreeTextAnnotation01() {
             String input = inputPath + "freeTextAnnotation.pdf";
@@ -186,8 +168,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanFormAnnotations01() {
             String input = inputPath + "formAnnotation.pdf";
@@ -201,8 +181,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_form01");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanFormAnnotations02() {
             String input = inputPath + "formAnnotation.pdf";
@@ -216,7 +194,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_form02");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -225,14 +202,10 @@ namespace iText.PdfCleanup {
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir) {
             CompareByContent(cmp, output, targetDir, null);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

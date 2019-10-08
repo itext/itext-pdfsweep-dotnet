@@ -62,8 +62,6 @@ namespace iText.PdfCleanup.Images {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Ignore("test works with differs in Java and .Net, cause the one doesn't work with 8-byte images"
             )]
         [NUnit.Framework.Test]
@@ -77,7 +75,6 @@ namespace iText.PdfCleanup.Images {
             CompareByContent(cmp, output, outputPath, "diff_imgSeparationCs");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -86,8 +83,6 @@ namespace iText.PdfCleanup.Images {
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

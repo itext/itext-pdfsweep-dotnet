@@ -198,10 +198,6 @@ namespace iText.PdfCleanup.Autosweep {
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// to be redacted
         /// </param>
-        /// <exception cref="System.IO.IOException">
-        /// an
-        /// <see cref="System.IO.IOException"/>
-        /// </exception>
         public virtual void CleanUp(PdfDocument pdfDocument) {
             IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfDocument);
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -218,10 +214,6 @@ namespace iText.PdfCleanup.Autosweep {
         /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// to be redacted
         /// </param>
-        /// <exception cref="System.IO.IOException">
-        /// an
-        /// <see cref="System.IO.IOException"/>
-        /// </exception>
         public virtual void CleanUp(PdfPage pdfPage) {
             IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfPage.GetDocument(), true) : new 

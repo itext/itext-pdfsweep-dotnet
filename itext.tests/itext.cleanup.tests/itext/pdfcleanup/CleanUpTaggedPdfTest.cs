@@ -58,8 +58,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanTextFull() {
             String input = inputPath + "cleanText_full.pdf";
@@ -69,8 +67,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_text_full");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanTextPartial() {
             String input = inputPath + "cleanText_partial.pdf";
@@ -80,8 +76,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_text_partial");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanImageFull() {
             String input = inputPath + "cleanImage_full.pdf";
@@ -91,8 +85,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_image_full");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanImagePartial() {
             String input = inputPath + "cleanImage_partial.pdf";
@@ -102,8 +94,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_image_partial");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanPathFull() {
             String input = inputPath + "cleanPath_full.pdf";
@@ -113,8 +103,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_path_full");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void CleanPathPartial() {
             String input = inputPath + "cleanPath_partial.pdf";
@@ -124,7 +112,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_path_partial");
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -133,8 +120,6 @@ namespace iText.PdfCleanup {
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
