@@ -139,6 +139,9 @@ namespace iText.PdfCleanup {
         }
     }
 
+    /*
+    * color matching text redaction
+    */
     internal class CCharacterRenderInfo : CharacterRenderInfo {
         private Color strokeColor;
 
@@ -146,9 +149,6 @@ namespace iText.PdfCleanup {
 
         public CCharacterRenderInfo(TextRenderInfo tri)
             : base(tri) {
-            /*
-            * color matching text redaction
-            */
             this.strokeColor = tri.GetStrokeColor();
             this.fillColor = tri.GetFillColor();
         }

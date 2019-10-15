@@ -45,6 +45,7 @@ using System;
 namespace iText.PdfCleanup {
     /// <summary>Product info about this iText add-on.</summary>
     public class PdfCleanupProductInfo {
+        // TODO refactor? move to local fields in order to hide it?
         /// <summary>The product name.</summary>
         public const String PRODUCT_NAME = "pdfSweep";
 
@@ -53,6 +54,5 @@ namespace iText.PdfCleanup {
 
         /// <summary>The minor version number.</summary>
         public const int MINOR_VERSION = 0;
-        // TODO refactor? move to local fields in order to hide it?
     }
 }

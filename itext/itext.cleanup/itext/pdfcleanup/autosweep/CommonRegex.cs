@@ -49,12 +49,18 @@ namespace iText.PdfCleanup.Autosweep {
     /// Most of these are copied verbatim from the "regular expression cookbook 2nd edition".
     /// </remarks>
     public class CommonRegex {
+        /*
+        * NUMBERS
+        */
         public static Regex MODERN_ROMAN_NUMERALS_STRICT = iText.IO.Util.StringUtil.RegexCompile("(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})"
             );
 
         public static Regex MODERN_ROMAN_NUMERALS_FLEXIBLE = iText.IO.Util.StringUtil.RegexCompile("(?=[MDCLXVI])M*(C[MD]|D?C*)(X[CL]|L?X*)(I[XV]|V?I*)"
             );
 
+        /*
+        * MISC.
+        */
         public static Regex US_SOCIAL_SECURITY_NUMBER = iText.IO.Util.StringUtil.RegexCompile("\\d{3}-\\d{2}-\\d{4}"
             );
 
@@ -81,6 +87,9 @@ namespace iText.PdfCleanup.Autosweep {
         public static Regex EU_CURRENCY = iText.IO.Util.StringUtil.RegexCompile("€(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
             );
 
+        /*
+        * DATE AND TIME
+        */
         public static Regex DATE_MM_DD_YYYY = iText.IO.Util.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4}"
             );
 
@@ -93,6 +102,9 @@ namespace iText.PdfCleanup.Autosweep {
         public static Regex DATE_DD_MM_YYYY_HH_MM_SS = iText.IO.Util.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"
             );
 
+        /*
+        * ICT
+        */
         public static Regex IPV4_ADDRESS = iText.IO.Util.StringUtil.RegexCompile("(?:[0-9]{1,3}\\.){3}[0-9]{1,3}");
 
         public static Regex IPV6_ADDRESS = iText.IO.Util.StringUtil.RegexCompile("(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}"
@@ -106,17 +118,5 @@ namespace iText.PdfCleanup.Autosweep {
 
         public static Regex HTTP_URL = iText.IO.Util.StringUtil.RegexCompile("(https?|ftp)://[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].+)?"
             );
-        /*
-        * NUMBERS
-        */
-        /*
-        * MISC.
-        */
-        /*
-        * DATE AND TIME
-        */
-        /*
-        * ICT
-        */
     }
 }

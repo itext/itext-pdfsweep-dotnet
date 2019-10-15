@@ -94,11 +94,11 @@ namespace iText.PdfCleanup {
         private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("Td", "TD", "Tm", "T*", "TL"));
 
+        // TL actually is not a text positioning operator, but we need to process it with them
+        // these operators are processed via PdfCanvasProcessor graphics state and event listener
         private static readonly ICollection<String> ignoredOperators = new HashSet<String>();
 
         static PdfCleanUpProcessor() {
-            // TL actually is not a text positioning operator, but we need to process it with them
-            // these operators are processed via PdfCanvasProcessor graphics state and event listener
             PATH_PAINTING_OPERATORS.AddAll(STROKE_OPERATORS);
             PATH_PAINTING_OPERATORS.AddAll(NW_FILL_OPERATORS);
             PATH_PAINTING_OPERATORS.AddAll(EO_FILL_OPERATORS);
@@ -1032,13 +1032,13 @@ namespace iText.PdfCleanup {
 
             internal IList<IList<PdfObject>> ctms = new List<IList<PdfObject>>();
 
+            // list of operator statements
             internal Color fillColor;
 
             internal Color strokeColor;
 
             internal IDictionary<String, IList<PdfObject>> lineStyleOperators = new LinkedDictionary<String, IList<PdfObject
                 >>();
-            // list of operator statements
             // operator and it's operands
         }
     }
