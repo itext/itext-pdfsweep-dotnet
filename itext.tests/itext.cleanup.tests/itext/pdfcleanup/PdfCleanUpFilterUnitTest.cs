@@ -41,9 +41,10 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using iText.Kernel.Geom;
+using iText.Test;
 
 namespace iText.PdfCleanup {
-    public class PdfCleanUpFilterUnitTest {
+    public class PdfCleanUpFilterUnitTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void CheckIfRectanglesIntersect_completelyCoveredBasic() {
             Point[] intersectSubject = new Point[] { new Point(70, 70), new Point(80, 70), new Point(80, 80), new Point

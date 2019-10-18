@@ -52,7 +52,7 @@ using iText.PdfCleanup.Autosweep;
 using iText.Test;
 
 namespace iText.PdfCleanup {
-    public class BigDocumentAutoCleanUpTest {
+    public class BigDocumentAutoCleanUpTest : ExtendedITextTest {
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/BigDocumentAutoCleanUpTest/";
 
