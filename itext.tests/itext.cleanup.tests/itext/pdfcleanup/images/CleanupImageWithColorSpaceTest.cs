@@ -62,7 +62,7 @@ namespace iText.PdfCleanup.Images {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        [NUnit.Framework.Ignore("test works with differs in Java and .Net, cause the one doesn't work with 8-byte images"
+        [NUnit.Framework.Ignore("Test works differently in Java and .Net, because currently .NET version doesn't work with 8-byte images. Update after DEVSIX-1908 is fixed"
             )]
         [NUnit.Framework.Test]
         public virtual void CleanUpTestColorSpace() {
