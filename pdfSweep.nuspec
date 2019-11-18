@@ -17,7 +17,7 @@
     <language>en-US</language>
     <tags>itext itext7 itextsharp c# .net csharp pdf cleanup pdfsweep</tags>
     <dependencies>
-      <dependency id="itext7" version="7.1.9-SNAPSHOT" />
+      <dependency id="itext7" version="7.1.10-SNAPSHOT" />
       <dependency id="Common.Logging" version="3.4.1" />
     </dependencies>
   </metadata>
