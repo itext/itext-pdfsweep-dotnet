@@ -79,6 +79,27 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
+        public virtual void RedactLipsumPatternStartsWithWhiteSpace()
+        {
+            String input = inputPath + "Lipsum.pdf";
+            String output = outputPath + "redactLipsumPatternStartsWithWhitespace.pdf";
+            String cmp = inputPath + "cmp_redactLipsumPatternStartsWithWhitespace.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy(@"\s(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
+            PdfWriter writer = new PdfWriter(output);
+            writer.SetCompressionLevel(0);
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), writer);
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.CleanUp(pdf);
+            pdf.Close();
+            // compare
+            CompareByContent(cmp, output, outputPath, "diff_redactLipsumPatternStartsWithWhitespace_");
+        }
+
+        /// <exception cref="System.IO.IOException"/>
+        /// <exception cref="System.Exception"/>
+        [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 2)]
         public virtual void RedactPdfWithNoninvertibleMatrix() {
             String input = inputPath + "noninvertibleMatrix.pdf";
