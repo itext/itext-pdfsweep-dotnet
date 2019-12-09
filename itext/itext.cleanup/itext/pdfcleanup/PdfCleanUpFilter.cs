@@ -41,11 +41,13 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Common.Logging;
 using iText.IO.Image;
 using iText.IO.Util;
@@ -63,6 +65,8 @@ using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iT
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpFilter {
+        
+        private const String UnsupportedImageFormat = "The given image format is not supported by pdfSweep.";
         private static readonly Color? CLEANED_AREA_FILL_COLOR = Color.White;
 
         private static float EPS = 1e-4f;
@@ -110,6 +114,15 @@ namespace iText.PdfCleanup {
 
         internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, Matrix imageCtm, PdfDocument document) {
             return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(imageCtm), document);
+        }
+
+        internal virtual bool IsOriginalCsCompatible(PdfImageXObject cmp, PdfImageXObject toCompare) {
+            using (Stream cmpStream = new MemoryStream(cmp.GetImageBytes()))
+            using (Stream toCompareStream = new MemoryStream(toCompare.GetImageBytes())) {
+                Image cmpImage = Image.FromStream(cmpStream);
+                Image toCompareImage = Image.FromStream(toCompareStream);
+                return cmpImage.PixelFormat == toCompareImage.PixelFormat;
+            }
         }
 
         /// <summary>Filter an ImageRenderInfo object</summary>
@@ -362,6 +375,7 @@ namespace iText.PdfCleanup {
                     intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
                     System.Diagnostics.Debug.Assert(intersectionSubjectAdded);
                 }
+
                 PolyTree polyTree = new PolyTree();
                 clipper.Execute(ClipType.INTERSECTION, polyTree, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
                 return !Clipper.PolyTreeToPaths(polyTree).IsEmpty();
@@ -462,21 +476,32 @@ namespace iText.PdfCleanup {
 
             using (Stream imageStream = new MemoryStream(imageBytes)) {
                 Image image = Image.FromStream(imageStream);
-                CleanImage(image, areasToBeCleaned);
+
+                ImageFormat formatToSave = image.RawFormat;
+                PixelFormat pixelFormat = image.PixelFormat;
+                switch (pixelFormat) {
+                    case PixelFormat.Format8bppIndexed:
+                        image = Clean8bppImage(image, areasToBeCleaned);
+                        break;
+                    default:
+                        CleanImage(image, areasToBeCleaned);
+                        break;
+                }
 
                 using (MemoryStream outStream = new MemoryStream()) {
-                    if (Equals(image.RawFormat, ImageFormat.Tiff)) {
-                        EncoderParameters encParams = new EncoderParameters(1);
-                        encParams.Param[0] =
-                            new EncoderParameter(Encoder.Compression, (long) EncoderValue.CompressionLZW);
-                        image.Save(outStream, GetEncoderInfo(image.RawFormat), encParams);
-                    } else if (Equals(image.RawFormat, ImageFormat.Jpeg)) {
-                        EncoderParameters encParams = new EncoderParameters(1);
+                    EncoderParameters encParams = null;
+                    if (Equals(formatToSave, ImageFormat.Jpeg)) {
+                        encParams = new EncoderParameters(1);
                         encParams.Param[0] = new EncoderParameter(Encoder.Quality, 100L);
-                        image.Save(outStream, GetEncoderInfo(image.RawFormat), encParams);
-                    } else {
-                        image.Save(outStream, image.RawFormat);
+
+                        // We want to preserve the original format, but in case of 8bpp indexed pixel format
+                        // we can not save JPEG format.
+                        if (image.PixelFormat == PixelFormat.Format8bppIndexed) {
+                            formatToSave = ImageFormat.Png;
+                        }
                     }
+
+                    image.Save(outStream, GetEncoderInfo(formatToSave), encParams);
 
                     return outStream.ToArray();
                 }
@@ -546,23 +571,72 @@ namespace iText.PdfCleanup {
             return originalImageBytes;
         }
 
+        private static Image Clean8bppImage(Image image, IList<Rectangle> areasToBeCleaned) {
+            // We need to create a new empty Bitmap and redraw an original image on it to clean it in case of 8bpp
+            Bitmap tempBitMap = new Bitmap(image.Width, image.Height);
+            tempBitMap.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+            using (Graphics g = Graphics.FromImage(tempBitMap)) {
+                g.DrawImage(image, 0, 0);
+            }
+
+            CleanImage(tempBitMap, areasToBeCleaned);
+
+            // The result shall be with the same bpp as the original image
+            return To8bppIndexed(tempBitMap, image.Palette);
+        }
+
         /// <summary>Clean up a BufferedImage using a List of Rectangles that need to be redacted</summary>
         /// <param name="image">the image to be cleaned up</param>
         /// <param name="areasToBeCleaned">the List of Rectangles that need to be redacted out of the image</param>
         private static void CleanImage(Image image, IList<Rectangle> areasToBeCleaned) {
-            Graphics g = Graphics.FromImage(image);
-            // A rectangle in the areasToBeCleaned list is treated to be in standard [0,1]x[0,1] image space
-            // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
-            // invert and shear the y axe.
-            foreach (Rectangle rect in areasToBeCleaned) {
-                int imgHeight = image.Height;
-                int imgWidth = image.Width;
-                int[] scaledRectToClean = GetImageRectToClean(rect, imgWidth, imgHeight);
+            using (Graphics g = Graphics.FromImage(image)) {
+                // A rectangle in the areasToBeCleaned list is treated to be in standard [0,1]x[0,1] image space
+                // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
+                // invert and shear the y axe.
+                foreach (Rectangle rect in areasToBeCleaned) {
+                    int imgHeight = image.Height;
+                    int imgWidth = image.Width;
+                    int[] scaledRectToClean = GetImageRectToClean(rect, imgWidth, imgHeight);
 
-                g.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR.Value), scaledRectToClean[0], scaledRectToClean[1], scaledRectToClean[2], scaledRectToClean[3]);
+                    g.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR.Value), scaledRectToClean[0],
+                        scaledRectToClean[1], scaledRectToClean[2], scaledRectToClean[3]);
+                }
+            }
+        }
+
+        private static Bitmap To8bppIndexed(Bitmap toConvert, ColorPalette palette) {
+            Color[] paletteEntries = palette.Entries;
+            Dictionary<Color, byte> colorToIndex = new Dictionary<Color, byte>(paletteEntries.Length);
+            for (int i = 0; i < paletteEntries.Length; ++i) {
+                colorToIndex.Put(paletteEntries[i], (byte) i);
             }
 
-            g.Dispose();
+            Bitmap result = new Bitmap(toConvert.Width, toConvert.Height, PixelFormat.Format8bppIndexed);
+            result.SetResolution(toConvert.HorizontalResolution, toConvert.VerticalResolution);
+            result.Palette = palette;
+
+            BitmapData data = result.LockBits(new System.Drawing.Rectangle(0, 0, result.Width, result.Height),
+                ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+
+            byte[] bytes = new byte[data.Height * data.Stride];
+            Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+
+            for (int x = 0; x < toConvert.Width; x++) {
+                for (int y = 0; y < toConvert.Height; y++) {
+                    Color pixelColor = toConvert.GetPixel(x, y);
+                    if (!colorToIndex.ContainsKey(pixelColor)) {
+                        throw new PdfException(UnsupportedImageFormat);
+                    }
+
+                    byte index = colorToIndex.Get(pixelColor);
+                    bytes[y * data.Stride + x] = index;
+                }
+            }
+
+            Marshal.Copy(bytes, 0, data.Scan0, bytes.Length);
+
+            result.UnlockBits(data);
+            return result;
         }
 
         private static int[] GetImageRectToClean(Rectangle rect, int imgWidth, int imgHeight) {
