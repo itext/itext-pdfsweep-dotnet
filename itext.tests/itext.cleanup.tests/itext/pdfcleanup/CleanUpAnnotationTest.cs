@@ -42,11 +42,13 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
+using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
 using iText.Test;
+using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
     public class CleanUpAnnotationTest : ExtendedITextTest {
@@ -192,6 +194,18 @@ namespace iText.PdfCleanup {
             cleanUpLocations.Add(highLightLoc);
             CleanUp(input, output, cleanUpLocations);
             CompareByContent(cmp, output, outputPath, "diff_form02");
+        }
+
+        [NUnit.Framework.Test]
+        [LogMessage(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED)]
+        public virtual void CleanWatermarkAnnotation() {
+            // TODO: update cmp file after DEVSIX-2471 fix
+            String input = inputPath + "watermarkAnnotation.pdf";
+            String output = outputPath + "watermarkAnnotation.pdf";
+            String cmp = inputPath + "cmp_watermarkAnnotation.pdf";
+            CleanUp(input, output, JavaCollectionsUtil.SingletonList(new PdfCleanUpLocation(1, new Rectangle(410, 410, 
+                50, 50), ColorConstants.YELLOW)));
+            CompareByContent(cmp, output, outputPath);
         }
 
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {

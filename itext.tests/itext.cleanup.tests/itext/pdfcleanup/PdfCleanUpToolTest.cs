@@ -570,7 +570,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
+        [LogMessage(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
         public virtual void NoninvertibleMatrixRemoveAllTest() {
             String fileName = "noninvertibleMatrixRemoveAllTest";
             String input = inputPath + "noninvertibleMatrix.pdf";
@@ -582,7 +582,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
+        [LogMessage(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
         public virtual void NoninvertibleMatrixRemoveAllTest02() {
             String fileName = "noninvertibleMatrixRemoveAllTest02";
             String input = inputPath + "noninvertibleMatrix.pdf";
@@ -595,7 +595,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
+        [LogMessage(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)]
         public virtual void NoninvertibleMatrixRemoveNothingTest() {
             String fileName = "noninvertibleMatrixRemoveNothingTest";
             String input = inputPath + "noninvertibleMatrix.pdf";
@@ -607,7 +607,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 7)]
+        [LogMessage(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 7)]
         public virtual void PathAndIncorrectCMTest() {
             String fileName = "pathAndIncorrectCM";
             String input = inputPath + "pathAndIncorrectCM.pdf";

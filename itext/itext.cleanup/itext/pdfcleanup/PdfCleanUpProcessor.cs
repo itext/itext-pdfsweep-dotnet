@@ -313,7 +313,7 @@ namespace iText.PdfCleanup {
             if (annotationType.Equals(PdfName.Watermark)) {
                 // TODO /FixedPrint entry effect is not fully investigated: DEVSIX-2471
                 ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Warn(iText.IO.LogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
+                logger.Warn(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
             }
             PdfArray rectAsArray = annotation.GetRectangle();
             Rectangle rect = null;
@@ -704,7 +704,7 @@ namespace iText.PdfCleanup {
                     if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
                         if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
                             ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                            logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                            logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                         }
                         else {
                             filteredImageData.MakeMask();
@@ -713,6 +713,18 @@ namespace iText.PdfCleanup {
                     if (filteredImageData != null) {
                         imageToWrite = new PdfImageXObject(filteredImageData);
                         GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
+                        // While having been processed with java libraries, only the number of components mattered.
+                        // However now we should put the correct color space dictionary as an image's resource,
+                        // because it'd be have been considered by pdf browsers before rendering it.
+                        // Additional checks required as if an image format has been changed,
+                        // then the old colorspace may produce an error with the new image data.
+                        if (AreColorSpacesDifferent(originalImage, imageToWrite) && filter.IsOriginalCsCompatible(originalImage, imageToWrite
+                            )) {
+                            PdfObject originalCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
+                            if (originalCS != null) {
+                                imageToWrite.Put(PdfName.ColorSpace, originalCS);
+                            }
+                        }
                         if (ctmForMasksFiltering != null && !filteredImageData.IsMask()) {
                             FilterImageMask(originalImage, PdfName.SMask, ctmForMasksFiltering, imageToWrite);
                             FilterImageMask(originalImage, PdfName.Mask, ctmForMasksFiltering, imageToWrite);
@@ -747,7 +759,7 @@ namespace iText.PdfCleanup {
             PdfImageXObject maskImageXObject = new PdfImageXObject(maskStream);
             if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(maskImageXObject)) {
                 ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                 return;
             }
             FilteredImagesCache.FilteredImageKey k = filter.CreateFilteredImageKey(maskImageXObject, ctmForMasksFiltering
@@ -1002,6 +1014,42 @@ namespace iText.PdfCleanup {
                 }
                 gsParams.strokeColor = null;
             }
+        }
+
+        internal static bool AreColorSpacesDifferent(PdfImageXObject originalImage, PdfImageXObject clearedImage) {
+            PdfObject originalImageCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
+            PdfObject clearedImageCS = clearedImage.GetPdfObject().Get(PdfName.ColorSpace);
+            if (originalImageCS == clearedImageCS) {
+                return false;
+            }
+            else {
+                if (originalImageCS == null || clearedImageCS == null) {
+                    return true;
+                }
+                else {
+                    if (originalImageCS.Equals(clearedImageCS)) {
+                        return false;
+                    }
+                    else {
+                        if (originalImageCS.IsArray() && clearedImageCS.IsArray()) {
+                            PdfArray originalCSArray = (PdfArray)originalImageCS;
+                            PdfArray clearedCSArray = (PdfArray)clearedImageCS;
+                            if (originalCSArray.Size() != clearedCSArray.Size()) {
+                                return true;
+                            }
+                            for (int i = 0; i < originalCSArray.Size(); ++i) {
+                                PdfObject objectFromOriginal = originalCSArray.Get(i);
+                                PdfObject objectFromCleared = clearedCSArray.Get(i);
+                                if (!objectFromOriginal.Equals(objectFromCleared)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         /// <summary>Single instance of this class represents not applied graphics state params of the single q/Q nesting level.

@@ -62,17 +62,38 @@ namespace iText.PdfCleanup.Images {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        [NUnit.Framework.Ignore("Test works differently in Java and .Net, because currently .NET version doesn't work with 8-byte images. Update after DEVSIX-1908 is fixed"
-            )]
         [NUnit.Framework.Test]
         public virtual void CleanUpTestColorSpace() {
-            // TODO: update cmp file after DEVSIX-1908 fixed
             String input = inputPath + "imgSeparationCs.pdf";
             String output = outputPath + "imgSeparationCs.pdf";
             String cmp = inputPath + "cmp_imgSeparationCs.pdf";
             CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 780f, 60f, 45f), 
                 ColorConstants.GREEN)));
-            CompareByContent(cmp, output, outputPath, "diff_imgSeparationCs");
+            CompareByContent(cmp, output, outputPath);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTestColorSpaceJpegBaselineEncoded() {
+            // cleanup jpeg image with baseline encoded data
+            String input = inputPath + "imgSeparationCsJpegBaselineEncoded.pdf";
+            String output = outputPath + "imgSeparationCsJpegBaselineEncoded.pdf";
+            String cmp = inputPath + "cmp_imgSeparationCsJpegBaselineEncoded.pdf";
+            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 600f, 100f, 50f)
+                , ColorConstants.GREEN)));
+            CompareByContent(cmp, output, outputPath);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CleanUpTestColorSpaceJpegBaselineEncodedWithApp14Segment() {
+            // cleanup jpeg image with baseline encoded data and app14 segment with unknown color type
+            // Adobe Photoshop will always add an APP14 segment into the resulting jpeg file.
+            // To make Unknown color type we have set the quality of an image to maximum during the "save as" operation
+            String input = inputPath + "imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
+            String output = outputPath + "imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
+            String cmp = inputPath + "cmp_imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
+            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 600f, 100f, 50f)
+                , ColorConstants.GREEN)));
+            CompareByContent(cmp, output, outputPath);
         }
 
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
@@ -83,9 +104,9 @@ namespace iText.PdfCleanup.Images {
             pdfDocument.Close();
         }
 
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
+        private void CompareByContent(String cmp, String output, String targetDir) {
             CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
+            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir);
             if (errorMessage != null) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }

@@ -79,7 +79,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 2)]
+        [LogMessage(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 2)]
         public virtual void RedactPdfWithNoninvertibleMatrix() {
             String input = inputPath + "noninvertibleMatrix.pdf";
             String output = outputPath + "redactPdfWithNoninvertibleMatrix.pdf";
