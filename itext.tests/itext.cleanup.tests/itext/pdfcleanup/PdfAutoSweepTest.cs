@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -60,8 +60,6 @@ namespace iText.PdfCleanup {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void RedactLipsum() {
             String input = inputPath + "Lipsum.pdf";
@@ -80,10 +78,8 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_redactLipsum_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 2)]
+        [LogMessage(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX, Count = 2)]
         public virtual void RedactPdfWithNoninvertibleMatrix() {
             String input = inputPath + "noninvertibleMatrix.pdf";
             String output = outputPath + "redactPdfWithNoninvertibleMatrix.pdf";
@@ -99,8 +95,6 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_redactPdfWithNoninvertibleMatrix_");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");

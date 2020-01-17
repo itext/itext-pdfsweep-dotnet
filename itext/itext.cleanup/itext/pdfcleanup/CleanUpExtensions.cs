@@ -1,7 +1,7 @@
 /*
 
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: Bruno Lowagie, Paulo Soares, et al.
 
 This program is free software; you can redistribute it and/or modify
@@ -154,9 +154,9 @@ namespace iText.PdfCleanup {
             return r;
         }
         
-        #if !NETSTANDARD1_6
+    #if !NETSTANDARD1_6
         public static Attribute GetCustomAttribute(this Assembly assembly, Type attributeType) {
-            object[] customAttributes = Assembly.GetExecutingAssembly().GetCustomAttributes(attributeType, false);
+            object[] customAttributes = assembly.GetCustomAttributes(attributeType, false);
             if (customAttributes.Length > 0 && customAttributes[0] is Attribute) {
                 return customAttributes[0] as Attribute;
             } else {

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -198,10 +198,6 @@ namespace iText.PdfCleanup.Autosweep {
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// to be redacted
         /// </param>
-        /// <exception cref="System.IO.IOException">
-        /// an
-        /// <see cref="System.IO.IOException"/>
-        /// </exception>
         public virtual void CleanUp(PdfDocument pdfDocument) {
             IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfDocument);
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -218,10 +214,6 @@ namespace iText.PdfCleanup.Autosweep {
         /// <see cref="iText.Kernel.Pdf.PdfPage"/>
         /// to be redacted
         /// </param>
-        /// <exception cref="System.IO.IOException">
-        /// an
-        /// <see cref="System.IO.IOException"/>
-        /// </exception>
         public virtual void CleanUp(PdfPage pdfPage) {
             IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfPage.GetDocument(), true) : new 

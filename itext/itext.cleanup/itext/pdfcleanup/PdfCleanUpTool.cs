@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-    Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -285,7 +285,6 @@ namespace iText.PdfCleanup {
         /// Cleans the document by erasing all the areas which are either provided or
         /// extracted from redaction annotations.
         /// </summary>
-        /// <exception cref="System.IO.IOException">IOException</exception>
         public virtual void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -437,7 +436,6 @@ namespace iText.PdfCleanup {
         /// Remove the redaction annotations
         /// This method is called after the annotations are processed.
         /// </summary>
-        /// <exception cref="System.IO.IOException"/>
         private void RemoveRedactAnnots() {
             foreach (PdfRedactAnnotation annotation in redactAnnotations.Keys) {
                 PdfPage page = annotation.GetPage();
@@ -483,7 +481,6 @@ namespace iText.PdfCleanup {
             }
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void DrawOverlayText(PdfCanvas canvas, String overlayText, Rectangle annotRect, PdfBoolean repeat, 
             PdfString defaultAppearance, int justification) {
             IDictionary<String, IList> parsedDA;
@@ -556,7 +553,6 @@ namespace iText.PdfCleanup {
             }
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private IDictionary<String, IList> ParseDAParam(PdfString DA) {
             IDictionary<String, IList> commandArguments = new Dictionary<String, IList>();
             PdfTokenizer tokeniser = new PdfTokenizer(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource
@@ -565,11 +561,11 @@ namespace iText.PdfCleanup {
             while (tokeniser.NextToken()) {
                 if (tokeniser.GetTokenType() == PdfTokenizer.TokenType.Other) {
                     String key = tokeniser.GetStringValue();
-                    if (key.Equals("RG") || key.Equals("G") || key.Equals("K")) {
+                    if ("RG".Equals(key) || "G".Equals(key) || "K".Equals(key)) {
                         key = "StrokeColor";
                     }
                     else {
-                        if (key.Equals("rg") || key.Equals("g") || key.Equals("k")) {
+                        if ("rg".Equals(key) || "g".Equals(key) || "k".Equals(key)) {
                             key = "FillColor";
                         }
                     }

@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -62,8 +62,6 @@ namespace iText.PdfCleanup.Text {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         [LogMessage(iText.IO.LogMessageConstant.FONT_DICTIONARY_WITH_NO_FONT_DESCRIPTOR)]
         [LogMessage(iText.IO.LogMessageConstant.FONT_DICTIONARY_WITH_NO_WIDTHS)]
@@ -75,7 +73,6 @@ namespace iText.PdfCleanup.Text {
             CompareByContent(cmp, output, outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
@@ -84,8 +81,6 @@ namespace iText.PdfCleanup.Text {
             pdfDocument.Close();
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private void CompareByContent(String cmp, String output, String targetDir) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir);

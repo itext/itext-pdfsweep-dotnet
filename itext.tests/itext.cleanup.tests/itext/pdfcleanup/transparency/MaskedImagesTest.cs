@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,43 +63,31 @@ namespace iText.PdfCleanup.Transparency {
             CreateOrClearDestinationFolder(outputPath);
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyImageMask() {
             RunTest("imageIsMask");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyMask() {
             RunTest("imageMask");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMask() {
             RunTest("imageSMask");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMaskAIS() {
             RunTest("imageSMaskAIS");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyColorKeyMaskArray() {
             RunTest("imageColorKeyMaskArray");
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyTextOnTransparentField() {
             String fileName = "textOnTransparentField";
@@ -118,8 +106,6 @@ namespace iText.PdfCleanup.Transparency {
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(output, cmp, outputPath));
         }
 
-        /// <exception cref="System.IO.IOException"/>
-        /// <exception cref="System.Exception"/>
         private static void RunTest(String fileName) {
             String input = inputPath + fileName + ".pdf";
             String output = outputPath + fileName + "_cleaned.pdf";

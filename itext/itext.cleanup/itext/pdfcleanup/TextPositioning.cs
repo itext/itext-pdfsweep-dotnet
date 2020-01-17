@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ namespace iText.PdfCleanup {
 
         private float? removedTextShift;
 
+        // shift in text space units, which is the result of the removed text
         /// <summary>
         /// Not null only when first pos operator encountered; when concatenation of operators is performed
         /// this field is cleaned and positioning info is stored in either tdShift or tmShift fields.
@@ -64,7 +65,6 @@ namespace iText.PdfCleanup {
 
         private float? currLeading;
 
-        // shift in text space units, which is the result of the removed text
         /// <summary>Get the current leading</summary>
         internal virtual float GetCurrLeading() {
             if (currLeading != null) {

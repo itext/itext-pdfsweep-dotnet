@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -41,9 +41,10 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using iText.Kernel.Geom;
+using iText.Test;
 
 namespace iText.PdfCleanup {
-    public class PdfCleanUpFilterUnitTest {
+    public class PdfCleanUpFilterUnitTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void CheckIfRectanglesIntersect_completelyCoveredBasic() {
             Point[] intersectSubject = new Point[] { new Point(70, 70), new Point(80, 70), new Point(80, 80), new Point

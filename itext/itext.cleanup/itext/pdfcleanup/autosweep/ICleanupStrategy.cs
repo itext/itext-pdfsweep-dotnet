@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -63,8 +63,14 @@ namespace iText.PdfCleanup.Autosweep {
         /// <c>PdfAutoSweep</c>
         /// will use the same strategy for all pages,
         /// and expects to receive only the rectangles from the last page as output.
-        /// Hence the reset method.
         /// </summary>
+        /// <remarks>
+        /// ICleanupStrategy objects have to be reset at times
+        /// <c>PdfAutoSweep</c>
+        /// will use the same strategy for all pages,
+        /// and expects to receive only the rectangles from the last page as output.
+        /// Hence the reset method.
+        /// </remarks>
         /// <returns>a clone of this Object</returns>
         ICleanupStrategy Reset();
     }

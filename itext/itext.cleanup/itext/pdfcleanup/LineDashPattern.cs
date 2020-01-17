@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -86,7 +86,7 @@ namespace iText.PdfCleanup {
         /// <summary>Getter for the dash array.</summary>
         /// <remarks>
         /// Getter for the dash array.
-        /// <p>
+        /// <para />
         /// The dash array’s elements is number that specify the lengths of
         /// alternating dashes and gaps; the numbers are nonnegative. The
         /// elements are expressed in user space units.
@@ -109,7 +109,7 @@ namespace iText.PdfCleanup {
         /// <summary>Getter for the dash phase.</summary>
         /// <remarks>
         /// Getter for the dash phase.
-        /// <p>
+        /// <para />
         /// The dash phase shall specify the distance into the dash pattern at which
         /// to start the dash. The elements are expressed in user space units.
         /// </remarks>

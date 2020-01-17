@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2019 iText Group NV
+Copyright (c) 1998-2020 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -94,11 +94,11 @@ namespace iText.PdfCleanup {
         private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
             ("Td", "TD", "Tm", "T*", "TL"));
 
+        // TL actually is not a text positioning operator, but we need to process it with them
+        // these operators are processed via PdfCanvasProcessor graphics state and event listener
         private static readonly ICollection<String> ignoredOperators = new HashSet<String>();
 
         static PdfCleanUpProcessor() {
-            // TL actually is not a text positioning operator, but we need to process it with them
-            // these operators are processed via PdfCanvasProcessor graphics state and event listener
             PATH_PAINTING_OPERATORS.AddAll(STROKE_OPERATORS);
             PATH_PAINTING_OPERATORS.AddAll(NW_FILL_OPERATORS);
             PATH_PAINTING_OPERATORS.AddAll(EO_FILL_OPERATORS);
@@ -124,28 +124,33 @@ namespace iText.PdfCleanup {
         /// In
         /// <c>notAppliedGsParams</c>
         /// field not written graphics state params are stored.
+        /// </summary>
+        /// <remarks>
+        /// In
+        /// <c>notAppliedGsParams</c>
+        /// field not written graphics state params are stored.
         /// Stack represents gs params on different levels of the q/Q nesting (see
         /// <see cref="NotAppliedGsParams"/>
         /// ).
         /// On "q" operator new
         /// <c>NotAppliedGsParams</c>
         /// is pushed to the stack and on "Q" it is popped.
-        /// <p>
+        /// <para />
         /// When operators are applied, they are written from the outer to inner nesting level, separated by "q".
         /// After being written the stack is cleared.
-        /// <p>
+        /// <para />
         /// Graphics state parameters are applied in two ways:
-        /// <ul>
-        /// <li>
+        /// <list type="bullet">
+        /// <item><description>
         /// first - right before writing text content, text state in current gs is compare to the text state of the text
         /// render info gs and difference is applied to current gs;
-        /// </li>
-        /// <li>
+        /// </description></item>
+        /// <item><description>
         /// second - through list of the not applied gs params. Right before writing some content, this list is checked,
         /// and if something affecting content is stored in this list it will be applied.
-        /// </li>
-        /// </ul>
-        /// </summary>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
         private LinkedList<PdfCleanUpProcessor.NotAppliedGsParams> notAppliedGsParams;
 
         private LinkedList<CanvasTag> notWrittenTags;
@@ -308,7 +313,7 @@ namespace iText.PdfCleanup {
             if (annotationType.Equals(PdfName.Watermark)) {
                 // TODO /FixedPrint entry effect is not fully investigated: DEVSIX-2471
                 ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Warn(iText.IO.LogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
+                logger.Warn(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
             }
             PdfArray rectAsArray = annotation.GetRectangle();
             Rectangle rect = null;
@@ -699,7 +704,7 @@ namespace iText.PdfCleanup {
                     if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
                         if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
                             ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                            logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                            logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                         }
                         else {
                             filteredImageData.MakeMask();
@@ -708,6 +713,18 @@ namespace iText.PdfCleanup {
                     if (filteredImageData != null) {
                         imageToWrite = new PdfImageXObject(filteredImageData);
                         GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
+                        // While having been processed with java libraries, only the number of components mattered.
+                        // However now we should put the correct color space dictionary as an image's resource,
+                        // because it'd be have been considered by pdf browsers before rendering it.
+                        // Additional checks required as if an image format has been changed,
+                        // then the old colorspace may produce an error with the new image data.
+                        if (AreColorSpacesDifferent(originalImage, imageToWrite) && filter.IsOriginalCsCompatible(originalImage, imageToWrite
+                            )) {
+                            PdfObject originalCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
+                            if (originalCS != null) {
+                                imageToWrite.Put(PdfName.ColorSpace, originalCS);
+                            }
+                        }
                         if (ctmForMasksFiltering != null && !filteredImageData.IsMask()) {
                             FilterImageMask(originalImage, PdfName.SMask, ctmForMasksFiltering, imageToWrite);
                             FilterImageMask(originalImage, PdfName.Mask, ctmForMasksFiltering, imageToWrite);
@@ -742,7 +759,7 @@ namespace iText.PdfCleanup {
             PdfImageXObject maskImageXObject = new PdfImageXObject(maskStream);
             if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(maskImageXObject)) {
                 ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Error(iText.IO.LogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                 return;
             }
             FilteredImagesCache.FilteredImageKey k = filter.CreateFilteredImageKey(maskImageXObject, ctmForMasksFiltering
@@ -999,25 +1016,61 @@ namespace iText.PdfCleanup {
             }
         }
 
+        internal static bool AreColorSpacesDifferent(PdfImageXObject originalImage, PdfImageXObject clearedImage) {
+            PdfObject originalImageCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
+            PdfObject clearedImageCS = clearedImage.GetPdfObject().Get(PdfName.ColorSpace);
+            if (originalImageCS == clearedImageCS) {
+                return false;
+            }
+            else {
+                if (originalImageCS == null || clearedImageCS == null) {
+                    return true;
+                }
+                else {
+                    if (originalImageCS.Equals(clearedImageCS)) {
+                        return false;
+                    }
+                    else {
+                        if (originalImageCS.IsArray() && clearedImageCS.IsArray()) {
+                            PdfArray originalCSArray = (PdfArray)originalImageCS;
+                            PdfArray clearedCSArray = (PdfArray)clearedImageCS;
+                            if (originalCSArray.Size() != clearedCSArray.Size()) {
+                                return true;
+                            }
+                            for (int i = 0; i < originalCSArray.Size(); ++i) {
+                                PdfObject objectFromOriginal = originalCSArray.Get(i);
+                                PdfObject objectFromCleared = clearedCSArray.Get(i);
+                                if (!objectFromOriginal.Equals(objectFromCleared)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
         /// <summary>Single instance of this class represents not applied graphics state params of the single q/Q nesting level.
         ///     </summary>
         /// <remarks>
         /// Single instance of this class represents not applied graphics state params of the single q/Q nesting level.
         /// For example:
-        /// <p>
+        /// <para />
         /// 0 g
         /// 1 0 0 1 25 50 cm
-        /// <p>
+        /// <para />
         /// q
-        /// <p>
+        /// <para />
         /// 5 w
         /// /Gs1 gs
         /// 13 g
-        /// <p>
+        /// <para />
         /// Q
-        /// <p>
+        /// <para />
         /// 1 0 0 RG
-        /// <p>
+        /// <para />
         /// Operators "0 g", "1 0 0 1 25 50 cm" and "1 0 0 RG" belong to the outer q/Q nesting level;
         /// Operators "5 w", "/Gs1 gs", "13 g" belong to the inner q/Q nesting level.
         /// Operators of every level of the q/Q nesting are stored in different instances of this class.
@@ -1027,13 +1080,13 @@ namespace iText.PdfCleanup {
 
             internal IList<IList<PdfObject>> ctms = new List<IList<PdfObject>>();
 
+            // list of operator statements
             internal Color fillColor;
 
             internal Color strokeColor;
 
             internal IDictionary<String, IList<PdfObject>> lineStyleOperators = new LinkedDictionary<String, IList<PdfObject
                 >>();
-            // list of operator statements
             // operator and it's operands
         }
     }
