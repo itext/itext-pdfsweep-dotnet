@@ -113,6 +113,21 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "diff_redactPdfWithNoninvertibleMatrix_");
         }
 
+        [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("DEVSIX-4047")]
+        public virtual void LineArtsDrawingOnCanvasTest() {
+            String input = inputPath + "lineArtsDrawingOnCanvas.pdf";
+            String output = outputPath + "lineArtsDrawingOnCanvas.pdf";
+            String cmp = inputPath + "cmp_lineArtsDrawingOnCanvas.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy("(iphone)|(iPhone)"));
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.CleanUp(pdf);
+            pdf.Close();
+            CompareByContent(cmp, output, outputPath, "diff_lineArtsDrawingOnCanvasTest_");
+        }
+
         private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
