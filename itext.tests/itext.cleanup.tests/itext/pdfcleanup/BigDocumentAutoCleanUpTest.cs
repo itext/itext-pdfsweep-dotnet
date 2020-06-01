@@ -49,6 +49,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Utils;
 using iText.PdfCleanup.Autosweep;
+using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup {
@@ -60,7 +61,7 @@ namespace iText.PdfCleanup {
 
         [NUnit.Framework.OneTimeSetUp]
         public static void Before() {
-            ITextTest.CreateOrClearDestinationFolder(outputPath);
+            CreateOrClearDestinationFolder(outputPath);
         }
 
         [NUnit.Framework.Test]
@@ -80,7 +81,25 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareResults(cmp, output, outputPath, "diff_redactTonySoprano_");
+            CompareResults(cmp, output, outputPath, "4");
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CleanUpAreaCalculationPrecisionTest() {
+            String input = inputPath + "cleanUpAreaCalculationPrecision.pdf";
+            String output = outputPath + "cleanUpAreaCalculationPrecision.pdf";
+            String cmp = inputPath + "cmp_cleanUpAreaCalculationPrecision.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new CustomLocationExtractionStrategy("(iphone)|(iPhone)"));
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.CleanUp(pdf);
+            pdf.Close();
+            // compare
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(output, cmp, outputPath);
+            NUnit.Framework.Assert.IsNull(errorMessage);
         }
 
         [NUnit.Framework.Test]
@@ -96,7 +115,17 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualMatchColor_");
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "4");
+            // TODO DEVSIX-4047 Switch to compareByContent() when the ticket will be resolved
+            String compareByContentResult = cmpTool.CompareVisually(output, cmp, outputPath, "diff_redactIPhoneUserManualMatchColor_"
+                , cmpTool.GetIgnoredImagesAreas());
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
+                NUnit.Framework.Assert.Fail(errorMessage);
+            }
         }
 
         [NUnit.Framework.Test]
@@ -112,7 +141,17 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManual_");
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "4");
+            // TODO DEVSIX-4047 Switch to compareByContent() when the ticket will be resolved
+            String compareByContentResult = cmpTool.CompareVisually(output, cmp, outputPath, "diff_redactIPhoneUserManual_"
+                , cmpTool.GetIgnoredImagesAreas());
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
+                NUnit.Framework.Assert.Fail(errorMessage);
+            }
         }
 
         [NUnit.Framework.Test]
@@ -127,13 +166,17 @@ namespace iText.PdfCleanup {
             PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
             autoSweep.CleanUp(pdf);
             pdf.Close();
-            CompareResults(cmp, output, outputPath, "diff_redactIPhoneUserManualColored_");
+            CompareResults(cmp, output, outputPath, "4");
         }
 
-        private void CompareResults(String cmp, String output, String targetDir, String diffPrefix) {
-            CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareVisually(output, cmp, targetDir, diffPrefix + "_");
-            if (errorMessage != null) {
+        private void CompareResults(String cmp, String output, String targetDir, String fuzzValue) {
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, targetDir, fuzzValue);
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, targetDir);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }
         }

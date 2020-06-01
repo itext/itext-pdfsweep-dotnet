@@ -360,7 +360,16 @@ namespace iText.PdfCleanup {
             if (pdfDocument.IsTagged()) {
                 canvas.OpenTag(new CanvasArtifact());
             }
-            canvas.SaveState().SetFillColor(location.GetCleanUpColor()).Rectangle(location.GetRegion()).Fill().RestoreState
+            
+            // To avoid the float calculation precision differences in Java and .Net,
+            // the values of rectangles to be drawn are rounded
+            float x = (float)(Math.Floor(location.GetRegion().GetX() * 2.0) / 2.0);
+            float y = (float)(Math.Floor(location.GetRegion().GetY() * 2.0) / 2.0);
+            float width = (float)(Math.Floor(location.GetRegion().GetWidth() * 2.0) / 2.0);
+            float height = (float)(Math.Floor(location.GetRegion().GetHeight() * 2.0) / 2.0);
+            Rectangle rect = new Rectangle(x, y, width, height);
+            
+            canvas.SaveState().SetFillColor(location.GetCleanUpColor()).Rectangle(rect).Fill().RestoreState
                 ();
             if (pdfDocument.IsTagged()) {
                 canvas.CloseTag();

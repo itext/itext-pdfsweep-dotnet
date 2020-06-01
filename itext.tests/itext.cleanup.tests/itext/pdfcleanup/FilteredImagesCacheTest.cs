@@ -45,7 +45,7 @@ using System.Collections.Generic;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Xobject;
-using iText.Kernel.Utils;
+using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup {
@@ -72,7 +72,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -103,7 +103,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 5);
         }
 
@@ -119,7 +119,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 2);
         }
 
@@ -145,7 +145,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new PdfCleanUpLocation(i + 2, region2));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -165,7 +165,7 @@ namespace iText.PdfCleanup {
             cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(3, new Rectangle(150, 300, 300, 150)));
             cleanUpTool.CleanUp();
             pdfDocument.Close();
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -185,7 +185,7 @@ namespace iText.PdfCleanup {
             cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(3, new Rectangle(150, 300, 300, 150)));
             cleanUpTool.CleanUp();
             pdfDocument.Close();
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -210,10 +210,14 @@ namespace iText.PdfCleanup {
             NUnit.Framework.Assert.AreEqual(n, xObjCount);
         }
 
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
-            CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
-            if (errorMessage != null) {
+        private void CompareByContent(String cmp, String output, String targetDir, String fuzzValue) {
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, targetDir, fuzzValue);
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, targetDir);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }
         }

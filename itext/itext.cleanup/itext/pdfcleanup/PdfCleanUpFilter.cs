@@ -189,6 +189,9 @@ namespace iText.PdfCleanup {
             Point[] textRect = GetTextRectangle(renderInfo);
             foreach (Rectangle region in regions) {
                 Point[] redactRect = GetRectangleVertices(region);
+                
+                // Text rectangle might be rotated, hence we are using precise polygon intersection checker and not
+                // just intersecting two rectangles that are parallel to the x and y coordinate vectors
                 if (CheckIfRectanglesIntersect(textRect, redactRect)) {
                     return false;
                 }
@@ -359,7 +362,8 @@ namespace iText.PdfCleanup {
                 // working with paths is considered to be a bit faster in terms of performance.
                 Paths paths = new Paths();
                 clipper.Execute(ClipType.INTERSECTION, paths, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-                return !paths.IsEmpty();
+                return !CheckIfIntersectionRectangleDegenerate(Clipper.GetBounds(paths), false)
+                       && !paths.IsEmpty();
             } else {
                 int rect1Size = rect1.Length;
                 intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
@@ -378,8 +382,29 @@ namespace iText.PdfCleanup {
 
                 PolyTree polyTree = new PolyTree();
                 clipper.Execute(ClipType.INTERSECTION, polyTree, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-                return !Clipper.PolyTreeToPaths(polyTree).IsEmpty();
+                Paths paths = Clipper.PolyTreeToPaths(polyTree);
+                return !CheckIfIntersectionRectangleDegenerate(Clipper.GetBounds(paths), true)
+                       && !paths.IsEmpty();
             }
+        }
+
+        /// <summary>
+        /// Checks if the input intersection rectangle is degenerate.
+        /// </summary>
+        /// <remarks>
+        /// In case of intersection subject is degenerate (isIntersectSubjectDegenerate
+        /// is true) and it is included into intersecting rectangle, this method returns false,
+        /// despite of the intersection rectangle is degenerate.
+        /// </remarks>
+        /// <param name="rect">intersection rectangle</param>
+        /// <param name="isIntersectSubjectDegenerate">Value, specifying if the intersection subject
+        /// is degenerate.</param>
+        /// <returns>True - if the intersection rectangle is degenerate.</returns>
+        private static bool CheckIfIntersectionRectangleDegenerate(IntRect rect,
+            bool isIntersectSubjectDegenerate) {
+            float width = (float) (Math.Abs(rect.left - rect.right) / ClipperBridge.floatMultiplier);
+            float height = (float) (Math.Abs(rect.top - rect.bottom) / ClipperBridge.floatMultiplier);
+            return isIntersectSubjectDegenerate ? (width < EPS && height < EPS) : (width < EPS || height < EPS);
         }
 
         private static bool IsPointOnALineSegment(Point currPoint, Point linePoint1, Point linePoint2, bool isBetweenLinePoints)
@@ -640,14 +665,17 @@ namespace iText.PdfCleanup {
         }
 
         private static int[] GetImageRectToClean(Rectangle rect, int imgWidth, int imgHeight) {
-            int scaledBottomY = (int) System.Math.Ceiling(rect.GetBottom() * imgHeight);
-            int scaledTopY = (int) Math.Floor(rect.GetTop() * imgHeight);
-            
-            int x = (int) System.Math.Ceiling(rect.GetLeft() * imgWidth);
+            double bottom = (double)rect.GetBottom() * imgHeight;
+            int scaledBottomY = (int) Math.Ceiling(bottom - EPS);
+            double top = (double)rect.GetTop() * imgHeight;
+            int scaledTopY = (int) Math.Floor(top + EPS);
+
+            double left = (double)rect.GetLeft() * imgWidth;
+            int x = (int) Math.Ceiling(left - EPS);
             int y = imgHeight - scaledTopY;
-            int w = (int) Math.Floor(rect.GetRight() * imgWidth) - x;
+            double right = (double)rect.GetRight() * imgWidth;
+            int w = (int) Math.Floor(right + EPS) - x;
             int h = scaledTopY - scaledBottomY;
-            
             return new int[] {x, y, w, h};
         }
 

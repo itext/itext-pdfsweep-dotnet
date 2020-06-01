@@ -49,6 +49,7 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Utils;
+using iText.PdfCleanup.Util;
 using iText.Test;
 using iText.Test.Attributes;
 
@@ -129,7 +130,15 @@ namespace iText.PdfCleanup {
             String output = outputPath + "BigImage-jpg.pdf";
             String cmp = inputPath + "cmp_BigImage-jpg.pdf";
             CleanUp(input, output, null);
-            CompareByContent(cmp, output, outputPath, "diff_05");
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "1");
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, outputPath);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
+                NUnit.Framework.Assert.Fail(errorMessage);
+            }
         }
 
         [NUnit.Framework.Test]
@@ -382,7 +391,15 @@ namespace iText.PdfCleanup {
             String cmp = inputPath + "cmp_textAndImages.pdf";
             CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(150f, 235f, 230f, 445f
                 ))));
-            CompareByContent(cmp, output, outputPath, "diff_34");
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "1.2");
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, outputPath);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
+                NUnit.Framework.Assert.Fail(errorMessage);
+            }
         }
 
         [NUnit.Framework.Test]
@@ -444,7 +461,15 @@ namespace iText.PdfCleanup {
             IList<PdfCleanUpLocation> cleanUpLocations = JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle
                 (100, 350, 100, 200), ColorConstants.ORANGE));
             CleanUp(input, output, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff_39");
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "1.2");
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, outputPath);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
+                NUnit.Framework.Assert.Fail(errorMessage);
+            }
         }
 
         [NUnit.Framework.Test]

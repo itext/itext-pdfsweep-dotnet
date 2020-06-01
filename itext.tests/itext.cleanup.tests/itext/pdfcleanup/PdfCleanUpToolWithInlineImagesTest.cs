@@ -45,11 +45,7 @@ using iText.IO;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
-using System.Collections.Generic;
-using System.Reflection;
-using System.IO;
-using Versions.Attributes;
-using iText.Kernel;
+using iText.PdfCleanup.Util;
 using iText.Test;
 using iText.Test.Attributes;
 using NUnit.Framework;
@@ -98,7 +94,12 @@ namespace iText.PdfCleanup {
             String output = outputPath + "inlineImageCleanup.pdf";
             String cmp = inputPath + "cmp_inlineImageCleanup.pdf";
             CleanUp(input, output, null);
-            CompareByContent(cmp, output, outputPath, "diff_31");
+            CleanUpImagesCompareTool compareTool = new CleanUpImagesCompareTool();
+            string errorMessage = compareTool.ExtractAndCompareImages(cmp, output, outputPath, "1");
+            errorMessage += compareTool.CompareByContent(output, cmp, outputPath);
+            if (!errorMessage.Equals("")) {
+                Assert.Fail(errorMessage);
+            }
         }
 
         private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {

@@ -49,6 +49,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Utils;
 using iText.PdfCleanup;
+using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup.Transparency {
@@ -65,27 +66,27 @@ namespace iText.PdfCleanup.Transparency {
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyImageMask() {
-            RunTest("imageIsMask");
+            RunTest("imageIsMask", "0");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyMask() {
-            RunTest("imageMask");
+            RunTest("imageMask", "1");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMask() {
-            RunTest("imageSMask");
+            RunTest("imageSMask", "1");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMaskAIS() {
-            RunTest("imageSMaskAIS");
+            RunTest("imageSMaskAIS", "1");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyColorKeyMaskArray() {
-            RunTest("imageColorKeyMaskArray");
+            RunTest("imageColorKeyMaskArray", "1");
         }
 
         [NUnit.Framework.Test]
@@ -106,7 +107,7 @@ namespace iText.PdfCleanup.Transparency {
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(output, cmp, outputPath));
         }
 
-        private static void RunTest(String fileName) {
+        private static void RunTest(String fileName, String fuzzValue) {
             String input = inputPath + fileName + ".pdf";
             String output = outputPath + fileName + "_cleaned.pdf";
             String cmp = inputPath + "cmp_" + fileName + ".pdf";
@@ -116,7 +117,15 @@ namespace iText.PdfCleanup.Transparency {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
             pdfDocument.Close();
-            NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(output, cmp, outputPath));
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, fuzzValue);
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, outputPath);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
+                NUnit.Framework.Assert.Fail(errorMessage);
+            }
         }
     }
 }

@@ -69,10 +69,20 @@ namespace iText.PdfCleanup {
             return true;
         }
 
+        public static void AddAll<T>(this Stack<T> c, Stack<T> collectionToAdd) {
+            foreach (T o in collectionToAdd) {
+                c.Push(o);
+            }
+        }
+        
         public static void AddAll<T>(this ICollection<T> c, IEnumerable<T> collectionToAdd) {
             foreach (T o in collectionToAdd) {
                 c.Add(o);
             }
+        }
+        
+        public static String JSubstring(this String str, int beginIndex, int endIndex) {
+            return str.Substring(beginIndex, endIndex - beginIndex);
         }
 
         public static T JRemoveAt<T>(this IList<T> list, int index) {
