@@ -50,6 +50,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using iText.Kernel.Geom;
+using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 
 namespace iText.PdfCleanup {
     internal static class CleanUpExtensions {
@@ -107,6 +108,15 @@ namespace iText.PdfCleanup {
             list.RemoveFirst();
 
             return value;
+        }
+        
+        public static T Next<T>(this IEnumerator<T> enumerator) {
+            enumerator.MoveNext();
+            return enumerator.Current;
+        }
+        
+        public static void Execute(this ClipperOffset clipperOffset, PolyTree solution, double delta) {
+            clipperOffset.Execute(ref solution, delta);
         }
 
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> col, TKey key) {

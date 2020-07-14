@@ -59,6 +59,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Colorspace;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
+using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpProcessor : PdfCanvasProcessor {
@@ -718,8 +719,8 @@ namespace iText.PdfCleanup {
                         // because it'd be have been considered by pdf browsers before rendering it.
                         // Additional checks required as if an image format has been changed,
                         // then the old colorspace may produce an error with the new image data.
-                        if (AreColorSpacesDifferent(originalImage, imageToWrite) && filter.IsOriginalCsCompatible(originalImage, imageToWrite
-                            )) {
+                        if (AreColorSpacesDifferent(originalImage, imageToWrite) && CleanUpCsCompareUtil.IsOriginalCsCompatible(originalImage
+                            , imageToWrite)) {
                             PdfObject originalCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
                             if (originalCS != null) {
                                 imageToWrite.Put(PdfName.ColorSpace, originalCS);
