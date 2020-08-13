@@ -21,8 +21,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Collections.Generic;
 using iText.IO.Util;
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Xobject;
 using iText.Test;
 
@@ -125,6 +128,58 @@ namespace iText.PdfCleanup {
         public virtual void AreColorSpacesDifferentForJavaNullAndPdfArrayValuesTest() {
             PdfArray pdfArray = CreatePdfArray(PdfName.Separation);
             NUnit.Framework.Assert.IsTrue(CreateAndCompareImages(null, pdfArray));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void OpenNotWrittenTagsUsualTest() {
+            LinkedList<CanvasTag> tags = new LinkedList<CanvasTag>(JavaUtil.ArraysAsList(new CanvasTag(new PdfName("tag name1"
+                )), new CanvasTag(new PdfName("tag name2")), new CanvasTag(new PdfName("tag name3"))));
+            TestOpenNotWrittenTags(tags);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void OpenNotWrittenTagsEmptyTest() {
+            TestOpenNotWrittenTags(new LinkedList<CanvasTag>());
+        }
+
+        private void TestOpenNotWrittenTags(LinkedList<CanvasTag> tags) {
+            PdfCleanUpProcessor processor = new _PdfCleanUpProcessor_161(tags, null, null);
+            foreach (CanvasTag tag in tags) {
+                processor.AddNotWrittenTag(tag);
+            }
+            processor.OpenNotWrittenTags();
+        }
+
+        private sealed class _PdfCleanUpProcessor_161 : PdfCleanUpProcessor {
+            public _PdfCleanUpProcessor_161(LinkedList<CanvasTag> tags, IList<Rectangle> baseArg1, PdfDocument baseArg2
+                )
+                : base(baseArg1, baseArg2) {
+                this.tags = tags;
+            }
+
+            internal override PdfCanvas GetCanvas() {
+                return new _PdfCanvas_164(tags, new PdfStream(), null, null);
+            }
+
+            private sealed class _PdfCanvas_164 : PdfCanvas {
+                public _PdfCanvas_164(LinkedList<CanvasTag> tags, PdfStream baseArg1, PdfResources baseArg2, PdfDocument baseArg3
+                    )
+                    : base(baseArg1, baseArg2, baseArg3) {
+                    this.tags = tags;
+                    this.tagsToCompare = tags;
+                }
+
+                internal readonly LinkedList<CanvasTag> tagsToCompare;
+
+                public override PdfCanvas OpenTag(CanvasTag tag) {
+                    NUnit.Framework.Assert.AreEqual(this.tagsToCompare.JRemoveFirst(), tag);
+                    return null;
+                }
+
+                private readonly LinkedList<CanvasTag> tags;
+            }
+
+            private readonly LinkedList<CanvasTag> tags;
         }
 
         private static PdfArray CreatePdfArray(params PdfObject[] objects) {

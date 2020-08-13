@@ -307,6 +307,28 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>Returns the last canvas without removing it.</summary>
+        /// <returns>the last canvas in canvasStack.</returns>
+        internal virtual PdfCanvas GetCanvas() {
+            return canvasStack.Peek();
+        }
+
+        /// <summary>Adds tag to the deque of not written tags.</summary>
+        /// <param name="tag">tag to be added.</param>
+        internal virtual void AddNotWrittenTag(CanvasTag tag) {
+            notWrittenTags.AddFirst(tag);
+        }
+
+        /// <summary>Opens all tags from deque of not written tags.</summary>
+        /// <remarks>Opens all tags from deque of not written tags. Should be called before some content is drawn.</remarks>
+        internal virtual void OpenNotWrittenTags() {
+            CanvasTag tag = notWrittenTags.PollLast();
+            while (tag != null) {
+                GetCanvas().OpenTag(tag);
+                tag = notWrittenTags.PollLast();
+            }
+        }
+
         private bool AnnotationIsToBeRedacted(PdfAnnotation annotation, Rectangle redactRegion) {
             // TODO(DEVSIX-1605,DEVSIX-1606,DEVSIX-1607,DEVSIX-1608,DEVSIX-1609)
             removeAnnotIfPartOverlap = true;
@@ -911,19 +933,6 @@ namespace iText.PdfCleanup {
             canvas.SaveState().SetFillColor(strokeColor);
             WritePath(strokePath);
             canvas.Fill().RestoreState();
-        }
-
-        private PdfCanvas GetCanvas() {
-            return canvasStack.Peek();
-        }
-
-        // should be called before some content is drawn
-        private void OpenNotWrittenTags() {
-            CanvasTag tag = notWrittenTags.PollLast();
-            while (tag != null) {
-                GetCanvas().OpenTag(tag);
-                tag = notWrittenTags.PollLast();
-            }
         }
 
         private void RemoveOrCloseTag() {
