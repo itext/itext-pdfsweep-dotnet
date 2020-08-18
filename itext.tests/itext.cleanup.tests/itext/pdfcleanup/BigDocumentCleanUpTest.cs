@@ -95,18 +95,21 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, outputPath, "4");
         }
 
-        private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
+        private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations
+                );
             cleaner.CleanUp();
             pdfDocument.Close();
         }
 
-        private IList<PdfCleanUpLocation> InitLocations(IList<Rectangle> rects, int pagesNum) {
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+        private IList<iText.PdfCleanup.PdfCleanUpLocation> InitLocations(IList<Rectangle> rects, int pagesNum) {
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
             for (int i = 0; i < pagesNum; ++i) {
                 for (int j = 0; j < rects.Count; ++j) {
-                    cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, rects[j]));
+                    cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, rects[j]));
                 }
             }
             return cleanUpLocations;

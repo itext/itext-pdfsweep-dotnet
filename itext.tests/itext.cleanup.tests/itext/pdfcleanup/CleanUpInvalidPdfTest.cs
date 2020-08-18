@@ -45,9 +45,11 @@ namespace iText.PdfCleanup {
             NUnit.Framework.Assert.That(() =>  {
                 String input = inputPath + "circularReferencesInResources.pdf";
                 PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(new MemoryStream()));
-                IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
-                cleanUpLocations.Add(new PdfCleanUpLocation(1, pdfDocument.GetPage(1).GetPageSize(), null));
-                new PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
+                IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                    >();
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(1, pdfDocument.GetPage(1).GetPageSize(), null
+                    ));
+                new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
                 pdfDocument.Close();
             }
             , NUnit.Framework.Throws.InstanceOf<OutOfMemoryException>())

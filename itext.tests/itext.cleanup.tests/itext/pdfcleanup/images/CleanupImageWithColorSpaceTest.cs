@@ -46,7 +46,6 @@ using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
-using iText.PdfCleanup;
 using iText.PdfCleanup.Util;
 using iText.Test;
 
@@ -67,8 +66,8 @@ namespace iText.PdfCleanup.Images {
             String input = inputPath + "imgSeparationCs.pdf";
             String output = outputPath + "imgSeparationCs.pdf";
             String cmp = inputPath + "cmp_imgSeparationCs.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 780f, 60f, 45f), 
-                ColorConstants.GREEN)));
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(60f, 
+                780f, 60f, 45f), ColorConstants.GREEN)));
             CompareByContent(cmp, output, outputPath, "9");
         }
 
@@ -78,8 +77,8 @@ namespace iText.PdfCleanup.Images {
             String input = inputPath + "imgSeparationCsJpegBaselineEncoded.pdf";
             String output = outputPath + "imgSeparationCsJpegBaselineEncoded.pdf";
             String cmp = inputPath + "cmp_imgSeparationCsJpegBaselineEncoded.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 600f, 100f, 50f)
-                , ColorConstants.GREEN)));
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(60f, 
+                600f, 100f, 50f), ColorConstants.GREEN)));
             CompareByContent(cmp, output, outputPath, "11");
         }
 
@@ -91,15 +90,16 @@ namespace iText.PdfCleanup.Images {
             String input = inputPath + "imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
             String output = outputPath + "imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
             String cmp = inputPath + "cmp_imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 600f, 100f, 50f)
-                , ColorConstants.GREEN)));
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(60f, 
+                600f, 100f, 50f), ColorConstants.GREEN)));
             CompareByContent(cmp, output, outputPath, "10");
         }
 
-        private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
+        private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
-                (pdfDocument, cleanUpLocations);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
+                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
             pdfDocument.Close();
         }

@@ -289,11 +289,11 @@ namespace iText.PdfCleanup {
                     path = LineDashPattern.ApplyDashPattern(path, lineDashPattern);
                 }
             }
-            ClipperOffset offset = new ClipperOffset(miterLimit, PdfCleanUpTool.arcTolerance * PdfCleanUpTool.floatMultiplier
-                );
+            ClipperOffset offset = new ClipperOffset(miterLimit, iText.PdfCleanup.PdfCleanUpTool.arcTolerance * iText.PdfCleanup.PdfCleanUpTool
+                .floatMultiplier);
             IList<Subpath> degenerateSubpaths = ClipperBridge.AddPath(offset, path, joinType, endType);
             PolyTree resultTree = new PolyTree();
-            offset.Execute(resultTree, lineWidth * PdfCleanUpTool.floatMultiplier / 2);
+            offset.Execute(resultTree, lineWidth * iText.PdfCleanup.PdfCleanUpTool.floatMultiplier / 2);
             Path offsetedPath = ClipperBridge.ConvertToPath(resultTree);
             if (degenerateSubpaths.Count > 0) {
                 if (endType == EndType.OPEN_ROUND) {

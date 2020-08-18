@@ -46,7 +46,6 @@ using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
-using iText.PdfCleanup;
 using iText.Test;
 using iText.Test.Attributes;
 
@@ -69,14 +68,16 @@ namespace iText.PdfCleanup.Text {
             String input = inputPath + "cleanZeroWidthTextInvalidFont.pdf";
             String output = outputPath + "cleanZeroWidthTextInvalidFont.pdf";
             String cmp = inputPath + "cmp_cleanZeroWidthTextInvalidFont.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(50, 50, 500, 500))));
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(50, 
+                50, 500, 500))));
             CompareByContent(cmp, output, outputPath);
         }
 
-        private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
+        private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
-                (pdfDocument, cleanUpLocations);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
+                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
             pdfDocument.Close();
         }

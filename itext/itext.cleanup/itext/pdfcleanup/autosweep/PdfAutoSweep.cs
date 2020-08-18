@@ -49,7 +49,6 @@ using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using iText.PdfCleanup;
 
 namespace iText.PdfCleanup.Autosweep {
     /// <summary>Class that automatically extracts all regions of interest from a given PdfDocument and redacts them.
@@ -83,7 +82,7 @@ namespace iText.PdfCleanup.Autosweep {
         /// <see cref="iText.PdfCleanup.PdfCleanUpLocation"/>
         /// objects
         /// </returns>
-        public virtual IList<PdfCleanUpLocation> GetPdfCleanUpLocations(PdfPage page) {
+        public virtual IList<iText.PdfCleanup.PdfCleanUpLocation> GetPdfCleanUpLocations(PdfPage page) {
             // get document
             PdfDocument doc = page.GetDocument();
             // create parser
@@ -91,11 +90,12 @@ namespace iText.PdfCleanup.Autosweep {
             // get page number
             int pageNr = doc.GetPageNumber(page);
             // process document
-            IList<PdfCleanUpLocation> toClean = new List<PdfCleanUpLocation>();
+            IList<iText.PdfCleanup.PdfCleanUpLocation> toClean = new List<iText.PdfCleanup.PdfCleanUpLocation>();
             parser.ProcessContent(pageNr, strategy);
             foreach (IPdfTextLocation rect in strategy.GetResultantLocations()) {
                 if (rect != null) {
-                    toClean.Add(new PdfCleanUpLocation(pageNr, rect.GetRectangle(), strategy.GetRedactionColor(rect)));
+                    toClean.Add(new iText.PdfCleanup.PdfCleanUpLocation(pageNr, rect.GetRectangle(), strategy.GetRedactionColor
+                        (rect)));
                 }
             }
             // reset strategy for next iteration
@@ -120,14 +120,15 @@ namespace iText.PdfCleanup.Autosweep {
         /// <see cref="iText.PdfCleanup.PdfCleanUpLocation"/>
         /// objects
         /// </returns>
-        public virtual IList<PdfCleanUpLocation> GetPdfCleanUpLocations(PdfDocument doc) {
+        public virtual IList<iText.PdfCleanup.PdfCleanUpLocation> GetPdfCleanUpLocations(PdfDocument doc) {
             PdfDocumentContentParser parser = new PdfDocumentContentParser(doc);
-            IList<PdfCleanUpLocation> toClean = new List<PdfCleanUpLocation>();
+            IList<iText.PdfCleanup.PdfCleanUpLocation> toClean = new List<iText.PdfCleanup.PdfCleanUpLocation>();
             for (int pageNr = 1; pageNr <= doc.GetNumberOfPages(); pageNr++) {
                 parser.ProcessContent(pageNr, strategy);
                 foreach (IPdfTextLocation rect in strategy.GetResultantLocations()) {
                     if (rect != null) {
-                        toClean.Add(new PdfCleanUpLocation(pageNr, rect.GetRectangle(), strategy.GetRedactionColor(rect)));
+                        toClean.Add(new iText.PdfCleanup.PdfCleanUpLocation(pageNr, rect.GetRectangle(), strategy.GetRedactionColor
+                            (rect)));
                     }
                 }
                 ResetStrategy();
@@ -136,11 +137,11 @@ namespace iText.PdfCleanup.Autosweep {
             return toClean;
         }
 
-        private sealed class _IComparer_137 : IComparer<PdfCleanUpLocation> {
+        private sealed class _IComparer_137 : IComparer<iText.PdfCleanup.PdfCleanUpLocation> {
             public _IComparer_137() {
             }
 
-            public int Compare(PdfCleanUpLocation o1, PdfCleanUpLocation o2) {
+            public int Compare(iText.PdfCleanup.PdfCleanUpLocation o1, iText.PdfCleanup.PdfCleanUpLocation o2) {
                 if (o1.GetPage() != o2.GetPage()) {
                     return o1.GetPage() < o2.GetPage() ? -1 : 1;
                 }
@@ -180,8 +181,8 @@ namespace iText.PdfCleanup.Autosweep {
         /// to be highlighted
         /// </param>
         public virtual void Highlight(PdfPage pdfPage) {
-            IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
-            foreach (PdfCleanUpLocation loc in cleanUpLocations) {
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
+            foreach (iText.PdfCleanup.PdfCleanUpLocation loc in cleanUpLocations) {
                 PdfCanvas canvas = new PdfCanvas(pdfPage);
                 canvas.SetColor(loc.GetCleanUpColor(), true);
                 canvas.Rectangle(loc.GetRegion());
@@ -199,9 +200,9 @@ namespace iText.PdfCleanup.Autosweep {
         /// to be redacted
         /// </param>
         public virtual void CleanUp(PdfDocument pdfDocument) {
-            IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfDocument);
-            PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
-                (pdfDocument, cleanUpLocations);
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfDocument);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
+                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
         }
 
@@ -215,9 +216,10 @@ namespace iText.PdfCleanup.Autosweep {
         /// to be redacted
         /// </param>
         public virtual void CleanUp(PdfPage pdfPage) {
-            IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
-            PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfPage.GetDocument(), true) : new 
-                PdfCleanUpTool(pdfPage.GetDocument(), cleanUpLocations);
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
+                (pdfPage.GetDocument(), true) : new iText.PdfCleanup.PdfCleanUpTool(pdfPage.GetDocument(), cleanUpLocations
+                );
             cleaner.CleanUp();
         }
 
@@ -242,11 +244,11 @@ namespace iText.PdfCleanup.Autosweep {
         /// </summary>
         /// <param name="pdfPage">the page to clean up</param>
         public virtual void TentativeCleanUp(PdfPage pdfPage) {
-            IList<PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
             // random title generation
             Random rnd = new Random(SystemUtil.GetTimeBasedIntSeed());
             ICollection<String> usedTitles = new HashSet<String>();
-            foreach (PdfCleanUpLocation loc in cleanUpLocations) {
+            foreach (iText.PdfCleanup.PdfCleanUpLocation loc in cleanUpLocations) {
                 float[] color = loc.GetCleanUpColor().GetColorValue();
                 // generate random annotation title
                 String title = "Annotation:" + rnd.Next();
