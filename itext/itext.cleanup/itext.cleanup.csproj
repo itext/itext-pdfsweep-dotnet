@@ -63,8 +63,8 @@
       <Project>{CEE5E7E1-1BF0-4BE1-9941-903262CE2F83}</Project>
       <Name>itext.io</Name>
     </ProjectReference>
-    <Reference Include="itext.io, Version=7.1.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca" Condition="!Exists('..\..\..\itextcore\itext\itext.io\itext.io.csproj')">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.13-SNAPSHOT\lib\net40\itext.io.dll</HintPath>
+    <Reference Include="itext.io, Version=7.1.14.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca" Condition="!Exists('..\..\..\itextcore\itext\itext.io\itext.io.csproj')">
+      <HintPath>$(SolutionDir)\packages\itext7.7.1.14-SNAPSHOT\lib\net40\itext.io.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj')">
       <Project>{4E7819E8-7555-4E2E-9A01-D8718A2CFDDA}</Project>
@@ -73,15 +73,15 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942" Condition="!Exists('..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj')">
       <HintPath>$(SolutionDir)\packages\Portable.BouncyCastle.1.8.5\lib\net40\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="itext.kernel, Version=7.1.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca" Condition="!Exists('..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj')">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.13-SNAPSHOT\lib\net40\itext.kernel.dll</HintPath>
+    <Reference Include="itext.kernel, Version=7.1.14.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca" Condition="!Exists('..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj')">
+      <HintPath>$(SolutionDir)\packages\itext7.7.1.14-SNAPSHOT\lib\net40\itext.kernel.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\..\..\itextcore\itext\itext.layout\itext.layout.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')">
       <Project>{42173642-DB52-44D3-9883-3E34C65C53BC}</Project>
       <Name>itext.layout</Name>
     </ProjectReference>
-    <Reference Include="itext.layout, Version=7.1.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca" Condition="!Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')">
-      <HintPath>$(SolutionDir)\packages\itext7.7.1.13-SNAPSHOT\lib\net40\itext.layout.dll</HintPath>
+    <Reference Include="itext.layout, Version=7.1.14.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca" Condition="!Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')">
+      <HintPath>$(SolutionDir)\packages\itext7.7.1.14-SNAPSHOT\lib\net40\itext.layout.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
