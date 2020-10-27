@@ -43,8 +43,8 @@ address: sales@itextpdf.com
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
+using System.IO;
 using System.Text;
 using iText.IO.Source;
 using iText.IO.Util;
@@ -149,38 +149,7 @@ namespace iText.PdfCleanup {
         /// inside the given document.
         /// </param>
         public PdfCleanUpTool(PdfDocument pdfDocument, bool cleanRedactAnnotations) {
-
-            try 
-            {
-                String licenseKeyClassName = "iText.License.LicenseKey, itext.licensekey";
-                String licenseKeyProductClassName = "iText.License.LicenseKeyProduct, itext.licensekey";
-                String licenseKeyFeatureClassName = "iText.License.LicenseKeyProductFeature, itext.licensekey";
-                String checkLicenseKeyMethodName = "ScheduledCheck";
-                Type licenseKeyClass = GetClass(licenseKeyClassName);
-                if ( licenseKeyClass != null ) 
-                {                
-                    Type licenseKeyProductClass = GetClass(licenseKeyProductClassName);
-                    Type licenseKeyProductFeatureClass = GetClass(licenseKeyFeatureClassName);
-                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
-                    object[] objects = new object[]
-                    {
-                        PdfCleanupProductInfo.PRODUCT_NAME,
-                        PdfCleanupProductInfo.MAJOR_VERSION,
-                        PdfCleanupProductInfo.MINOR_VERSION,
-                        array
-                    };
-                    Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
-                    MethodInfo m = licenseKeyClass.GetMethod(checkLicenseKeyMethodName);
-                    m.Invoke(System.Activator.CreateInstance(licenseKeyClass), new object[] {productObject});
-                }   
-            } 
-            catch ( Exception e ) 
-            {
-                if ( !Kernel.Version.IsAGPLVersion() )
-                {
-                    throw;
-                }
-            }
+            ReflectionUtils.ScheduledLicenseCheck();
             if (pdfDocument.GetReader() == null || pdfDocument.GetWriter() == null) {
                 throw new PdfException(PdfException.PdfDocumentMustBeOpenedInStampingMode);
             }
