@@ -41,6 +41,8 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
+using System.Collections;
+using System.IO;
 using iText.Kernel.Colors;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
@@ -63,8 +65,8 @@ namespace iText.PdfCleanup {
         [NUnit.Framework.Test]
         public virtual void RedactLipsum() {
             String input = inputPath + "Lipsum.pdf";
-            String output = outputPath + "redactLipsum.pdf";
-            String cmp = inputPath + "cmp_redactLipsum.pdf";
+            String output = outputPath + "cleanUpDocument.pdf";
+            String cmp = inputPath + "cmp_cleanUpDocument.pdf";
             CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
             strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
             PdfWriter writer = new PdfWriter(output);
@@ -75,7 +77,72 @@ namespace iText.PdfCleanup {
             autoSweep.CleanUp(pdf);
             pdf.Close();
             // compare
-            CompareByContent(cmp, output, outputPath, "diff_redactLipsum_");
+            CompareByContent(cmp, output, outputPath, "diff_cleanUpDocument_");
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CleanUpPageTest() {
+            String input = inputPath + "Lipsum.pdf";
+            String output = outputPath + "cleanUpPage.pdf";
+            String cmp = inputPath + "cmp_cleanUpPage.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
+            PdfWriter writer = new PdfWriter(output);
+            writer.SetCompressionLevel(0);
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), writer);
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.CleanUp(pdf.GetPage(1));
+            pdf.Close();
+            // compare
+            CompareByContent(cmp, output, outputPath, "diff_cleanUpPage_");
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void TentativeCleanUpTest() {
+            String input = inputPath + "Lipsum.pdf";
+            String output = outputPath + "tentativeCleanUp.pdf";
+            String cmp = inputPath + "cmp_tentativeCleanUp.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output).SetCompressionLevel(0));
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.TentativeCleanUp(pdf);
+            pdf.Close();
+            // compare
+            CompareByContent(cmp, output, outputPath, "diff_tentativeCleanUp_");
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void GetPdfCleanUpLocationsTest() {
+            String input = inputPath + "Lipsum.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor"));
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(new MemoryStream()));
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            IList cleanUpLocations = (IList)autoSweep.GetPdfCleanUpLocations(pdf.GetPage(1));
+            pdf.Close();
+            // compare
+            NUnit.Framework.Assert.AreEqual(2, cleanUpLocations.Count);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void HighlightTest() {
+            String input = inputPath + "Lipsum.pdf";
+            String output = outputPath + "highlightTest.pdf";
+            String cmp = inputPath + "cmp_highlightTest.pdf";
+            CompositeCleanupStrategy strategy = new CompositeCleanupStrategy();
+            strategy.Add(new RegexBasedCleanupStrategy("(D|d)olor").SetRedactionColor(ColorConstants.GREEN));
+            PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output).SetCompressionLevel(CompressionConstants
+                .NO_COMPRESSION));
+            // sweep
+            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
+            autoSweep.Highlight(pdf);
+            pdf.Close();
+            // compare
+            CompareByContent(cmp, output, outputPath, "diff_highlightTest_");
         }
 
         [NUnit.Framework.Test]

@@ -42,6 +42,7 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using iText.IO.Util;
 using iText.Kernel;
 using iText.Kernel.Colors;
@@ -566,6 +567,36 @@ namespace iText.PdfCleanup {
             pdfDoc.Close();
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareVisually(outputPath + filename, inputPath + "cmp_" 
                 + filename, outputPath, "diff_"));
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void CleanUpAnnotationSetterTest() {
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputPath + "fontCleanup.pdf"), new PdfWriter(new MemoryStream
+                ()));
+            iText.PdfCleanup.PdfCleanUpTool cleanUpTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDoc);
+            NUnit.Framework.Assert.IsTrue(cleanUpTool.IsProcessAnnotations());
+            cleanUpTool.SetProcessAnnotations(false);
+            NUnit.Framework.Assert.IsFalse(cleanUpTool.IsProcessAnnotations());
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void DocumentInNonStampingModeTest() {
+            NUnit.Framework.Assert.That(() =>  {
+                PdfDocument pdfDocument = new PdfDocument(new PdfReader(inputPath + "fontCleanup.pdf"));
+                new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
+            }
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.PdfDocumentMustBeOpenedInStampingMode))
+;
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void DocumentWithoutReaderTest() {
+            NUnit.Framework.Assert.That(() =>  {
+                PdfDocument pdfDocument = new PdfDocument(new PdfWriter(new MemoryStream()));
+                new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
+            }
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.PdfDocumentMustBeOpenedInStampingMode))
+;
         }
 
         [NUnit.Framework.Test]
