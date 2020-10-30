@@ -59,6 +59,8 @@ using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
 using iText.PdfCleanup.Events;
+using iText.PdfCleanup.Exceptions;
+using Versions.Attributes;
 
 namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
@@ -174,7 +176,7 @@ namespace iText.PdfCleanup {
         public PdfCleanUpTool(PdfDocument pdfDocument, bool cleanRedactAnnotations) {
             ReflectionUtils.ScheduledLicenseCheck();
             if (pdfDocument.GetReader() == null || pdfDocument.GetWriter() == null) {
-                throw new PdfException(PdfException.PdfDocumentMustBeOpenedInStampingMode);
+                throw new PdfException(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE);
             }
             this.pdfDocument = pdfDocument;
             this.pdfCleanUpLocations = new Dictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>>();
@@ -431,7 +433,7 @@ namespace iText.PdfCleanup {
                 parsedDA = ParseDAParam(defaultAppearance);
             }
             catch (NullReferenceException) {
-                throw new PdfException(PdfException.DefaultAppearanceNotFound);
+                throw new PdfException(CleanupExceptionMessageConstant.DEFAULT_APPEARANCE_NOT_FOUND);
             }
             PdfFont font;
             float fontSize = 12;

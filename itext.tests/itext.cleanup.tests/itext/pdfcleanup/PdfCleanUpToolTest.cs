@@ -46,10 +46,12 @@ using System.IO;
 using iText.IO.Util;
 using iText.Kernel;
 using iText.Kernel.Colors;
+using iText.Kernel.Exceptions;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Utils;
+using iText.PdfCleanup.Exceptions;
 using iText.PdfCleanup.Util;
 using iText.Test;
 using iText.Test.Attributes;
@@ -554,7 +556,7 @@ namespace iText.PdfCleanup {
                 new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, true).CleanUp();
                 pdfDocument.Close();
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.DefaultAppearanceNotFound))
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(CleanupExceptionMessageConstant.DEFAULT_APPEARANCE_NOT_FOUND))
 ;
         }
 
@@ -585,7 +587,7 @@ namespace iText.PdfCleanup {
                 PdfDocument pdfDocument = new PdfDocument(new PdfReader(inputPath + "fontCleanup.pdf"));
                 new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.PdfDocumentMustBeOpenedInStampingMode))
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE))
 ;
         }
 
@@ -595,7 +597,7 @@ namespace iText.PdfCleanup {
                 PdfDocument pdfDocument = new PdfDocument(new PdfWriter(new MemoryStream()));
                 new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
             }
-            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(PdfException.PdfDocumentMustBeOpenedInStampingMode))
+            , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE))
 ;
         }
 

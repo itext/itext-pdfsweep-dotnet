@@ -54,6 +54,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Xobject;
 using iText.Kernel.Utils;
 using iText.Kernel.Utils.Objectpathitems;
+using iText.PdfCleanup.Exceptions;
 using iText.Test;
 
 namespace iText.PdfCleanup.Util {
@@ -321,7 +322,7 @@ namespace iText.PdfCleanup.Util {
                         t = t.CreateInverse();
                     }
                     catch (NoninvertibleTransformException e) {
-                        throw new PdfException(PdfException.NoninvertibleMatrixCannotBeProcessed, e);
+                        throw new PdfException(CleanupExceptionMessageConstant.NONINVERTIBLE_MATRIX_CANNOT_BE_PROCESSED, e);
                     }
                 }
                 t.Transform(points, 0, transformed, 0, points.Length);
