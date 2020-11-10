@@ -63,52 +63,57 @@ using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpProcessor : PdfCanvasProcessor {
-        private static readonly ICollection<String> TEXT_SHOWING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("TJ", "Tj", "'", "\""));
+        private static readonly ICollection<String> TEXT_SHOWING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("TJ", "Tj", "'", "\"")));
 
-        private static readonly ICollection<String> PATH_CONSTRUCTION_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("m", "l", "c", "v", "y", "h", "re"));
+        private static readonly ICollection<String> PATH_CONSTRUCTION_OPERATORS = JavaCollectionsUtil.UnmodifiableSet
+            (new HashSet<String>(JavaUtil.ArraysAsList("m", "l", "c", "v", "y", "h", "re")));
 
-        private static readonly ICollection<String> STROKE_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList("S"
-            , "s", "B", "B*", "b", "b*"));
+        private static readonly ICollection<String> STROKE_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new HashSet
+            <String>(JavaUtil.ArraysAsList("S", "s", "B", "B*", "b", "b*")));
 
-        private static readonly ICollection<String> NW_FILL_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList(
-            "f", "F", "B", "b"));
+        private static readonly ICollection<String> NW_FILL_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new HashSet
+            <String>(JavaUtil.ArraysAsList("f", "F", "B", "b")));
 
-        private static readonly ICollection<String> EO_FILL_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList(
-            "f*", "B*", "b*"));
+        private static readonly ICollection<String> EO_FILL_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new HashSet
+            <String>(JavaUtil.ArraysAsList("f*", "B*", "b*")));
 
-        private static readonly ICollection<String> PATH_PAINTING_OPERATORS = new HashSet<String>();
+        private static readonly ICollection<String> PATH_PAINTING_OPERATORS;
 
-        private static readonly ICollection<String> CLIPPING_PATH_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("W", "W*"));
+        private static readonly ICollection<String> CLIPPING_PATH_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(
+            new HashSet<String>(JavaUtil.ArraysAsList("W", "W*")));
 
-        private static readonly ICollection<String> LINE_STYLE_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("w", "J", "j", "M", "d"));
+        private static readonly ICollection<String> LINE_STYLE_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("w", "J", "j", "M", "d")));
 
-        private static readonly ICollection<String> STROKE_COLOR_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("CS", "SC", "SCN", "G", "RG", "K"));
+        private static readonly ICollection<String> STROKE_COLOR_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("CS", "SC", "SCN", "G", "RG", "K")));
 
-        private static readonly ICollection<String> FILL_COLOR_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("cs", "sc", "scn", "g", "rg", "k"));
-
-        private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("Td", "TD", "Tm", "T*", "TL"));
+        private static readonly ICollection<String> FILL_COLOR_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("cs", "sc", "scn", "g", "rg", "k")));
 
         // TL actually is not a text positioning operator, but we need to process it with them
+        private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet
+            (new HashSet<String>(JavaUtil.ArraysAsList("Td", "TD", "Tm", "T*", "TL")));
+
         // these operators are processed via PdfCanvasProcessor graphics state and event listener
-        private static readonly ICollection<String> ignoredOperators = new HashSet<String>();
+        private static readonly ICollection<String> IGNORED_OPERATORS;
 
         static PdfCleanUpProcessor() {
-            PATH_PAINTING_OPERATORS.AddAll(STROKE_OPERATORS);
-            PATH_PAINTING_OPERATORS.AddAll(NW_FILL_OPERATORS);
-            PATH_PAINTING_OPERATORS.AddAll(EO_FILL_OPERATORS);
-            PATH_PAINTING_OPERATORS.Add("n");
-            ignoredOperators.AddAll(PATH_CONSTRUCTION_OPERATORS);
-            ignoredOperators.AddAll(CLIPPING_PATH_OPERATORS);
-            ignoredOperators.AddAll(LINE_STYLE_OPERATORS);
-            ignoredOperators.AddAll(JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
-            ignoredOperators.AddAll(JavaUtil.ArraysAsList("BMC", "BDC"));
+            // HashSet is required in order to autoport correctly in .Net
+            HashSet<String> tempSet = new HashSet<String>();
+            tempSet.AddAll(STROKE_OPERATORS);
+            tempSet.AddAll(NW_FILL_OPERATORS);
+            tempSet.AddAll(EO_FILL_OPERATORS);
+            tempSet.Add("n");
+            PATH_PAINTING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(tempSet);
+            tempSet = new HashSet<String>();
+            tempSet.AddAll(PATH_CONSTRUCTION_OPERATORS);
+            tempSet.AddAll(CLIPPING_PATH_OPERATORS);
+            tempSet.AddAll(LINE_STYLE_OPERATORS);
+            tempSet.AddAll(JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
+            tempSet.AddAll(JavaUtil.ArraysAsList("BMC", "BDC"));
+            IGNORED_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(tempSet);
         }
 
         private PdfDocument document;
@@ -550,7 +555,7 @@ namespace iText.PdfCleanup {
                                                                             GetCanvas().PaintShading(shading);
                                                                         }
                                                                         else {
-                                                                            if (!ignoredOperators.Contains(@operator)) {
+                                                                            if (!IGNORED_OPERATORS.Contains(@operator)) {
                                                                                 WriteOperands(GetCanvas(), operands);
                                                                             }
                                                                         }
