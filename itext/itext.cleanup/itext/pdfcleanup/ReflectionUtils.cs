@@ -35,7 +35,6 @@ namespace iText.PdfCleanup
     {
         private static readonly String LICENSEKEY = "iText.License.LicenseKey, itext.licensekey";
         private static readonly String LICENSEKEY_PRODUCT = "iText.License.LicenseKeyProduct, itext.licensekey";
-        private static readonly String LICENSEKEY_FEATURE = "iText.License.LicenseKeyProductFeature, itext.licensekey";
         private static readonly String CHECK_LICENSEKEY_METHOD = "ScheduledCheck";
 
         private ReflectionUtils() {
@@ -50,14 +49,11 @@ namespace iText.PdfCleanup
                 if ( licenseKeyClass != null )
                 {
                     Type licenseKeyProductClass = GetClass(LICENSEKEY_PRODUCT);
-                    Type licenseKeyProductFeatureClass = GetClass(LICENSEKEY_FEATURE);
-                    Array array = Array.CreateInstance(licenseKeyProductFeatureClass, 0);
                     object[] objects = new object[]
                     {
                         PdfCleanupProductInfo.PRODUCT_NAME,
-                        PdfCleanupProductInfo.MAJOR_VERSION,
-                        PdfCleanupProductInfo.MINOR_VERSION,
-                        array
+                        PdfCleanupProductInfo.MAJOR_VERSION.ToString(),
+                        PdfCleanupProductInfo.MINOR_VERSION.ToString()
                     };
                     Object productObject = System.Activator.CreateInstance(licenseKeyProductClass, objects);
                     licenseKeyClass.GetMethod(CHECK_LICENSEKEY_METHOD)
