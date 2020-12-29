@@ -11,14 +11,14 @@
     <icon>ITSC-avatar.png</icon>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>pdfSweep is an iText 7 add-on that allows you to permanently remove or black out sensitive data from your PDF documents.</description>
-    <summary></summary>
+    <summary />
     <releaseNotes>https://itextpdf.com/itext7release</releaseNotes>
     <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itext7 itextsharp c# .net csharp pdf cleanup pdfsweep</tags>
-	<repository type="git" url="https://github.com/itext/i7j-pdfsweep.git"/>
+	<repository type="git" url="https://github.com/itext/i7j-pdfsweep.git" />
     <dependencies>
-      <dependency id="itext7" version="7.1.14-SNAPSHOT" />
+      <dependency id="itext7" version="7.1.15-SNAPSHOT" />
       <dependency id="Common.Logging" version="3.4.1" />
     </dependencies>
   </metadata>
