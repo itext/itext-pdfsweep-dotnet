@@ -46,7 +46,6 @@ using System.IO;
 using iText.IO.Util;
 using iText.Kernel;
 using iText.Kernel.Colors;
-using iText.Kernel.Exceptions;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Annot;
@@ -719,7 +718,7 @@ namespace iText.PdfCleanup {
         public virtual void CleanUpDocWithoutReaderTest() {
             NUnit.Framework.Assert.That(() =>  {
                 PdfDocument pdfDoc = new PdfDocument(new PdfWriter(new MemoryStream()));
-                PdfCleanUpTool clean = new PdfCleanUpTool(pdfDoc, true);
+                iText.PdfCleanup.PdfCleanUpTool clean = new iText.PdfCleanup.PdfCleanUpTool(pdfDoc, true);
             }
             , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE))
 ;
@@ -730,13 +729,14 @@ namespace iText.PdfCleanup {
             NUnit.Framework.Assert.That(() =>  {
                 String input = inputPath + "emptyPdf.pdf";
                 PdfDocument pdfDoc = new PdfDocument(new PdfReader(input));
-                PdfCleanUpTool clean = new PdfCleanUpTool(pdfDoc, true);
+                iText.PdfCleanup.PdfCleanUpTool clean = new iText.PdfCleanup.PdfCleanUpTool(pdfDoc, true);
             }
             , NUnit.Framework.Throws.InstanceOf<PdfException>().With.Message.EqualTo(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE))
 ;
         }
 
-        private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
+        private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
                 (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);

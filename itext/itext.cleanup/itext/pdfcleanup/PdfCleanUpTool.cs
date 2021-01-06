@@ -60,7 +60,6 @@ using iText.Layout.Layout;
 using iText.Layout.Properties;
 using iText.PdfCleanup.Events;
 using iText.PdfCleanup.Exceptions;
-using Versions.Attributes;
 
 namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
