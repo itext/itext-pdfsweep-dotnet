@@ -448,7 +448,7 @@ namespace iText.PdfCleanup {
             if (pdfDocument.IsTagged()) {
                 canvas.OpenTag(new CanvasArtifact());
             }
-            iText.Layout.Canvas modelCanvas = new iText.Layout.Canvas(canvas, pdfDocument, annotRect, false);
+            iText.Layout.Canvas modelCanvas = new iText.Layout.Canvas(canvas, annotRect, false);
             Paragraph p = new Paragraph(overlayText).SetFont(font).SetFontSize(fontSize).SetMargin(0);
             TextAlignment? textAlignment = TextAlignment.LEFT;
             switch (justification) {
