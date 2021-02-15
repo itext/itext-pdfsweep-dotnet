@@ -35,7 +35,7 @@ namespace iText.PdfCleanup.Util {
     /// Utility class providing methods to handle images and work with graphics.
     /// </summary>
     public class CleanUpImageUtil {
-        private static readonly Color? CLEANED_AREA_FILL_COLOR = Color.White;
+        private static readonly Color DEFAULT_CLEANED_AREA_FILL_COLOR = Color.White;
 
         private const String UnsupportedImageFormat = "The given image format is not supported by pdfSweep.";
 
@@ -60,7 +60,7 @@ namespace iText.PdfCleanup.Util {
                         image = Clean8bppImage(image, areasToBeCleaned);
                         break;
                     default:
-                        CleanImage(image, areasToBeCleaned);
+                        CleanImage(image, areasToBeCleaned, DEFAULT_CLEANED_AREA_FILL_COLOR);
                         break;
                 }
 
@@ -92,7 +92,10 @@ namespace iText.PdfCleanup.Util {
                 g.DrawImage(image, 0, 0);
             }
 
-            CleanImage(tempBitMap, areasToBeCleaned);
+            Color cleanColor = image.Palette.Entries.Length > 0 
+                ? image.Palette.Entries[0] 
+                : DEFAULT_CLEANED_AREA_FILL_COLOR;
+            CleanImage(tempBitMap, areasToBeCleaned, cleanColor);
 
             // The result shall be with the same bpp as the original image
             return To8bppIndexed(tempBitMap, image.Palette);
@@ -136,7 +139,7 @@ namespace iText.PdfCleanup.Util {
         /// <summary>Clean up a BufferedImage using a List of Rectangles that need to be redacted</summary>
         /// <param name="image">the image to be cleaned up</param>
         /// <param name="areasToBeCleaned">the List of Rectangles that need to be redacted out of the image</param>
-        private static void CleanImage(Image image, IList<Rectangle> areasToBeCleaned) {
+        private static void CleanImage(Image image, IList<Rectangle> areasToBeCleaned, Color cleanColor) {
             using (Graphics g = Graphics.FromImage(image)) {
                 // A rectangle in the areasToBeCleaned list is treated to be in standard [0,1]x[0,1] image space
                 // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
@@ -146,7 +149,7 @@ namespace iText.PdfCleanup.Util {
                     int imgWidth = image.Width;
                     int[] scaledRectToClean = CleanUpHelperUtil.GetImageRectToClean(rect, imgWidth, imgHeight);
 
-                    g.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR.Value), scaledRectToClean[0],
+                    g.FillRectangle(new SolidBrush(cleanColor), scaledRectToClean[0],
                         scaledRectToClean[1], scaledRectToClean[2], scaledRectToClean[3]);
                 }
             }
