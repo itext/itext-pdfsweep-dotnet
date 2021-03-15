@@ -23,8 +23,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="itext\itext.cleanup\bin\Release\itext.cleanup.dll" target="lib\net40" />
-    <file src="itext\itext.cleanup\bin\Release\itext.cleanup.xml" target="lib\net40" />
+    <file src="itext\itext.cleanup\bin\Release\itext.cleanup.dll" target="lib\net45" />
+    <file src="itext\itext.cleanup\bin\Release\itext.cleanup.xml" target="lib\net45" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
 	<file src="ITSC-avatar.png" target="" />
