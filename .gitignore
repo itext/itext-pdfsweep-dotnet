@@ -222,3 +222,4 @@ $RECYCLE.BIN/
 target/
 nbactions*.xml
 src/core/iTextSharp.xml
+.idea/

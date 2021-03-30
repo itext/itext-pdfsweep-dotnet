@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ using System.Collections.Generic;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Xobject;
-using iText.Kernel.Utils;
+using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup {
@@ -67,12 +67,13 @@ namespace iText.PdfCleanup {
             String output = outputPath + "filteredImagesCacheTest01.pdf";
             String cmp = inputPath + "cmp_filteredImagesCacheTest01.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
             for (int i = 0; i < pdfDocument.GetNumberOfPages(); ++i) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -83,27 +84,28 @@ namespace iText.PdfCleanup {
             String output = outputPath + "filteredImagesCacheTest02.pdf";
             String cmp = inputPath + "cmp_filteredImagesCacheTest02.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
             for (int i = 0; i < pdfDocument.GetNumberOfPages(); i += 5) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 40)));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(300, 400, 50, 150)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 40)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(300, 400, 50, 150)));
             }
             for (int i = 1; i < pdfDocument.GetNumberOfPages(); i += 5) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 490, 300, 20)));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 530, 300, 20)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 490, 300, 20)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 530, 300, 20)));
             }
             for (int i = 3; i < pdfDocument.GetNumberOfPages(); i += 5) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(300, 400, 50, 150)));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 400, 50, 150)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(300, 400, 50, 150)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 400, 50, 150)));
             }
             for (int i = 4; i < pdfDocument.GetNumberOfPages(); i += 5) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 5);
         }
 
@@ -114,12 +116,13 @@ namespace iText.PdfCleanup {
             String output = outputPath + "filteredImagesCacheTest03.pdf";
             String cmp = inputPath + "cmp_filteredImagesCacheTest03.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
             for (int i = 0; i < pdfDocument.GetNumberOfPages(); ++i) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 2);
         }
 
@@ -130,7 +133,8 @@ namespace iText.PdfCleanup {
             String output = outputPath + "filteredImagesCacheTest04.pdf";
             String cmp = inputPath + "cmp_filteredImagesCacheTest04.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
             float x = 559;
             float y = 600.2f;
             float width = 100;
@@ -141,11 +145,11 @@ namespace iText.PdfCleanup {
             height *= scaleFactor;
             Rectangle region2 = new Rectangle(x - width, y - height, width, height);
             for (int i = 0; i < pdfDocument.GetNumberOfPages(); i += 2) {
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, region1));
-                cleanUpLocations.Add(new PdfCleanUpLocation(i + 2, region2));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, region1));
+                cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 2, region2));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -155,17 +159,20 @@ namespace iText.PdfCleanup {
             String output = outputPath + "filteredImagesCacheFlushingTest01.pdf";
             String cmp = inputPath + "cmp_filteredImagesCacheFlushingTest01.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleanUpTool = new PdfCleanUpTool(pdfDocument);
-            cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(1, new Rectangle(150, 300, 300, 150)));
+            iText.PdfCleanup.PdfCleanUpTool cleanUpTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
+            cleanUpTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(150, 300, 300, 150
+                )));
             cleanUpTool.CleanUp();
             PdfImageXObject img = pdfDocument.GetPage(2).GetResources().GetImage(new PdfName("Im1"));
             img.GetPdfObject().Release();
-            cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(2, new Rectangle(150, 300, 300, 150)));
+            cleanUpTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(2, new Rectangle(150, 300, 300, 150
+                )));
             cleanUpTool.CleanUp();
-            cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(3, new Rectangle(150, 300, 300, 150)));
+            cleanUpTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(3, new Rectangle(150, 300, 300, 150
+                )));
             cleanUpTool.CleanUp();
             pdfDocument.Close();
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
@@ -175,22 +182,25 @@ namespace iText.PdfCleanup {
             String output = outputPath + "filteredImagesCacheFlushingTest02.pdf";
             String cmp = inputPath + "cmp_filteredImagesCacheFlushingTest02.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleanUpTool = new PdfCleanUpTool(pdfDocument);
-            cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(1, new Rectangle(150, 300, 300, 150)));
+            iText.PdfCleanup.PdfCleanUpTool cleanUpTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
+            cleanUpTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(150, 300, 300, 150
+                )));
             cleanUpTool.CleanUp();
             PdfImageXObject img = pdfDocument.GetPage(1).GetResources().GetImage(new PdfName("Im1"));
             img.MakeIndirect(pdfDocument).Flush();
-            cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(2, new Rectangle(150, 300, 300, 150)));
+            cleanUpTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(2, new Rectangle(150, 300, 300, 150
+                )));
             cleanUpTool.CleanUp();
-            cleanUpTool.AddCleanupLocation(new PdfCleanUpLocation(3, new Rectangle(150, 300, 300, 150)));
+            cleanUpTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(3, new Rectangle(150, 300, 300, 150
+                )));
             cleanUpTool.CleanUp();
             pdfDocument.Close();
-            CompareByContent(cmp, output, outputPath, "diff");
+            CompareByContent(cmp, output, outputPath, "1.2");
             AssertNumberXObjects(output, 1);
         }
 
-        private void CleanUp(PdfDocument pdfDocument, IList<PdfCleanUpLocation> cleanUpLocations) {
-            new PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
+        private void CleanUp(PdfDocument pdfDocument, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations) {
+            new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
             pdfDocument.Close();
         }
 
@@ -210,10 +220,14 @@ namespace iText.PdfCleanup {
             NUnit.Framework.Assert.AreEqual(n, xObjCount);
         }
 
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
-            CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
-            if (errorMessage != null) {
+        private void CompareByContent(String cmp, String output, String targetDir, String fuzzValue) {
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, targetDir, fuzzValue);
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, targetDir);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }
         }

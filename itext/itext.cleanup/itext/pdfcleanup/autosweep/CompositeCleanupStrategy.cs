@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ namespace iText.PdfCleanup.Autosweep {
         public virtual ICollection<IPdfTextLocation> GetResultantLocations() {
             locations.Clear();
             // build return value
-            ICollection<IPdfTextLocation> retval = new HashSet<IPdfTextLocation>();
+            ICollection<IPdfTextLocation> retval = new LinkedHashSet<IPdfTextLocation>();
             for (int i = 0; i < strategies.Count; i++) {
                 ILocationExtractionStrategy s = strategies[i];
                 ICollection<IPdfTextLocation> rects = s.GetResultantLocations();
@@ -78,13 +78,13 @@ namespace iText.PdfCleanup.Autosweep {
                 locations.Put(i, new HashSet<IPdfTextLocation>(rects));
             }
             IList<IPdfTextLocation> rectangles = new List<IPdfTextLocation>(retval);
-            JavaCollectionsUtil.Sort(rectangles, new _IComparer_93());
+            JavaCollectionsUtil.Sort(rectangles, new _IComparer_94());
             // return
             return rectangles;
         }
 
-        private sealed class _IComparer_93 : IComparer<IPdfTextLocation> {
-            public _IComparer_93() {
+        private sealed class _IComparer_94 : IComparer<IPdfTextLocation> {
+            public _IComparer_94() {
             }
 
             public int Compare(IPdfTextLocation l1, IPdfTextLocation l2) {

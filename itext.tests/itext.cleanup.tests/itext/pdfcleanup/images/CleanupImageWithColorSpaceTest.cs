@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -46,8 +46,7 @@ using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
-using iText.Kernel.Utils;
-using iText.PdfCleanup;
+using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup.Images {
@@ -67,9 +66,9 @@ namespace iText.PdfCleanup.Images {
             String input = inputPath + "imgSeparationCs.pdf";
             String output = outputPath + "imgSeparationCs.pdf";
             String cmp = inputPath + "cmp_imgSeparationCs.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 780f, 60f, 45f), 
-                ColorConstants.GREEN)));
-            CompareByContent(cmp, output, outputPath);
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(60f, 
+                780f, 60f, 45f), ColorConstants.GREEN)));
+            CompareByContent(cmp, output, outputPath, "9");
         }
 
         [NUnit.Framework.Test]
@@ -78,9 +77,9 @@ namespace iText.PdfCleanup.Images {
             String input = inputPath + "imgSeparationCsJpegBaselineEncoded.pdf";
             String output = outputPath + "imgSeparationCsJpegBaselineEncoded.pdf";
             String cmp = inputPath + "cmp_imgSeparationCsJpegBaselineEncoded.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 600f, 100f, 50f)
-                , ColorConstants.GREEN)));
-            CompareByContent(cmp, output, outputPath);
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(60f, 
+                600f, 100f, 50f), ColorConstants.GREEN)));
+            CompareByContent(cmp, output, outputPath, "11");
         }
 
         [NUnit.Framework.Test]
@@ -91,23 +90,29 @@ namespace iText.PdfCleanup.Images {
             String input = inputPath + "imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
             String output = outputPath + "imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
             String cmp = inputPath + "cmp_imgSeparationCsJpegBaselineEncodedWithApp14Segment.pdf";
-            CleanUp(input, output, JavaUtil.ArraysAsList(new PdfCleanUpLocation(1, new Rectangle(60f, 600f, 100f, 50f)
-                , ColorConstants.GREEN)));
-            CompareByContent(cmp, output, outputPath);
+            CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(60f, 
+                600f, 100f, 50f), ColorConstants.GREEN)));
+            CompareByContent(cmp, output, outputPath, "10");
         }
 
-        private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
+        private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new PdfCleanUpTool(pdfDocument, true) : new PdfCleanUpTool
-                (pdfDocument, cleanUpLocations);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
+                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
             cleaner.CleanUp();
             pdfDocument.Close();
         }
 
-        private void CompareByContent(String cmp, String output, String targetDir) {
-            CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir);
-            if (errorMessage != null) {
+        private void CompareByContent(String cmp, String output, String targetDir, String fuzzValue) {
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            cmpTool.UseGsImageExtracting(true);
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, targetDir, fuzzValue);
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, targetDir);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }
         }

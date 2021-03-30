@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -59,55 +59,61 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Colorspace;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
+using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
     public class PdfCleanUpProcessor : PdfCanvasProcessor {
-        private static readonly ICollection<String> TEXT_SHOWING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("TJ", "Tj", "'", "\""));
+        private static readonly ICollection<String> TEXT_SHOWING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("TJ", "Tj", "'", "\"")));
 
-        private static readonly ICollection<String> PATH_CONSTRUCTION_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("m", "l", "c", "v", "y", "h", "re"));
+        private static readonly ICollection<String> PATH_CONSTRUCTION_OPERATORS = JavaCollectionsUtil.UnmodifiableSet
+            (new HashSet<String>(JavaUtil.ArraysAsList("m", "l", "c", "v", "y", "h", "re")));
 
-        private static readonly ICollection<String> STROKE_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList("S"
-            , "s", "B", "B*", "b", "b*"));
+        private static readonly ICollection<String> STROKE_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new HashSet
+            <String>(JavaUtil.ArraysAsList("S", "s", "B", "B*", "b", "b*")));
 
-        private static readonly ICollection<String> NW_FILL_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList(
-            "f", "F", "B", "b"));
+        private static readonly ICollection<String> NW_FILL_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new HashSet
+            <String>(JavaUtil.ArraysAsList("f", "F", "B", "b")));
 
-        private static readonly ICollection<String> EO_FILL_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList(
-            "f*", "B*", "b*"));
+        private static readonly ICollection<String> EO_FILL_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new HashSet
+            <String>(JavaUtil.ArraysAsList("f*", "B*", "b*")));
 
-        private static readonly ICollection<String> PATH_PAINTING_OPERATORS = new HashSet<String>();
+        private static readonly ICollection<String> PATH_PAINTING_OPERATORS;
 
-        private static readonly ICollection<String> CLIPPING_PATH_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("W", "W*"));
+        private static readonly ICollection<String> CLIPPING_PATH_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(
+            new HashSet<String>(JavaUtil.ArraysAsList("W", "W*")));
 
-        private static readonly ICollection<String> LINE_STYLE_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("w", "J", "j", "M", "d"));
+        private static readonly ICollection<String> LINE_STYLE_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("w", "J", "j", "M", "d")));
 
-        private static readonly ICollection<String> STROKE_COLOR_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("CS", "SC", "SCN", "G", "RG", "K"));
+        private static readonly ICollection<String> STROKE_COLOR_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("CS", "SC", "SCN", "G", "RG", "K")));
 
-        private static readonly ICollection<String> FILL_COLOR_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("cs", "sc", "scn", "g", "rg", "k"));
-
-        private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = new HashSet<String>(JavaUtil.ArraysAsList
-            ("Td", "TD", "Tm", "T*", "TL"));
+        private static readonly ICollection<String> FILL_COLOR_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(new 
+            HashSet<String>(JavaUtil.ArraysAsList("cs", "sc", "scn", "g", "rg", "k")));
 
         // TL actually is not a text positioning operator, but we need to process it with them
+        private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet
+            (new HashSet<String>(JavaUtil.ArraysAsList("Td", "TD", "Tm", "T*", "TL")));
+
         // these operators are processed via PdfCanvasProcessor graphics state and event listener
-        private static readonly ICollection<String> ignoredOperators = new HashSet<String>();
+        private static readonly ICollection<String> IGNORED_OPERATORS;
 
         static PdfCleanUpProcessor() {
-            PATH_PAINTING_OPERATORS.AddAll(STROKE_OPERATORS);
-            PATH_PAINTING_OPERATORS.AddAll(NW_FILL_OPERATORS);
-            PATH_PAINTING_OPERATORS.AddAll(EO_FILL_OPERATORS);
-            PATH_PAINTING_OPERATORS.Add("n");
-            ignoredOperators.AddAll(PATH_CONSTRUCTION_OPERATORS);
-            ignoredOperators.AddAll(CLIPPING_PATH_OPERATORS);
-            ignoredOperators.AddAll(LINE_STYLE_OPERATORS);
-            ignoredOperators.AddAll(JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
-            ignoredOperators.AddAll(JavaUtil.ArraysAsList("BMC", "BDC"));
+            // HashSet is required in order to autoport correctly in .Net
+            HashSet<String> tempSet = new HashSet<String>();
+            tempSet.AddAll(STROKE_OPERATORS);
+            tempSet.AddAll(NW_FILL_OPERATORS);
+            tempSet.AddAll(EO_FILL_OPERATORS);
+            tempSet.Add("n");
+            PATH_PAINTING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(tempSet);
+            tempSet = new HashSet<String>();
+            tempSet.AddAll(PATH_CONSTRUCTION_OPERATORS);
+            tempSet.AddAll(CLIPPING_PATH_OPERATORS);
+            tempSet.AddAll(LINE_STYLE_OPERATORS);
+            tempSet.AddAll(JavaUtil.ArraysAsList("Tc", "Tw", "Tz", "Tf", "Tr", "Ts"));
+            tempSet.AddAll(JavaUtil.ArraysAsList("BMC", "BDC"));
+            IGNORED_OPERATORS = JavaCollectionsUtil.UnmodifiableSet(tempSet);
         }
 
         private PdfDocument document;
@@ -303,6 +309,28 @@ namespace iText.PdfCleanup {
         protected override void EventOccurred(IEventData data, EventType type) {
             if (supportedEvents == null || supportedEvents.Contains(type)) {
                 eventListener.EventOccurred(data, type);
+            }
+        }
+
+        /// <summary>Returns the last canvas without removing it.</summary>
+        /// <returns>the last canvas in canvasStack.</returns>
+        internal virtual PdfCanvas GetCanvas() {
+            return canvasStack.Peek();
+        }
+
+        /// <summary>Adds tag to the deque of not written tags.</summary>
+        /// <param name="tag">tag to be added.</param>
+        internal virtual void AddNotWrittenTag(CanvasTag tag) {
+            notWrittenTags.AddFirst(tag);
+        }
+
+        /// <summary>Opens all tags from deque of not written tags.</summary>
+        /// <remarks>Opens all tags from deque of not written tags. Should be called before some content is drawn.</remarks>
+        internal virtual void OpenNotWrittenTags() {
+            CanvasTag tag = notWrittenTags.PollLast();
+            while (tag != null) {
+                GetCanvas().OpenTag(tag);
+                tag = notWrittenTags.PollLast();
             }
         }
 
@@ -527,7 +555,7 @@ namespace iText.PdfCleanup {
                                                                             GetCanvas().PaintShading(shading);
                                                                         }
                                                                         else {
-                                                                            if (!ignoredOperators.Contains(@operator)) {
+                                                                            if (!IGNORED_OPERATORS.Contains(@operator)) {
                                                                                 WriteOperands(GetCanvas(), operands);
                                                                             }
                                                                         }
@@ -718,8 +746,8 @@ namespace iText.PdfCleanup {
                         // because it'd be have been considered by pdf browsers before rendering it.
                         // Additional checks required as if an image format has been changed,
                         // then the old colorspace may produce an error with the new image data.
-                        if (AreColorSpacesDifferent(originalImage, imageToWrite) && filter.IsOriginalCsCompatible(originalImage, imageToWrite
-                            )) {
+                        if (AreColorSpacesDifferent(originalImage, imageToWrite) && CleanUpCsCompareUtil.IsOriginalCsCompatible(originalImage
+                            , imageToWrite)) {
                             PdfObject originalCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
                             if (originalCS != null) {
                                 imageToWrite.Put(PdfName.ColorSpace, originalCS);
@@ -910,19 +938,6 @@ namespace iText.PdfCleanup {
             canvas.SaveState().SetFillColor(strokeColor);
             WritePath(strokePath);
             canvas.Fill().RestoreState();
-        }
-
-        private PdfCanvas GetCanvas() {
-            return canvasStack.Peek();
-        }
-
-        // should be called before some content is drawn
-        private void OpenNotWrittenTags() {
-            CanvasTag tag = notWrittenTags.PollLast();
-            while (tag != null) {
-                GetCanvas().OpenTag(tag);
-                tag = notWrittenTags.PollLast();
-            }
         }
 
         private void RemoveOrCloseTag() {

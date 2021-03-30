@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2020 iText Group NV
+Copyright (c) 1998-2021 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ using System.Collections.Generic;
 using iText.IO.Util;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
-using iText.Kernel.Utils;
+using iText.PdfCleanup.Util;
 using iText.Test;
 using iText.Test.Attributes;
 
@@ -69,7 +69,7 @@ namespace iText.PdfCleanup {
             IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
                 , 215f, 260f));
             CleanUp(input, output, InitLocations(rects, 130));
-            CompareByContent(cmp, output, outputPath, "diff_bigUntagged_");
+            CompareByContent(cmp, output, outputPath, "4");
         }
 
         [NUnit.Framework.Test]
@@ -81,7 +81,7 @@ namespace iText.PdfCleanup {
             IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
                 , 215f, 270f));
             CleanUp(input, output, InitLocations(rects, 131));
-            CompareByContent(cmp, output, outputPath, "diff_bigTagged_");
+            CompareByContent(cmp, output, outputPath, "4");
         }
 
         [NUnit.Framework.Test]
@@ -92,30 +92,37 @@ namespace iText.PdfCleanup {
             IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(0f, 0f, 1f, 1f));
             // just to enable cleanup processing of the pages
             CleanUp(input, output, InitLocations(rects, 163));
-            CompareByContent(cmp, output, outputPath, "diff_txtPos_");
+            CompareByContent(cmp, output, outputPath, "4");
         }
 
-        private void CleanUp(String input, String output, IList<PdfCleanUpLocation> cleanUpLocations) {
+        private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
+            ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations);
+            iText.PdfCleanup.PdfCleanUpTool cleaner = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations
+                );
             cleaner.CleanUp();
             pdfDocument.Close();
         }
 
-        private IList<PdfCleanUpLocation> InitLocations(IList<Rectangle> rects, int pagesNum) {
-            IList<PdfCleanUpLocation> cleanUpLocations = new List<PdfCleanUpLocation>();
+        private IList<iText.PdfCleanup.PdfCleanUpLocation> InitLocations(IList<Rectangle> rects, int pagesNum) {
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
             for (int i = 0; i < pagesNum; ++i) {
                 for (int j = 0; j < rects.Count; ++j) {
-                    cleanUpLocations.Add(new PdfCleanUpLocation(i + 1, rects[j]));
+                    cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, rects[j]));
                 }
             }
             return cleanUpLocations;
         }
 
-        private void CompareByContent(String cmp, String output, String targetDir, String diffPrefix) {
-            CompareTool cmpTool = new CompareTool();
-            String errorMessage = cmpTool.CompareByContent(output, cmp, targetDir, diffPrefix + "_");
-            if (errorMessage != null) {
+        private void CompareByContent(String cmp, String output, String targetDir, String fuzzValue) {
+            CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, targetDir, fuzzValue);
+            String compareByContentResult = cmpTool.CompareByContent(output, cmp, targetDir);
+            if (compareByContentResult != null) {
+                errorMessage += compareByContentResult;
+            }
+            if (!errorMessage.Equals("")) {
                 NUnit.Framework.Assert.Fail(errorMessage);
             }
         }
