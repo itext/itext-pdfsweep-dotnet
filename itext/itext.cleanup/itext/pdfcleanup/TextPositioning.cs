@@ -63,14 +63,11 @@ namespace iText.PdfCleanup {
 
         private Matrix tmShift;
 
-        private float? currLeading;
+        private float currLeading = 0F;
 
         /// <summary>Get the current leading</summary>
         internal virtual float GetCurrLeading() {
-            if (currLeading != null) {
-                return (float)currLeading;
-            }
-            return 0f;
+            return currLeading;
         }
 
         internal virtual void AppendPositioningOperator(String @operator, IList<PdfObject> operands) {
@@ -168,7 +165,7 @@ namespace iText.PdfCleanup {
             if (firstPositioningOperands != null) {
                 if ("T*".Equals(prevOperator)) {
                     if (canvas.GetGraphicsState().GetLeading() != currLeading) {
-                        canvas.SetLeading((float)currLeading);
+                        canvas.SetLeading(currLeading);
                     }
                 }
                 PdfCleanUpProcessor.WriteOperands(canvas, firstPositioningOperands);
@@ -192,7 +189,7 @@ namespace iText.PdfCleanup {
             bool newLineShowText = "'".Equals(@operator) || "\"".Equals(@operator);
             if (newLineShowText) {
                 if (canvasGs.GetLeading() != currLeading) {
-                    canvas.SetLeading((float)currLeading);
+                    canvas.SetLeading(currLeading);
                 }
                 // after new line operator, removed text shift doesn't matter
                 removedTextShift = null;

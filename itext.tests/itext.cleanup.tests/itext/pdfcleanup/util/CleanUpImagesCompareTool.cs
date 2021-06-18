@@ -182,70 +182,72 @@ namespace iText.PdfCleanup.Util {
 
         private IDictionary<int, CleanUpImagesCompareTool.PageImageObjectsPaths> ExtractImagesFromPdf(String pdf, 
             String outputPath) {
-            PdfDocument pdfDoc = new PdfDocument(new PdfReader(pdf));
-            IDictionary<int, CleanUpImagesCompareTool.PageImageObjectsPaths> imageObjectDatas = new Dictionary<int, CleanUpImagesCompareTool.PageImageObjectsPaths
-                >();
-            for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++) {
-                PdfPage page = pdfDoc.GetPage(i);
-                CleanUpImagesCompareTool.PageImageObjectsPaths imageObjectData = new CleanUpImagesCompareTool.PageImageObjectsPaths
-                    (page.GetPdfObject().GetIndirectReference());
-                Stack<CompareTool.ObjectPath.LocalPathItem> baseLocalPath = new Stack<CompareTool.ObjectPath.LocalPathItem
-                    >();
-                PdfResources pdfResources = page.GetResources();
-                if (pdfResources.GetPdfObject().IsIndirect()) {
-                    imageObjectData.AddIndirectReference(pdfResources.GetPdfObject().GetIndirectReference());
-                }
-                else {
-                    baseLocalPath.Push(new CompareTool.ObjectPath.DictPathItem(PdfName.Resources));
-                }
-                PdfDictionary xObjects = pdfResources.GetResource(PdfName.XObject);
-                if (xObjects == null) {
-                    continue;
-                }
-                if (xObjects.IsIndirect()) {
-                    imageObjectData.AddIndirectReference(xObjects.GetIndirectReference());
-                    baseLocalPath.Clear();
-                }
-                else {
-                    baseLocalPath.Push(new CompareTool.ObjectPath.DictPathItem(PdfName.XObject));
-                }
-                bool isPageToGsExtract = false;
-                foreach (PdfName objectName in xObjects.KeySet()) {
-                    if (!xObjects.Get(objectName).IsStream() || !PdfName.Image.Equals(xObjects.GetAsStream(objectName).GetAsName
-                        (PdfName.Subtype))) {
-                        continue;
-                    }
-                    PdfImageXObject pdfObject = new PdfImageXObject(xObjects.GetAsStream(objectName));
-                    baseLocalPath.Push(new CompareTool.ObjectPath.DictPathItem(objectName));
-                    if (!useGs) {
-                        String extension = pdfObject.IdentifyImageFileExtension();
-                        String fileName = outputPath + objectName + "_" + i + "." + extension;
-                        CreateImageFromPdfXObject(fileName, pdfObject);
-                    }
-                    else {
-                        isPageToGsExtract = true;
-                    }
-                    Stack<CompareTool.ObjectPath.LocalPathItem> reversedStack = new Stack<CompareTool.ObjectPath.LocalPathItem
+            using (PdfReader readerPdf = new PdfReader(pdf)) {
+                using (PdfDocument pdfDoc = new PdfDocument(readerPdf)) {
+                    IDictionary<int, CleanUpImagesCompareTool.PageImageObjectsPaths> imageObjectDatas = new Dictionary<int, CleanUpImagesCompareTool.PageImageObjectsPaths
                         >();
-                    reversedStack.AddAll(baseLocalPath);
-                    Stack<CompareTool.ObjectPath.LocalPathItem> resultStack = new Stack<CompareTool.ObjectPath.LocalPathItem>(
-                        );
-                    resultStack.AddAll(reversedStack);
-                    imageObjectData.AddLocalPath(resultStack);
-                    baseLocalPath.Pop();
+                    for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++) {
+                        PdfPage page = pdfDoc.GetPage(i);
+                        CleanUpImagesCompareTool.PageImageObjectsPaths imageObjectData = new CleanUpImagesCompareTool.PageImageObjectsPaths
+                            (page.GetPdfObject().GetIndirectReference());
+                        Stack<CompareTool.ObjectPath.LocalPathItem> baseLocalPath = new Stack<CompareTool.ObjectPath.LocalPathItem
+                            >();
+                        PdfResources pdfResources = page.GetResources();
+                        if (pdfResources.GetPdfObject().IsIndirect()) {
+                            imageObjectData.AddIndirectReference(pdfResources.GetPdfObject().GetIndirectReference());
+                        }
+                        else {
+                            baseLocalPath.Push(new CompareTool.ObjectPath.DictPathItem(PdfName.Resources));
+                        }
+                        PdfDictionary xObjects = pdfResources.GetResource(PdfName.XObject);
+                        if (xObjects == null) {
+                            continue;
+                        }
+                        if (xObjects.IsIndirect()) {
+                            imageObjectData.AddIndirectReference(xObjects.GetIndirectReference());
+                            baseLocalPath.Clear();
+                        }
+                        else {
+                            baseLocalPath.Push(new CompareTool.ObjectPath.DictPathItem(PdfName.XObject));
+                        }
+                        bool isPageToGsExtract = false;
+                        foreach (PdfName objectName in xObjects.KeySet()) {
+                            if (!xObjects.Get(objectName).IsStream() || !PdfName.Image.Equals(xObjects.GetAsStream(objectName).GetAsName
+                                (PdfName.Subtype))) {
+                                continue;
+                            }
+                            PdfImageXObject pdfObject = new PdfImageXObject(xObjects.GetAsStream(objectName));
+                            baseLocalPath.Push(new CompareTool.ObjectPath.DictPathItem(objectName));
+                            if (!useGs) {
+                                String extension = pdfObject.IdentifyImageFileExtension();
+                                String fileName = outputPath + objectName + "_" + i + "." + extension;
+                                CreateImageFromPdfXObject(fileName, pdfObject);
+                            }
+                            else {
+                                isPageToGsExtract = true;
+                            }
+                            Stack<CompareTool.ObjectPath.LocalPathItem> reversedStack = new Stack<CompareTool.ObjectPath.LocalPathItem
+                                >();
+                            reversedStack.AddAll(baseLocalPath);
+                            Stack<CompareTool.ObjectPath.LocalPathItem> resultStack = new Stack<CompareTool.ObjectPath.LocalPathItem>(
+                                );
+                            resultStack.AddAll(reversedStack);
+                            imageObjectData.AddLocalPath(resultStack);
+                            baseLocalPath.Pop();
+                        }
+                        if (useGs && isPageToGsExtract) {
+                            String fileName = "Page_" + i + "-%03d.png";
+                            ghostscriptHelper.RunGhostScriptImageGeneration(pdf, outputPath, fileName, i.ToString());
+                        }
+                        CleanUpImagesCompareTool.ImageRenderListener listener = new CleanUpImagesCompareTool.ImageRenderListener();
+                        PdfCanvasProcessor parser = new PdfCanvasProcessor(listener);
+                        parser.ProcessPageContent(page);
+                        ignoredImagesAreas.Put(i, listener.GetImageRectangles());
+                        imageObjectDatas.Put(i, imageObjectData);
+                    }
+                    return imageObjectDatas;
                 }
-                if (useGs && isPageToGsExtract) {
-                    String fileName = "Page_" + i + "-%03d.png";
-                    ghostscriptHelper.RunGhostScriptImageGeneration(pdf, outputPath, fileName, i.ToString());
-                }
-                CleanUpImagesCompareTool.ImageRenderListener listener = new CleanUpImagesCompareTool.ImageRenderListener();
-                PdfCanvasProcessor parser = new PdfCanvasProcessor(listener);
-                parser.ProcessPageContent(page);
-                ignoredImagesAreas.Put(i, listener.GetImageRectangles());
-                imageObjectDatas.Put(i, imageObjectData);
             }
-            pdfDoc.Close();
-            return imageObjectDatas;
         }
 
         private void CreateImageFromPdfXObject(String imageFileName, PdfImageXObject imageObject) {
