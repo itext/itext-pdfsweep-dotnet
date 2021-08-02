@@ -214,7 +214,7 @@ namespace iText.PdfCleanup {
             foreach (Rectangle rectangle in regions) {
                 try {
                     Point[] transfRectVertices = TransformPoints(ctm, true, GetRectangleVertices(rectangle));
-                    ClipperBridge.AddRectToClipper(clipper, transfRectVertices, PolyType.CLIP);
+                    ClipperBridge.AddPolygonToClipper(clipper, transfRectVertices, PolyType.CLIP);
                 }
                 catch (PdfException e) {
                     if (!(e.InnerException is NoninvertibleTransformException)) {
