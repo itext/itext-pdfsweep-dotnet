@@ -236,7 +236,7 @@ namespace iText.PdfCleanup.Util {
                             baseLocalPath.Pop();
                         }
                         if (useGs && isPageToGsExtract) {
-                            String fileName = "Page_" + i + "-%03d.png";
+                            String fileName = "Page_" + i;
                             ghostscriptHelper.RunGhostScriptImageGeneration(pdf, outputPath, fileName, i.ToString());
                         }
                         CleanUpImagesCompareTool.ImageRenderListener listener = new CleanUpImagesCompareTool.ImageRenderListener();
