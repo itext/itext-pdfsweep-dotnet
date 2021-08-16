@@ -716,7 +716,8 @@ namespace iText.PdfCleanup {
                     float[] ctm = PollNotAppliedCtm();
                     WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
-                    GetCanvas().AddXObject(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
+                    GetCanvas().AddXObjectWithTransformationMatrix(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5
+                        ]);
                 }
             }
         }
@@ -820,7 +821,8 @@ namespace iText.PdfCleanup {
                 float[] ctm = PollNotAppliedCtm();
                 WriteNotAppliedGsParams(false, false);
                 OpenNotWrittenTags();
-                GetCanvas().AddImage(filteredImage, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5], true);
+                GetCanvas().AddImageWithTransformationMatrix(filteredImage, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]
+                    , true);
             }
         }
 
@@ -903,7 +905,7 @@ namespace iText.PdfCleanup {
                     // we still need to open all q operators
                     canvas.MoveTo(0, 0).Clip();
                 }
-                canvas.NewPath();
+                canvas.EndPath();
             }
         }
 

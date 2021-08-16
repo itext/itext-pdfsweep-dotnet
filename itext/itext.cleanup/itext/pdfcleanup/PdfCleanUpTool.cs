@@ -416,9 +416,10 @@ namespace iText.PdfCleanup {
             foreach (Rectangle rect in cleanedRegions) {
                 canvas.Rectangle(rect.GetLeft(), rect.GetBottom(), rect.GetWidth(), rect.GetHeight());
             }
-            canvas.Clip().NewPath();
+            canvas.Clip().EndPath();
             PdfFormXObject formXObject = new PdfFormXObject(redactRolloverAppearance);
-            canvas.AddXObject(formXObject, 1, 0, 0, 1, annotRect.GetLeft(), annotRect.GetBottom());
+            canvas.AddXObjectWithTransformationMatrix(formXObject, 1, 0, 0, 1, annotRect.GetLeft(), annotRect.GetBottom
+                ());
             canvas.RestoreState();
             if (pdfDocument.IsTagged()) {
                 canvas.CloseTag();
