@@ -23,7 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System;
 using System.IO;
 using System.Reflection;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using Versions.Attributes;
 using iText.PdfCleanup;
 
@@ -104,7 +105,7 @@ namespace iText.PdfCleanup
                     }
                     if (type == null && fileLoadExceptionMessage != null)
                     {
-                        LogManager.GetLogger(typeof(ReflectionUtils)).Error(fileLoadExceptionMessage);
+                        ITextLogManager.GetLogger(typeof(ReflectionUtils)).LogError(fileLoadExceptionMessage);
                     }
                 }
             }

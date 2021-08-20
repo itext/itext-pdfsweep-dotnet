@@ -42,7 +42,8 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.IO;
 using iText.IO.Image;
 using iText.IO.Source;
 using iText.IO.Util;
@@ -327,8 +328,8 @@ namespace iText.PdfCleanup {
             PdfName annotationType = annotation.GetPdfObject().GetAsName(PdfName.Subtype);
             if (annotationType.Equals(PdfName.Watermark)) {
                 // TODO /FixedPrint entry effect is not fully investigated: DEVSIX-2471
-                ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Warn(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
+                ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                logger.LogWarning(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
             }
             PdfArray rectAsArray = annotation.GetRectangle();
             Rectangle rect = null;
@@ -719,8 +720,8 @@ namespace iText.PdfCleanup {
                     ImageData filteredImageData = imageFilterResult.GetFilterResult();
                     if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
                         if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
-                            ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                            logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                            ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                            logger.LogError(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                         }
                         else {
                             filteredImageData.MakeMask();
@@ -774,8 +775,8 @@ namespace iText.PdfCleanup {
             }
             PdfImageXObject maskImageXObject = new PdfImageXObject(maskStream);
             if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(maskImageXObject)) {
-                ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                logger.LogError(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                 return;
             }
             FilteredImagesCache.FilteredImageKey k = filter.CreateFilteredImageKey(maskImageXObject, ctmForMasksFiltering

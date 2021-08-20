@@ -19,12 +19,12 @@
 	<repository type="git" url="https://github.com/itext/i7j-pdfsweep.git" />
     <dependencies>
       <dependency id="itext7" version="7.2.0-SNAPSHOT" />
-      <dependency id="Common.Logging" version="3.4.1" />
+      <dependency id="Microsoft.Extensions.Logging" version="5.0.0" />
     </dependencies>
   </metadata>
   <files>
-    <file src="itext\itext.cleanup\bin\Release\net45\itext.cleanup.dll" target="lib\net45" />
-    <file src="itext\itext.cleanup\bin\Release\net45\itext.cleanup.xml" target="lib\net45" />
+    <file src="itext\itext.cleanup\bin\Release\net461\itext.cleanup.dll" target="lib\net461" />
+    <file src="itext\itext.cleanup\bin\Release\net461\itext.cleanup.xml" target="lib\net461" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
 	<file src="ITSC-avatar.png" target="" />

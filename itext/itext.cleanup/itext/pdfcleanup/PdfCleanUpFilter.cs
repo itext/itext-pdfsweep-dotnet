@@ -42,8 +42,9 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
 using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iText.Kernel.Pdf.Canvas.Parser.ClipperLib.IntPoint>>;
+using iText.IO;
 using iText.IO.Image;
 using iText.IO.Util;
 using iText.Kernel;
@@ -58,7 +59,8 @@ using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
     internal class PdfCleanUpFilter {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpFilter));
+        private static readonly ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpFilter
+            ));
 
         /* There is no exact representation of the circle using Bezier curves.
         * But, for a Bezier curve with n segments the optimal distance to the control points,
@@ -280,8 +282,8 @@ namespace iText.PdfCleanup {
                         throw;
                     }
                     else {
-                        logger.Error(MessageFormatUtil.Format(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)
-                            );
+                        logger.LogError(MessageFormatUtil.Format(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX
+                            ));
                     }
                 }
             }
