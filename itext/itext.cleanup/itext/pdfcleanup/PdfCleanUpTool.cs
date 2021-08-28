@@ -65,24 +65,28 @@ namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
     public class PdfCleanUpTool {
         /// <summary>
-        /// When a document with line arts is being cleaned up, there are lot of
+        /// When a document with line arts is being cleaned up, there are a lot of
         /// calculations with floating point numbers.
         /// </summary>
         /// <remarks>
-        /// When a document with line arts is being cleaned up, there are lot of
+        /// When a document with line arts is being cleaned up, there are a lot of
         /// calculations with floating point numbers. All of them are translated
         /// into fixed point numbers by multiplying by this coefficient. Vary it
         /// to adjust the preciseness of the calculations.
         /// </remarks>
         [System.ObsoleteAttribute]
-        public static double floatMultiplier = Math.Pow(10, 14);
+        public static double floatMultiplier = Math
+                //TODO DEVSIX-5770 make this constant a single non-static configuration
+                .Pow(10, 14);
 
         /// <summary>
         /// Used as the criterion of a good approximation of rounded line joins
         /// and line caps.
         /// </summary>
         [System.ObsoleteAttribute]
-        public static double arcTolerance = 0.0025;
+        public static double arcTolerance = 
+                //TODO DEVSIX-5770 make this constant a single non-static configuration
+                0.0025;
 
         private PdfDocument pdfDocument;
 

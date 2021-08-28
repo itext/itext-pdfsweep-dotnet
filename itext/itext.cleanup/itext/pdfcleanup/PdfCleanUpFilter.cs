@@ -57,8 +57,7 @@ using iText.PdfCleanup.Exceptions;
 using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
-    [System.ObsoleteAttribute(@"This class will be changed to package-private in 7.2.")]
-    public class PdfCleanUpFilter {
+    internal class PdfCleanUpFilter {
         private static readonly ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpFilter));
 
         /* There is no exact representation of the circle using Bezier curves.
@@ -83,232 +82,12 @@ namespace iText.PdfCleanup {
             this.regions = regions;
         }
 
-        /// <summary>Filter a TextRenderInfo object.</summary>
-        /// <param name="text">the TextRenderInfo to be filtered</param>
-        /// <returns>
-        /// a
-        /// <see cref="FilterResult{T}"/>
-        /// object with filtered text.
-        /// </returns>
-        [System.ObsoleteAttribute(@"This method will be changed to package-private in 7.2.")]
-        public virtual PdfCleanUpFilter.FilterResult<PdfArray> FilterText(TextRenderInfo text) {
-            PdfTextArray textArray = new PdfTextArray();
-            if (IsTextNotToBeCleaned(text)) {
-                return new PdfCleanUpFilter.FilterResult<PdfArray>(false, new PdfArray(text.GetPdfString()));
-            }
-            foreach (TextRenderInfo ri in text.GetCharacterRenderInfos()) {
-                if (IsTextNotToBeCleaned(ri)) {
-                    textArray.Add(ri.GetPdfString());
-                }
-                else {
-                    textArray.Add(new PdfNumber(-ri.GetUnscaledWidth() * 1000f / (text.GetFontSize() * text.GetHorizontalScaling
-                        () / 100)));
-                }
-            }
-            return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
-        }
-
-        internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, Matrix
-             imageCtm, PdfDocument document) {
-            return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(imageCtm), document);
-        }
-
-        /// <summary>Filter an ImageRenderInfo object.</summary>
-        /// <param name="image">the ImageRenderInfo object to be filtered</param>
-        /// <returns>
-        /// an
-        /// <see cref="FilterResult{T}"/>
-        /// object with filtered image data.filterStrokePath
-        /// </returns>
-        [System.ObsoleteAttribute(@"This method will be changed to package-private in 7.2.")]
-        public virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image) {
-            return FilterImage(image.GetImage(), GetImageAreasToBeCleaned(image.GetImageCtm()));
-        }
-
-        internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(FilteredImagesCache.FilteredImageKey
-             imageKey) {
-            return FilterImage(imageKey.GetImageXObject(), imageKey.GetCleanedAreas());
-        }
-
-        private PdfCleanUpFilter.FilterResult<ImageData> FilterImage(PdfImageXObject image, IList<Rectangle> imageAreasToBeCleaned
-            ) {
-            if (imageAreasToBeCleaned == null) {
-                return new PdfCleanUpFilter.FilterResult<ImageData>(true, null);
-            }
-            else {
-                if (imageAreasToBeCleaned.IsEmpty()) {
-                    return new PdfCleanUpFilter.FilterResult<ImageData>(false, null);
-                }
-            }
-            byte[] filteredImageBytes;
-            if (ImageSupportsDirectCleanup(image)) {
-                byte[] imageStreamBytes = ProcessImageDirectly(image, imageAreasToBeCleaned);
-                // Creating imageXObject clone in order to avoid modification of the original XObject in the document.
-                // We require to set filtered image bytes to the image XObject only for the sake of simplifying code:
-                // in this method we return ImageData, so in order to convert PDF image to the common image format we
-                // reuse PdfImageXObject#getImageBytes method.
-                // I think this is acceptable here, because monochrome and grayscale images are not very common,
-                // so the overhead would be not that big. But anyway, this should be refactored in future if this
-                // direct image bytes cleaning approach would be found useful and will be preserved in future.
-                PdfImageXObject tempImageClone = new PdfImageXObject((PdfStream)image.GetPdfObject().Clone());
-                tempImageClone.GetPdfObject().SetData(imageStreamBytes);
-                filteredImageBytes = tempImageClone.GetImageBytes();
-            }
-            else {
-                byte[] originalImageBytes = image.GetImageBytes();
-                filteredImageBytes = CleanUpImageUtil.CleanUpImage(originalImageBytes, imageAreasToBeCleaned);
-            }
-            return new PdfCleanUpFilter.FilterResult<ImageData>(true, ImageDataFactory.Create(filteredImageBytes));
-        }
-
-        /// <summary>Filter a PathRenderInfo object</summary>
-        /// <param name="path">the PathRenderInfo object to be filtered</param>
-        /// <returns>
-        /// a filtered
-        /// <see cref="iText.Kernel.Geom.Path"/>
-        /// object.
-        /// </returns>
-        [System.ObsoleteAttribute(@"This method will be changed to package-private in 7.2.")]
-        public virtual Path FilterStrokePath(PathRenderInfo path) {
-            PdfArray dashPattern = path.GetLineDashPattern();
-            LineDashPattern lineDashPattern = new LineDashPattern(dashPattern.GetAsArray(0), dashPattern.GetAsNumber(1
-                ).FloatValue());
-            return FilterStrokePath(path.GetPath(), path.GetCtm(), path.GetLineWidth(), path.GetLineCapStyle(), path.GetLineJoinStyle
-                (), path.GetMiterLimit(), lineDashPattern);
-        }
-
-        /// <summary>Filter a PathRenderInfo object</summary>
-        /// <param name="path">the PathRenderInfo object to be filtered</param>
-        /// <param name="fillingRule">
-        /// an integer parameter, specifying whether the subpath is contour.
-        /// If the subpath is contour, pass any value.
-        /// </param>
-        /// <returns>
-        /// a filtered
-        /// <see cref="iText.Kernel.Geom.Path"/>
-        /// object.
-        /// </returns>
-        [System.ObsoleteAttribute(@"This method will be changed to package-private in 7.2.")]
-        public virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
-            return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
-        }
-
-        /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
-        /// <param name="path">the PathRenderInfo object to be filtered.</param>
-        /// <param name="ctm">
-        /// a
-        /// <see cref="iText.Kernel.Geom.Path"/>
-        /// transformation matrix.
-        /// </param>
-        /// <param name="fillingRule">If the subpath is contour, pass any value.</param>
-        /// <returns>
-        /// a filtered
-        /// <see cref="iText.Kernel.Geom.Path"/>
-        /// object.
-        /// </returns>
-        [System.ObsoleteAttribute(@"This method will be changed to private in 7.2")]
-        protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
-            path.CloseAllSubpaths();
-            Clipper clipper = new Clipper();
-            ClipperBridge.AddPath(clipper, path, PolyType.SUBJECT);
-            foreach (Rectangle rectangle in regions) {
-                try {
-                    Point[] transfRectVertices = TransformPoints(ctm, true, GetRectangleVertices(rectangle));
-                    ClipperBridge.AddPolygonToClipper(clipper, transfRectVertices, PolyType.CLIP);
-                }
-                catch (PdfException e) {
-                    if (!(e.InnerException is NoninvertibleTransformException)) {
-                        throw;
-                    }
-                    else {
-                        logger.Error(MessageFormatUtil.Format(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)
-                            );
-                    }
-                }
-            }
-            PolyFillType fillType = PolyFillType.NON_ZERO;
-            if (fillingRule == PdfCanvasConstants.FillingRule.EVEN_ODD) {
-                fillType = PolyFillType.EVEN_ODD;
-            }
-            PolyTree resultTree = new PolyTree();
-            clipper.Execute(ClipType.DIFFERENCE, resultTree, fillType, PolyFillType.NON_ZERO);
-            return ClipperBridge.ConvertToPath(resultTree);
-        }
-
-        /// <summary>Returns whether the given TextRenderInfo object needs to be cleaned up</summary>
-        /// <param name="renderInfo">the input TextRenderInfo object</param>
-        private bool IsTextNotToBeCleaned(TextRenderInfo renderInfo) {
-            Point[] textRect = GetTextRectangle(renderInfo);
-            foreach (Rectangle region in regions) {
-                Point[] redactRect = GetRectangleVertices(region);
-                // Text rectangle might be rotated, hence we are using precise polygon intersection checker and not
-                // just intersecting two rectangles that are parallel to the x and y coordinate vectors
-                if (CheckIfRectanglesIntersect(textRect, redactRect)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
-        ///     </summary>
-        /// <returns>
-        /// 
-        /// <see langword="null"/>
-        /// if the image is fully covered and therefore is completely cleaned,
-        /// <see cref="System.Collections.IList{E}"/>
-        /// of
-        /// <see cref="iText.Kernel.Geom.Rectangle"/>
-        /// objects otherwise.
-        /// </returns>
-        private IList<Rectangle> GetImageAreasToBeCleaned(Matrix imageCtm) {
-            Rectangle imageRect = CalcImageRect(imageCtm);
-            if (imageRect == null) {
-                return null;
-            }
-            IList<Rectangle> areasToBeCleaned = new List<Rectangle>();
-            foreach (Rectangle region in regions) {
-                Rectangle intersectionRect = GetRectanglesIntersection(imageRect, region);
-                if (intersectionRect != null) {
-                    if (imageRect.EqualsWithEpsilon(intersectionRect)) {
-                        // true if the image is completely covered
-                        return null;
-                    }
-                    areasToBeCleaned.Add(TransformRectIntoImageCoordinates(intersectionRect, imageCtm));
-                }
-            }
-            return areasToBeCleaned;
-        }
-
-        private Path FilterStrokePath(Path sourcePath, Matrix ctm, float lineWidth, int lineCapStyle, int lineJoinStyle
-            , float miterLimit, LineDashPattern lineDashPattern) {
-            Path path = sourcePath;
-            JoinType joinType = ClipperBridge.GetJoinType(lineJoinStyle);
-            EndType endType = ClipperBridge.GetEndType(lineCapStyle);
-            if (lineDashPattern != null) {
-                if (!lineDashPattern.IsSolid()) {
-                    path = LineDashPattern.ApplyDashPattern(path, lineDashPattern);
-                }
-            }
-            ClipperOffset offset = new ClipperOffset(miterLimit, iText.PdfCleanup.PdfCleanUpTool.arcTolerance * iText.PdfCleanup.PdfCleanUpTool
-                .floatMultiplier);
-            IList<Subpath> degenerateSubpaths = ClipperBridge.AddPath(offset, path, joinType, endType);
-            PolyTree resultTree = new PolyTree();
-            offset.Execute(resultTree, lineWidth * iText.PdfCleanup.PdfCleanUpTool.floatMultiplier / 2);
-            Path offsetedPath = ClipperBridge.ConvertToPath(resultTree);
-            if (degenerateSubpaths.Count > 0) {
-                if (endType == EndType.OPEN_ROUND) {
-                    IList<Subpath> circles = ConvertToCircles(degenerateSubpaths, lineWidth / 2);
-                    offsetedPath.AddSubpaths(circles);
-                }
-                else {
-                    if (endType == EndType.OPEN_SQUARE && lineDashPattern != null) {
-                        IList<Subpath> squares = ConvertToSquares(degenerateSubpaths, lineWidth, sourcePath);
-                        offsetedPath.AddSubpaths(squares);
-                    }
-                }
-            }
-            return FilterFillPath(offsetedPath, ctm, PdfCanvasConstants.FillingRule.NONZERO_WINDING);
+        internal static bool ImageSupportsDirectCleanup(PdfImageXObject image) {
+            PdfObject filter = image.GetPdfObject().Get(PdfName.Filter);
+            bool supportedFilterForDirectCleanup = IsSupportedFilterForDirectImageCleanup(filter);
+            bool deviceGrayOrNoCS = PdfName.DeviceGray.Equals(image.GetPdfObject().GetAsName(PdfName.ColorSpace)) || !
+                image.GetPdfObject().ContainsKey(PdfName.ColorSpace);
+            return deviceGrayOrNoCS && supportedFilterForDirectCleanup;
         }
 
         /// <summary>Return true if two given rectangles (specified by an array of points) intersect.</summary>
@@ -399,6 +178,227 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>Filter a TextRenderInfo object.</summary>
+        /// <param name="text">the TextRenderInfo to be filtered</param>
+        /// <returns>
+        /// a
+        /// <see cref="FilterResult{T}"/>
+        /// object with filtered text.
+        /// </returns>
+        internal virtual PdfCleanUpFilter.FilterResult<PdfArray> FilterText(TextRenderInfo text) {
+            PdfTextArray textArray = new PdfTextArray();
+            if (IsTextNotToBeCleaned(text)) {
+                return new PdfCleanUpFilter.FilterResult<PdfArray>(false, new PdfArray(text.GetPdfString()));
+            }
+            foreach (TextRenderInfo ri in text.GetCharacterRenderInfos()) {
+                if (IsTextNotToBeCleaned(ri)) {
+                    textArray.Add(ri.GetPdfString());
+                }
+                else {
+                    textArray.Add(new PdfNumber(-ri.GetUnscaledWidth() * 1000f / (text.GetFontSize() * text.GetHorizontalScaling
+                        () / 100)));
+                }
+            }
+            return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
+        }
+
+        /// <summary>Filter an ImageRenderInfo object.</summary>
+        /// <param name="image">the ImageRenderInfo object to be filtered</param>
+        /// <returns>
+        /// an
+        /// <see cref="FilterResult{T}"/>
+        /// object with filtered image data.filterStrokePath
+        /// </returns>
+        internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image) {
+            return FilterImage(image.GetImage(), GetImageAreasToBeCleaned(image.GetImageCtm()));
+        }
+
+        internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(FilteredImagesCache.FilteredImageKey
+             imageKey) {
+            return FilterImage(imageKey.GetImageXObject(), imageKey.GetCleanedAreas());
+        }
+
+        /// <summary>Filter a PathRenderInfo object.</summary>
+        /// <param name="path">the PathRenderInfo object to be filtered</param>
+        /// <returns>
+        /// a filtered
+        /// <see cref="iText.Kernel.Geom.Path"/>
+        /// object.
+        /// </returns>
+        internal virtual Path FilterStrokePath(PathRenderInfo path) {
+            PdfArray dashPattern = path.GetLineDashPattern();
+            LineDashPattern lineDashPattern = new LineDashPattern(dashPattern.GetAsArray(0), dashPattern.GetAsNumber(1
+                ).FloatValue());
+            return FilterStrokePath(path.GetPath(), path.GetCtm(), path.GetLineWidth(), path.GetLineCapStyle(), path.GetLineJoinStyle
+                (), path.GetMiterLimit(), lineDashPattern);
+        }
+
+        /// <summary>Filter a PathRenderInfo object.</summary>
+        /// <param name="path">the PathRenderInfo object to be filtered</param>
+        /// <param name="fillingRule">
+        /// an integer parameter, specifying whether the subpath is contour.
+        /// If the subpath is contour, pass any value.
+        /// </param>
+        /// <returns>
+        /// a filtered
+        /// <see cref="iText.Kernel.Geom.Path"/>
+        /// object.
+        /// </returns>
+        internal virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
+            return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
+        }
+
+        internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, Matrix
+             imageCtm, PdfDocument document) {
+            return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(imageCtm), document);
+        }
+
+        /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
+        /// <param name="path">the PathRenderInfo object to be filtered.</param>
+        /// <param name="ctm">
+        /// a
+        /// <see cref="iText.Kernel.Geom.Path"/>
+        /// transformation matrix.
+        /// </param>
+        /// <param name="fillingRule">If the subpath is contour, pass any value.</param>
+        /// <returns>
+        /// a filtered
+        /// <see cref="iText.Kernel.Geom.Path"/>
+        /// object.
+        /// </returns>
+        private Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+            path.CloseAllSubpaths();
+            Clipper clipper = new Clipper();
+            ClipperBridge.AddPath(clipper, path, PolyType.SUBJECT);
+            foreach (Rectangle rectangle in regions) {
+                try {
+                    Point[] transfRectVertices = TransformPoints(ctm, true, GetRectangleVertices(rectangle));
+                    ClipperBridge.AddPolygonToClipper(clipper, transfRectVertices, PolyType.CLIP);
+                }
+                catch (PdfException e) {
+                    if (!(e.InnerException is NoninvertibleTransformException)) {
+                        throw;
+                    }
+                    else {
+                        logger.Error(MessageFormatUtil.Format(CleanUpLogMessageConstant.FAILED_TO_PROCESS_A_TRANSFORMATION_MATRIX)
+                            );
+                    }
+                }
+            }
+            PolyFillType fillType = PolyFillType.NON_ZERO;
+            if (fillingRule == PdfCanvasConstants.FillingRule.EVEN_ODD) {
+                fillType = PolyFillType.EVEN_ODD;
+            }
+            PolyTree resultTree = new PolyTree();
+            clipper.Execute(ClipType.DIFFERENCE, resultTree, fillType, PolyFillType.NON_ZERO);
+            return ClipperBridge.ConvertToPath(resultTree);
+        }
+
+        /// <summary>Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
+        ///     </summary>
+        /// <returns>
+        /// 
+        /// <see langword="null"/>
+        /// if the image is fully covered and therefore is completely cleaned,
+        /// <see cref="System.Collections.IList{E}"/>
+        /// of
+        /// <see cref="iText.Kernel.Geom.Rectangle"/>
+        /// objects otherwise.
+        /// </returns>
+        private IList<Rectangle> GetImageAreasToBeCleaned(Matrix imageCtm) {
+            Rectangle imageRect = CalcImageRect(imageCtm);
+            if (imageRect == null) {
+                return null;
+            }
+            IList<Rectangle> areasToBeCleaned = new List<Rectangle>();
+            foreach (Rectangle region in regions) {
+                Rectangle intersectionRect = GetRectanglesIntersection(imageRect, region);
+                if (intersectionRect != null) {
+                    if (imageRect.EqualsWithEpsilon(intersectionRect)) {
+                        // true if the image is completely covered
+                        return null;
+                    }
+                    areasToBeCleaned.Add(TransformRectIntoImageCoordinates(intersectionRect, imageCtm));
+                }
+            }
+            return areasToBeCleaned;
+        }
+
+        private Path FilterStrokePath(Path sourcePath, Matrix ctm, float lineWidth, int lineCapStyle, int lineJoinStyle
+            , float miterLimit, LineDashPattern lineDashPattern) {
+            Path path = sourcePath;
+            JoinType joinType = ClipperBridge.GetJoinType(lineJoinStyle);
+            EndType endType = ClipperBridge.GetEndType(lineCapStyle);
+            if (lineDashPattern != null && !lineDashPattern.IsSolid()) {
+                path = LineDashPattern.ApplyDashPattern(path, lineDashPattern);
+            }
+            ClipperOffset offset = new ClipperOffset(miterLimit, iText.PdfCleanup.PdfCleanUpTool.arcTolerance * iText.PdfCleanup.PdfCleanUpTool
+                .floatMultiplier);
+            IList<Subpath> degenerateSubpaths = ClipperBridge.AddPath(offset, path, joinType, endType);
+            PolyTree resultTree = new PolyTree();
+            offset.Execute(resultTree, lineWidth * iText.PdfCleanup.PdfCleanUpTool.floatMultiplier / 2);
+            Path offsetedPath = ClipperBridge.ConvertToPath(resultTree);
+            if (degenerateSubpaths.Count > 0) {
+                if (endType == EndType.OPEN_ROUND) {
+                    IList<Subpath> circles = ConvertToCircles(degenerateSubpaths, lineWidth / 2);
+                    offsetedPath.AddSubpaths(circles);
+                }
+                else {
+                    if (endType == EndType.OPEN_SQUARE && lineDashPattern != null) {
+                        IList<Subpath> squares = ConvertToSquares(degenerateSubpaths, lineWidth, sourcePath);
+                        offsetedPath.AddSubpaths(squares);
+                    }
+                }
+            }
+            return FilterFillPath(offsetedPath, ctm, PdfCanvasConstants.FillingRule.NONZERO_WINDING);
+        }
+
+        /// <summary>Returns whether the given TextRenderInfo object needs to be cleaned up.</summary>
+        /// <param name="renderInfo">the input TextRenderInfo object</param>
+        private bool IsTextNotToBeCleaned(TextRenderInfo renderInfo) {
+            Point[] textRect = GetTextRectangle(renderInfo);
+            foreach (Rectangle region in regions) {
+                Point[] redactRect = GetRectangleVertices(region);
+                // Text rectangle might be rotated, hence we are using precise polygon intersection checker and not
+                // just intersecting two rectangles that are parallel to the x and y coordinate vectors
+                if (CheckIfRectanglesIntersect(textRect, redactRect)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static PdfCleanUpFilter.FilterResult<ImageData> FilterImage(PdfImageXObject image, IList<Rectangle
+            > imageAreasToBeCleaned) {
+            if (imageAreasToBeCleaned == null) {
+                return new PdfCleanUpFilter.FilterResult<ImageData>(true, null);
+            }
+            else {
+                if (imageAreasToBeCleaned.IsEmpty()) {
+                    return new PdfCleanUpFilter.FilterResult<ImageData>(false, null);
+                }
+            }
+            byte[] filteredImageBytes;
+            if (ImageSupportsDirectCleanup(image)) {
+                byte[] imageStreamBytes = ProcessImageDirectly(image, imageAreasToBeCleaned);
+                // Creating imageXObject clone in order to avoid modification of the original XObject in the document.
+                // We require to set filtered image bytes to the image XObject only for the sake of simplifying code:
+                // in this method we return ImageData, so in order to convert PDF image to the common image format we
+                // reuse PdfImageXObject#getImageBytes method.
+                // I think this is acceptable here, because monochrome and grayscale images are not very common,
+                // so the overhead would be not that big. But anyway, this should be refactored in future if this
+                // direct image bytes cleaning approach would be found useful and will be preserved in future.
+                PdfImageXObject tempImageClone = new PdfImageXObject((PdfStream)image.GetPdfObject().Clone());
+                tempImageClone.GetPdfObject().SetData(imageStreamBytes);
+                filteredImageBytes = tempImageClone.GetImageBytes();
+            }
+            else {
+                byte[] originalImageBytes = image.GetImageBytes();
+                filteredImageBytes = CleanUpImageUtil.CleanUpImage(originalImageBytes, imageAreasToBeCleaned);
+            }
+            return new PdfCleanUpFilter.FilterResult<ImageData>(true, ImageDataFactory.Create(filteredImageBytes));
+        }
+
         /// <summary>Checks if the input intersection rectangle is degenerate.</summary>
         /// <remarks>
         /// Checks if the input intersection rectangle is degenerate.
@@ -445,14 +445,6 @@ namespace iText.PdfCleanup {
             return false;
         }
 
-        internal static bool ImageSupportsDirectCleanup(PdfImageXObject image) {
-            PdfObject filter = image.GetPdfObject().Get(PdfName.Filter);
-            bool supportedFilterForDirectCleanup = IsSupportedFilterForDirectImageCleanup(filter);
-            bool deviceGrayOrNoCS = PdfName.DeviceGray.Equals(image.GetPdfObject().GetAsName(PdfName.ColorSpace)) || !
-                image.GetPdfObject().ContainsKey(PdfName.ColorSpace);
-            return deviceGrayOrNoCS && supportedFilterForDirectCleanup;
-        }
-
         private static bool IsSupportedFilterForDirectImageCleanup(PdfObject filter) {
             if (filter == null) {
                 return true;
@@ -483,7 +475,7 @@ namespace iText.PdfCleanup {
             return Rectangle.CalculateBBox(JavaUtil.ArraysAsList(points));
         }
 
-        /// <summary>Transforms the given Rectangle into the image coordinate system which is [0,1]x[0,1] by default</summary>
+        /// <summary>Transforms the given Rectangle into the image coordinate system which is [0,1]x[0,1] by default.</summary>
         private static Rectangle TransformRectIntoImageCoordinates(Rectangle rect, Matrix imageCtm) {
             Point[] points = TransformPoints(imageCtm, true, new Point(rect.GetLeft(), rect.GetBottom()), new Point(rect
                 .GetLeft(), rect.GetTop()), new Point(rect.GetRight(), rect.GetBottom()), new Point(rect.GetRight(), rect
@@ -500,7 +492,7 @@ namespace iText.PdfCleanup {
         /// <param name="imageAreasToBeCleaned">list of rectangle areas for clean up with coordinates in (0,1)x(0,1) space
         ///     </param>
         /// <returns>raw bytes of the PDF image samples stream which is already cleaned.</returns>
-        private byte[] ProcessImageDirectly(PdfImageXObject image, IList<Rectangle> imageAreasToBeCleaned) {
+        private static byte[] ProcessImageDirectly(PdfImageXObject image, IList<Rectangle> imageAreasToBeCleaned) {
             int X = 0;
             int Y = 1;
             int W = 2;
@@ -620,7 +612,7 @@ namespace iText.PdfCleanup {
             return squares;
         }
 
-        /// <summary>Approximates a given Path with a List of Point objects</summary>
+        /// <summary>Approximates a given Path with a List of Point objects.</summary>
         /// <param name="path">input path</param>
         private static IList<Point> GetPathApproximation(Path path) {
             PdfCleanUpFilter.ApproxPointList<Point> approx = new PdfCleanUpFilter.ApproxPointList<Point>();
@@ -654,7 +646,7 @@ namespace iText.PdfCleanup {
             return rotatedSquareVertices;
         }
 
-        /// <summary>Approximate a circle with 4 Bezier curves (one for each 90 degrees sector)</summary>
+        /// <summary>Approximate a circle with 4 Bezier curves (one for each 90 degrees sector).</summary>
         /// <param name="center">center of the circle</param>
         /// <param name="radius">radius of the circle</param>
         private static BezierCurve[] ApproximateCircle(Point center, double radius) {
@@ -695,7 +687,7 @@ namespace iText.PdfCleanup {
             return transformed;
         }
 
-        /// <summary>Get the bounding box of a TextRenderInfo object</summary>
+        /// <summary>Get the bounding box of a TextRenderInfo object.</summary>
         /// <param name="renderInfo">input TextRenderInfo object</param>
         private static Point[] GetTextRectangle(TextRenderInfo renderInfo) {
             LineSegment ascent = renderInfo.GetAscentLine();
@@ -713,7 +705,7 @@ namespace iText.PdfCleanup {
             return points;
         }
 
-        /// <summary>Calculate the intersection of 2 Rectangles</summary>
+        /// <summary>Calculate the intersection of 2 Rectangles.</summary>
         /// <param name="rect1">first Rectangle</param>
         /// <param name="rect2">second Rectangle</param>
         private static Rectangle GetRectanglesIntersection(Rectangle rect1, Rectangle rect2) {
@@ -722,6 +714,30 @@ namespace iText.PdfCleanup {
             float x2 = Math.Min(rect1.GetRight(), rect2.GetRight());
             float y2 = Math.Min(rect1.GetTop(), rect2.GetTop());
             return (x2 - x1 > 0 && y2 - y1 > 0) ? new Rectangle(x1, y1, x2 - x1, y2 - y1) : null;
+        }
+
+        /// <summary>Generic class representing the result of filtering an object of type T.</summary>
+        internal class FilterResult<T> {
+            private bool isModified;
+
+            private T filterResult;
+
+            public FilterResult(bool isModified, T filterResult) {
+                this.isModified = isModified;
+                this.filterResult = filterResult;
+            }
+
+            /// <summary>Get whether the object was modified or not.</summary>
+            /// <returns>true if the object was modified, false otherwise</returns>
+            internal virtual bool IsModified() {
+                return isModified;
+            }
+
+            /// <summary>Get the result after filtering</summary>
+            /// <returns>the result of filtering an object of type T.</returns>
+            internal virtual T GetFilterResult() {
+                return filterResult;
+            }
         }
 
         private class ApproxPointList<T> : List<Point> {
@@ -738,33 +754,6 @@ namespace iText.PdfCleanup {
                     }
                 }
                 return true;
-            }
-        }
-
-        /// <summary>Generic class representing the result of filtering an object of type T</summary>
-        [System.ObsoleteAttribute(@"this class will be changed to package-private in 7.2.")]
-        public class FilterResult<T> {
-            private bool isModified;
-
-            private T filterResult;
-
-            public FilterResult(bool isModified, T filterResult) {
-                this.isModified = isModified;
-                this.filterResult = filterResult;
-            }
-
-            /// <summary>Get whether the object was modified or not</summary>
-            /// <returns>true if the object was modified, false otherwise</returns>
-            [System.ObsoleteAttribute(@"this method will be changed to package-private in 7.2.")]
-            public virtual bool IsModified() {
-                return isModified;
-            }
-
-            /// <summary>Get the result after filtering</summary>
-            /// <returns>the result of filtering an object of type T.</returns>
-            [System.ObsoleteAttribute(@"this method will be changed to package-private in 7.2.")]
-            public virtual T GetFilterResult() {
-                return filterResult;
             }
         }
 

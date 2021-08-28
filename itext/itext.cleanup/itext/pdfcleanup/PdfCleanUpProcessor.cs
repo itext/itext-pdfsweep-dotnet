@@ -197,19 +197,6 @@ namespace iText.PdfCleanup {
         /// </remarks>
         /// <param name="page">the page to process</param>
         /// <param name="regions">a list of redaction regions</param>
-        [System.ObsoleteAttribute(@"Will be removed in iText 7.2, use ProcessPageAnnotations(iText.Kernel.Pdf.PdfPage, System.Collections.Generic.IList{E}, bool) instead."
-            )]
-        public virtual void ProcessPageAnnotations(PdfPage page, IList<Rectangle> regions) {
-            ProcessPageAnnotations(page, regions, false);
-        }
-
-        /// <summary>Process the annotations of a page.</summary>
-        /// <remarks>
-        /// Process the annotations of a page.
-        /// Default process behaviour is to remove the annotation if there is (partial) overlap with a redaction region
-        /// </remarks>
-        /// <param name="page">the page to process</param>
-        /// <param name="regions">a list of redaction regions</param>
         /// <param name="redactRedactAnnotations">true if annotation with subtype /Redact should also be removed</param>
         public virtual void ProcessPageAnnotations(PdfPage page, IList<Rectangle> regions, bool redactRedactAnnotations
             ) {
