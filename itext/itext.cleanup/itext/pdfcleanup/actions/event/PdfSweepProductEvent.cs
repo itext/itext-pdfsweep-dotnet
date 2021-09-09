@@ -40,40 +40,41 @@ source product.
 For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
-using iText.Kernel.Colors;
-using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using System;
+using iText.Commons.Actions;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Actions.Contexts;
+using iText.Commons.Actions.Sequence;
+using iText.PdfCleanup.Actions.Data;
 
-namespace iText.PdfCleanup.Autosweep {
-    /// <summary>
-    /// This class represents a generic cleanup strategy to be used with
-    /// <see cref="iText.PdfCleanup.PdfCleaner"/>
-    /// or
-    /// <see cref="PdfAutoSweepTools"/>
-    /// ICleanupStrategy must implement Cloneable to ensure a strategy can be reset after having handled a page.
-    /// </summary>
-    public interface ICleanupStrategy : ILocationExtractionStrategy {
-        /// <summary>Get the color in which redaction is to take place</summary>
-        /// <param name="location">where to get the redaction color from</param>
-        /// <returns>
-        /// a
-        /// <see cref="iText.Kernel.Colors.Color"/>
-        /// </returns>
-        Color GetRedactionColor(IPdfTextLocation location);
+namespace iText.PdfCleanup.Actions.Event {
+    /// <summary>Class represents events registered in iText cleanup module.</summary>
+    public class PdfSweepProductEvent : AbstractProductProcessITextEvent {
+        /// <summary>Cleanup event type description.</summary>
+        public const String CLEANUP_PDF = "cleanup-pdf";
 
-        /// <summary>
-        /// ICleanupStrategy objects have to be reset at times
-        /// <c>PdfAutoSweep</c>
-        /// will use the same strategy for all pages,
-        /// and expects to receive only the rectangles from the last page as output.
-        /// </summary>
-        /// <remarks>
-        /// ICleanupStrategy objects have to be reset at times
-        /// <c>PdfAutoSweep</c>
-        /// will use the same strategy for all pages,
-        /// and expects to receive only the rectangles from the last page as output.
-        /// Hence the reset method.
-        /// </remarks>
-        /// <returns>a clone of this Object</returns>
-        ICleanupStrategy Reset();
+        private readonly String eventType;
+
+        /// <summary>Creates an event associated with a general identifier and additional meta data.</summary>
+        /// <param name="sequenceId">is an identifier associated with the event</param>
+        /// <param name="metaInfo">is an additional meta info</param>
+        /// <param name="eventType">is a string description of the event</param>
+        private PdfSweepProductEvent(SequenceId sequenceId, IMetaInfo metaInfo, String eventType)
+            : base(sequenceId, PdfSweepProductData.GetInstance(), metaInfo, EventConfirmationType.ON_CLOSE) {
+            this.eventType = eventType;
+        }
+
+        /// <summary>Creates a cleanup-pdf event which associated with a general identifier and additional meta data.</summary>
+        /// <param name="sequenceId">is an identifier associated with the event</param>
+        /// <param name="metaInfo">is an additional meta info</param>
+        /// <returns>the cleanup-pdf event</returns>
+        public static iText.PdfCleanup.Actions.Event.PdfSweepProductEvent CreateCleanupPdfEvent(SequenceId sequenceId
+            , IMetaInfo metaInfo) {
+            return new iText.PdfCleanup.Actions.Event.PdfSweepProductEvent(sequenceId, metaInfo, CLEANUP_PDF);
+        }
+
+        public override String GetEventType() {
+            return eventType;
+        }
     }
 }

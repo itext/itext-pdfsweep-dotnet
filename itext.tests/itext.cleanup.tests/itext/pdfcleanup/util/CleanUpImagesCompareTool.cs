@@ -44,6 +44,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iText.Commons.Utils;
 using iText.IO.Util;
 using iText.Kernel;
 using iText.Kernel.Geom;

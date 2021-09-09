@@ -49,7 +49,7 @@ namespace iText.PdfCleanup {
                     >();
                 cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(1, pdfDocument.GetPage(1).GetPageSize(), null
                     ));
-                new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
+                PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
                 pdfDocument.Close();
             }
             , NUnit.Framework.Throws.InstanceOf<OutOfMemoryException>())

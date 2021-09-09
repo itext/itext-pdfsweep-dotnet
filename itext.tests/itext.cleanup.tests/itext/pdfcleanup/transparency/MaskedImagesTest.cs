@@ -42,12 +42,13 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Utils;
+using iText.PdfCleanup;
 using iText.PdfCleanup.Util;
 using iText.Test;
 
@@ -97,9 +98,7 @@ namespace iText.PdfCleanup.Transparency {
             IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = JavaCollectionsUtil.SingletonList(new iText.PdfCleanup.PdfCleanUpLocation
                 (1, new Rectangle(280, 360, 200, 75)));
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            iText.PdfCleanup.PdfCleanUpTool cleaner = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations
-                );
-            cleaner.CleanUp();
+            PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
             new PdfCanvas(pdfDocument.GetFirstPage().NewContentStreamBefore(), pdfDocument.GetFirstPage().GetResources
                 (), pdfDocument).SetColor(ColorConstants.LIGHT_GRAY, true).Rectangle(0, 0, 1000, 1000).Fill().SetColor
                 (ColorConstants.BLACK, true);
@@ -114,9 +113,7 @@ namespace iText.PdfCleanup.Transparency {
             IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = JavaCollectionsUtil.SingletonList(new iText.PdfCleanup.PdfCleanUpLocation
                 (1, new Rectangle(308, 520, 200, 75)));
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            iText.PdfCleanup.PdfCleanUpTool cleaner = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations
-                );
-            cleaner.CleanUp();
+            PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
             pdfDocument.Close();
             CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
             String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, fuzzValue);

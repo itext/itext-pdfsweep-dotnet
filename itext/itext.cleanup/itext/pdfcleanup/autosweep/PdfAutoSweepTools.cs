@@ -41,7 +41,7 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System.Collections.Generic;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Annot;
@@ -52,14 +52,14 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 namespace iText.PdfCleanup.Autosweep {
     /// <summary>Class that automatically extracts all regions of interest from a given PdfDocument and redacts them.
     ///     </summary>
-    public class PdfAutoSweep {
+    public class PdfAutoSweepTools {
         private ICleanupStrategy strategy;
 
         private int annotationNumber = 1;
 
-        /// <summary>Construct a new instance of PdfAutoSweep with a given ICleanupStrategy</summary>
+        /// <summary>Construct a new instance of PdfAutoSweepTools with a given ICleanupStrategy</summary>
         /// <param name="strategy">the redaction strategy to be used</param>
-        public PdfAutoSweep(ICleanupStrategy strategy) {
+        public PdfAutoSweepTools(ICleanupStrategy strategy) {
             this.strategy = strategy;
         }
 
@@ -95,39 +95,6 @@ namespace iText.PdfCleanup.Autosweep {
                 canvas.Rectangle(loc.GetRegion());
                 canvas.Fill();
             }
-        }
-
-        /// <summary>
-        /// Perform cleanup of areas of interest on a given
-        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// </summary>
-        /// <param name="pdfDocument">
-        /// the
-        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// to be redacted
-        /// </param>
-        public virtual void CleanUp(PdfDocument pdfDocument) {
-            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfDocument);
-            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
-                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
-            cleaner.CleanUp();
-        }
-
-        /// <summary>
-        /// Perform cleanup of areas of interest on a given
-        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
-        /// </summary>
-        /// <param name="pdfPage">
-        /// the
-        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
-        /// to be redacted
-        /// </param>
-        public virtual void CleanUp(PdfPage pdfPage) {
-            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = GetPdfCleanUpLocations(pdfPage);
-            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
-                (pdfPage.GetDocument(), true) : new iText.PdfCleanup.PdfCleanUpTool(pdfPage.GetDocument(), cleanUpLocations
-                );
-            cleaner.CleanUp();
         }
 
         /// <summary>
@@ -169,7 +136,7 @@ namespace iText.PdfCleanup.Autosweep {
         /// Get all
         /// <see cref="iText.PdfCleanup.PdfCleanUpLocation"/>
         /// objects from a given
-        /// <see cref="iText.Kernel.Pdf.PdfPage"/>
+        /// <see cref="iText.Kernel.Pdf.PdfPage"/>.
         /// </summary>
         /// <param name="page">
         /// the
@@ -207,7 +174,7 @@ namespace iText.PdfCleanup.Autosweep {
         /// Get all
         /// <see cref="iText.PdfCleanup.PdfCleanUpLocation"/>
         /// objects from a given
-        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
+        /// <see cref="iText.Kernel.Pdf.PdfDocument"/>.
         /// </summary>
         /// <param name="doc">
         /// the
@@ -232,12 +199,12 @@ namespace iText.PdfCleanup.Autosweep {
                 }
                 ResetStrategy();
             }
-            JavaCollectionsUtil.Sort(toClean, new _IComparer_222());
+            JavaCollectionsUtil.Sort(toClean, new _IComparer_197());
             return toClean;
         }
 
-        private sealed class _IComparer_222 : IComparer<iText.PdfCleanup.PdfCleanUpLocation> {
-            public _IComparer_222() {
+        private sealed class _IComparer_197 : IComparer<iText.PdfCleanup.PdfCleanUpLocation> {
+            public _IComparer_197() {
             }
 
             public int Compare(iText.PdfCleanup.PdfCleanUpLocation o1, iText.PdfCleanup.PdfCleanUpLocation o2) {

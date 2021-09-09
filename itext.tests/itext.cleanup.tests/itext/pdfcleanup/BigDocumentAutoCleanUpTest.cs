@@ -77,8 +77,7 @@ namespace iText.PdfCleanup {
             writer.SetCompressionLevel(0);
             PdfDocument pdf = new PdfDocument(new PdfReader(input), writer);
             // sweep
-            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
-            autoSweep.CleanUp(pdf);
+            PdfCleaner.AutoSweepCleanUp(pdf, strategy);
             pdf.Close();
             // compare
             CompareResults(cmp, output, outputPath, "4");
@@ -93,8 +92,7 @@ namespace iText.PdfCleanup {
             strategy.Add(new CustomLocationExtractionStrategy("(iphone)|(iPhone)"));
             PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             // sweep
-            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
-            autoSweep.CleanUp(pdf);
+            PdfCleaner.AutoSweepCleanUp(pdf, strategy);
             pdf.Close();
             // compare
             CompareTool compareTool = new CompareTool();
@@ -111,8 +109,7 @@ namespace iText.PdfCleanup {
             strategy.Add(new CustomLocationExtractionStrategy("(iphone)|(iPhone)"));
             PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             // sweep
-            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
-            autoSweep.CleanUp(pdf);
+            PdfCleaner.AutoSweepCleanUp(pdf, strategy);
             pdf.Close();
             // compare
             CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
@@ -137,8 +134,7 @@ namespace iText.PdfCleanup {
             strategy.Add(new RegexBasedCleanupStrategy("(iphone)|(iPhone)"));
             PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             // sweep
-            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
-            autoSweep.CleanUp(pdf);
+            PdfCleaner.AutoSweepCleanUp(pdf, strategy);
             pdf.Close();
             // compare
             CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
@@ -163,8 +159,7 @@ namespace iText.PdfCleanup {
             strategy.Add(new RegexBasedCleanupStrategy("(iphone)|(iPhone)").SetRedactionColor(ColorConstants.GREEN));
             PdfDocument pdf = new PdfDocument(new PdfReader(input), new PdfWriter(output));
             // sweep
-            PdfAutoSweep autoSweep = new PdfAutoSweep(strategy);
-            autoSweep.CleanUp(pdf);
+            PdfCleaner.AutoSweepCleanUp(pdf, strategy);
             pdf.Close();
             CompareResults(cmp, output, outputPath, "4");
         }

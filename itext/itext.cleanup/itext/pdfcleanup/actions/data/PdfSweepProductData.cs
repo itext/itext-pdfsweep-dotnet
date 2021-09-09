@@ -1,7 +1,7 @@
 /*
 This file is part of the iText (R) project.
 Copyright (c) 1998-2021 iText Group NV
-Authors: Bruno Lowagie, Paulo Soares, et al.
+Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License version 3
@@ -41,26 +41,39 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
-using iText.Kernel.Counter;
-using iText.Kernel.Counter.Event;
+using iText.Commons.Actions.Data;
 
-namespace iText.PdfCleanup.Events {
-    public class PdfSweepEvent : IGenericEvent {
-        public static readonly iText.PdfCleanup.Events.PdfSweepEvent CLEANUP = new iText.PdfCleanup.Events.PdfSweepEvent
-            ("cleanup");
+namespace iText.PdfCleanup.Actions.Data {
+    /// <summary>
+    /// Stores an instance of
+    /// <see cref="iText.Commons.Actions.Data.ProductData"/>
+    /// related to iText pdfSweep module.
+    /// </summary>
+    public class PdfSweepProductData {
+        public const String PDF_SWEEP_PRODUCT_NAME = "pdfSweep";
 
-        private readonly String subtype;
+        public const String PDF_SWEEP_PUBLIC_PRODUCT_NAME = PDF_SWEEP_PRODUCT_NAME;
 
-        private PdfSweepEvent(String subtype) {
-            this.subtype = subtype;
+        private const String PDF_SWEEP_VERSION = "3.0.0-SNAPSHOT";
+
+        private const int PDF_SWEEP_COPYRIGHT_SINCE = 2000;
+
+        private const int PDF_SWEEP_COPYRIGHT_TO = 2021;
+
+        private static readonly ProductData PDF_SWEEP_PRODUCT_DATA = new ProductData(PDF_SWEEP_PUBLIC_PRODUCT_NAME
+            , PDF_SWEEP_PRODUCT_NAME, PDF_SWEEP_VERSION, PDF_SWEEP_COPYRIGHT_SINCE, PDF_SWEEP_COPYRIGHT_TO);
+
+        private PdfSweepProductData() {
         }
 
-        public virtual String GetEventType() {
-            return "sweep-" + subtype;
-        }
-
-        public virtual String GetOriginId() {
-            return NamespaceConstant.PDF_SWEEP;
+        /// <summary>
+        /// Getter for an instance of
+        /// <see cref="iText.Commons.Actions.Data.ProductData"/>
+        /// related to iText pdfSweep module.
+        /// </summary>
+        /// <returns>iText pdfSweep product description</returns>
+        public static ProductData GetInstance() {
+            return PDF_SWEEP_PRODUCT_DATA;
         }
     }
 }

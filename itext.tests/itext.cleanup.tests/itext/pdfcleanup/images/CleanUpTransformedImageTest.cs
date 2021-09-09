@@ -21,11 +21,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
+using iText.PdfCleanup;
 using iText.PdfCleanup.Util;
 using iText.Test;
 
@@ -70,8 +71,8 @@ namespace iText.PdfCleanup.Images {
         private static void CleanFirstPageAndDrawCleanupRegion(Rectangle cleanupRegion, String input, String output
             ) {
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output))) {
-                new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, JavaCollectionsUtil.SingletonList(new iText.PdfCleanup.PdfCleanUpLocation
-                    (1, cleanupRegion))).CleanUp();
+                PdfCleaner.CleanUp(pdfDocument, JavaCollectionsUtil.SingletonList(new iText.PdfCleanup.PdfCleanUpLocation(
+                    1, cleanupRegion)));
                 DrawCleanupRegionOnPage(pdfDocument, cleanupRegion);
             }
         }
