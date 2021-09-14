@@ -79,7 +79,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(2, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             NUnit.Framework.Assert.AreEqual(PdfSweepProductEvent.CLEANUP_PDF, events[1].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent(), GetCleanUpEvent
@@ -103,7 +103,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(2, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             NUnit.Framework.Assert.AreEqual(PdfSweepProductEvent.CLEANUP_PDF, events[1].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent(), GetCleanUpEvent
@@ -123,7 +123,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(2, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             NUnit.Framework.Assert.AreEqual(PdfSweepProductEvent.CLEANUP_PDF, events[1].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent(), GetCleanUpEvent
@@ -205,7 +205,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(2, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             NUnit.Framework.Assert.AreEqual(PdfSweepProductEvent.CLEANUP_PDF, events[1].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent(), GetCleanUpEvent
@@ -226,7 +226,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(1, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent() }, oldProducer
                     );
@@ -245,7 +245,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(2, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             NUnit.Framework.Assert.AreEqual(PdfSweepProductEvent.CLEANUP_PDF, events[1].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent(), GetCleanUpEvent
@@ -308,7 +308,7 @@ namespace iText.PdfCleanup {
             document.Close();
             IList<ConfirmEvent> events = handler.GetEvents();
             NUnit.Framework.Assert.AreEqual(1, events.Count);
-            NUnit.Framework.Assert.AreEqual(ITextCoreEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
+            NUnit.Framework.Assert.AreEqual(ITextCoreProductEvent.PROCESS_PDF, events[0].GetEvent().GetEventType());
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(new MemoryStream(baos.ToArray())))) {
                 String expectedProdLine = CreateExpectedProducerLine(new ConfirmedEventWrapper[] { GetCoreEvent() }, oldProducer
                     );
@@ -325,7 +325,7 @@ namespace iText.PdfCleanup {
         private static ConfirmedEventWrapper GetCoreEvent() {
             DefaultITextProductEventProcessor processor = new DefaultITextProductEventProcessor(ProductNameConstant.ITEXT_CORE
                 );
-            return new ConfirmedEventWrapper(ITextCoreEvent.CreateProcessPdfEvent(new SequenceId(), null, EventConfirmationType
+            return new ConfirmedEventWrapper(ITextCoreProductEvent.CreateProcessPdfEvent(new SequenceId(), null, EventConfirmationType
                 .ON_CLOSE), processor.GetUsageType(), processor.GetProducer());
         }
 
