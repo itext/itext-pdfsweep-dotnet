@@ -336,14 +336,14 @@ namespace iText.PdfCleanup {
                 .GetUsageType(), processor.GetProducer());
         }
 
-        private class StoreEventsHandler : IBaseEventHandler {
+        private class StoreEventsHandler : IEventHandler {
             private readonly IList<ConfirmEvent> events = new List<ConfirmEvent>();
 
             public virtual IList<ConfirmEvent> GetEvents() {
                 return events;
             }
 
-            public virtual void OnEvent(IBaseEvent @event) {
+            public virtual void OnEvent(IEvent @event) {
                 if (@event is ConfirmEvent) {
                     events.Add((ConfirmEvent)@event);
                 }
