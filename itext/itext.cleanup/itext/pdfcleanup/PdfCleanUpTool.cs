@@ -149,8 +149,10 @@ namespace iText.PdfCleanup {
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// object representing the document to which redaction applies.
         /// </param>
-        /// <param name="cleanRedactAnnotations">
-        /// if true - regions to be erased are extracted from the redact annotations contained
+        /// <param name="cleanRedactAnnotations">if true - regions to be erased are extracted from the redact annotations contained
+        ///     </param>
+        /// <param name="properties">
+        /// additional properties for clean-up process
         /// inside the given document.
         /// </param>
         public PdfCleanUpTool(PdfDocument pdfDocument, bool cleanRedactAnnotations, CleanUpProperties properties) {
@@ -186,6 +188,7 @@ namespace iText.PdfCleanup {
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
         /// object representing the document to which redaction applies.
         /// </param>
+        /// <param name="properties">additional properties for clean-up process</param>
         public PdfCleanUpTool(PdfDocument pdfDocument, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
             , CleanUpProperties properties)
             : this(pdfDocument, false, properties) {
