@@ -60,6 +60,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Colorspace;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
+using iText.PdfCleanup.Logs;
 using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {

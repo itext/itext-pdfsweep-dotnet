@@ -73,7 +73,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.CREATED_ROOT_TAG_HAS_MAPPING)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.CREATED_ROOT_TAG_HAS_MAPPING)]
         public virtual void BigTaggedDocument() {
             String input = inputPath + "chapter8_Interactive_features.pdf";
             String output = outputPath + "bigTaggedDocument.pdf";

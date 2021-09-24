@@ -63,8 +63,8 @@ namespace iText.PdfCleanup.Text {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.FONT_DICTIONARY_WITH_NO_FONT_DESCRIPTOR)]
-        [LogMessage(iText.IO.LogMessageConstant.FONT_DICTIONARY_WITH_NO_WIDTHS)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.FONT_DICTIONARY_WITH_NO_FONT_DESCRIPTOR)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.FONT_DICTIONARY_WITH_NO_WIDTHS)]
         public virtual void CleanZeroWidthTextInvalidFont() {
             String input = inputPath + "cleanZeroWidthTextInvalidFont.pdf";
             String output = outputPath + "cleanZeroWidthTextInvalidFont.pdf";

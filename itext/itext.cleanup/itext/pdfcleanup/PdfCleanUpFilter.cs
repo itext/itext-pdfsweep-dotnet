@@ -55,6 +55,7 @@ using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Xobject;
 using iText.PdfCleanup.Exceptions;
+using iText.PdfCleanup.Logs;
 using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {

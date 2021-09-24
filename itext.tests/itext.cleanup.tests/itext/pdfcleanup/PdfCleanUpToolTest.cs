@@ -52,6 +52,7 @@ using iText.Kernel.Pdf.Annot;
 using iText.Kernel.Utils;
 using iText.PdfCleanup.Autosweep;
 using iText.PdfCleanup.Exceptions;
+using iText.PdfCleanup.Logs;
 using iText.PdfCleanup.Util;
 using iText.Test;
 using iText.Test.Attributes;
@@ -697,7 +698,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
         public virtual void NoPropertiesInResourcesTest() {
             String fileName = "noPropertiesInResourcesTest";
             String input = INPUT_PATH + fileName + ".pdf";
@@ -710,7 +711,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.PDF_REFERS_TO_NOT_EXISTING_PROPERTY_DICTIONARY)]
         public virtual void IncorrectBDCToBMCTest() {
             String fileName = "incorrectBDCToBMCTest";
             String input = INPUT_PATH + fileName + ".pdf";
