@@ -47,7 +47,7 @@ using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iT
 using iText.Commons;
 using iText.Commons.Utils;
 using iText.IO.Image;
-using iText.Kernel;
+using iText.Kernel.Exceptions;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;

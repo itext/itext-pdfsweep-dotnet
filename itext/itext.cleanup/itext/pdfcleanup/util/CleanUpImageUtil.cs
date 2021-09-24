@@ -27,7 +27,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-using iText.Kernel;
+using iText.Kernel.Exceptions;
 using Rectangle = iText.Kernel.Geom.Rectangle;
 
 namespace iText.PdfCleanup.Util {
