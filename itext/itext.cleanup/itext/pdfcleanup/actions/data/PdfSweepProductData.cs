@@ -54,7 +54,7 @@ namespace iText.PdfCleanup.Actions.Data {
 
         public const String PDF_SWEEP_PUBLIC_PRODUCT_NAME = PDF_SWEEP_PRODUCT_NAME;
 
-        private const String PDF_SWEEP_VERSION = "3.0.0-SNAPSHOT";
+        private const String PDF_SWEEP_VERSION = "3.0.1-SNAPSHOT";
 
         private const int PDF_SWEEP_COPYRIGHT_SINCE = 2000;
 
