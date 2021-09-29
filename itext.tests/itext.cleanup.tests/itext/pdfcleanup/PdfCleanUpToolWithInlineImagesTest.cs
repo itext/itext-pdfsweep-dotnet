@@ -43,7 +43,7 @@ address: sales@itextpdf.com
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
@@ -64,7 +64,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
         [Ignore("DEVSIX-1617: System.Drawing.Image creates a Bitmap image object with fixed pixel format. If you try to get Graphics from such an image you'll get an exception." )]
         public virtual void CleanUpTest28() {
             String input = inputPath + "inlineImages.pdf";
@@ -89,7 +89,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [LogMessage(iText.IO.LogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.IMAGE_SIZE_CANNOT_BE_MORE_4KB)]
         public virtual void CleanUpTest31() {
             String input = inputPath + "inlineImageCleanup.pdf";
             String output = outputPath + "inlineImageCleanup.pdf";
@@ -109,9 +109,12 @@ namespace iText.PdfCleanup {
         private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
             ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
-                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
-            cleaner.CleanUp();
+            if (cleanUpLocations == null) {
+                PdfCleaner.CleanUpRedactAnnotations(pdfDocument);
+            }
+            else {
+                PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
+            }
             pdfDocument.Close();
         }
 

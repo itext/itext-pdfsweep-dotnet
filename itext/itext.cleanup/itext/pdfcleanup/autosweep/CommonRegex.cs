@@ -52,71 +52,72 @@ namespace iText.PdfCleanup.Autosweep {
         /*
         * NUMBERS
         */
-        public static Regex MODERN_ROMAN_NUMERALS_STRICT = iText.IO.Util.StringUtil.RegexCompile("(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})"
+        public static Regex MODERN_ROMAN_NUMERALS_STRICT = iText.Commons.Utils.StringUtil.RegexCompile("(?=[MDCLXVI])M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})"
             );
 
-        public static Regex MODERN_ROMAN_NUMERALS_FLEXIBLE = iText.IO.Util.StringUtil.RegexCompile("(?=[MDCLXVI])M*(C[MD]|D?C*)(X[CL]|L?X*)(I[XV]|V?I*)"
+        public static Regex MODERN_ROMAN_NUMERALS_FLEXIBLE = iText.Commons.Utils.StringUtil.RegexCompile("(?=[MDCLXVI])M*(C[MD]|D?C*)(X[CL]|L?X*)(I[XV]|V?I*)"
             );
 
         /*
         * MISC.
         */
-        public static Regex US_SOCIAL_SECURITY_NUMBER = iText.IO.Util.StringUtil.RegexCompile("\\d{3}-\\d{2}-\\d{4}"
+        public static Regex US_SOCIAL_SECURITY_NUMBER = iText.Commons.Utils.StringUtil.RegexCompile("\\d{3}-\\d{2}-\\d{4}"
             );
 
-        public static Regex US_ZIP_CODE = iText.IO.Util.StringUtil.RegexCompile("\\d{5}(-\\d{4})?");
+        public static Regex US_ZIP_CODE = iText.Commons.Utils.StringUtil.RegexCompile("\\d{5}(-\\d{4})?");
 
-        public static Regex US_CURRENCY = iText.IO.Util.StringUtil.RegexCompile("\\$(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
+        public static Regex US_CURRENCY = iText.Commons.Utils.StringUtil.RegexCompile("\\$(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
             );
 
-        public static Regex CANADA_SOCIAL_SECURITY_NUMBER = iText.IO.Util.StringUtil.RegexCompile("\\d{3}-\\d{3}-\\d{3}"
+        public static Regex CANADA_SOCIAL_SECURITY_NUMBER = iText.Commons.Utils.StringUtil.RegexCompile("\\d{3}-\\d{3}-\\d{3}"
             );
 
-        public static Regex CANADA_ZIP_CODE = iText.IO.Util.StringUtil.RegexCompile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]"
+        public static Regex CANADA_ZIP_CODE = iText.Commons.Utils.StringUtil.RegexCompile("(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]"
             );
 
-        public static Regex UK_SOCIAL_SECURITY_NUMBER = iText.IO.Util.StringUtil.RegexCompile("[A-Z]{2}\\d{6}[A-Z]]"
+        public static Regex UK_SOCIAL_SECURITY_NUMBER = iText.Commons.Utils.StringUtil.RegexCompile("[A-Z]{2}\\d{6}[A-Z]]"
             );
 
-        public static Regex UK_ZIP_CODE = iText.IO.Util.StringUtil.RegexCompile("[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}"
+        public static Regex UK_ZIP_CODE = iText.Commons.Utils.StringUtil.RegexCompile("[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}"
             );
 
-        public static Regex UK_CURRENCY = iText.IO.Util.StringUtil.RegexCompile("£(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
+        public static Regex UK_CURRENCY = iText.Commons.Utils.StringUtil.RegexCompile("£(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
             );
 
-        public static Regex EU_CURRENCY = iText.IO.Util.StringUtil.RegexCompile("€(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
+        public static Regex EU_CURRENCY = iText.Commons.Utils.StringUtil.RegexCompile("€(\\d{1,3}(\\,\\d{3})*|(\\d+))(\\.\\d{2})?"
             );
 
         /*
         * DATE AND TIME
         */
-        public static Regex DATE_MM_DD_YYYY = iText.IO.Util.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4}"
+        public static Regex DATE_MM_DD_YYYY = iText.Commons.Utils.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4}"
             );
 
-        public static Regex DATE_MM_DD_YYYY_HH_MM_SS = iText.IO.Util.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"
+        public static Regex DATE_MM_DD_YYYY_HH_MM_SS = iText.Commons.Utils.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"
             );
 
-        public static Regex DATE_DD_MM_YYYY = iText.IO.Util.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4}"
+        public static Regex DATE_DD_MM_YYYY = iText.Commons.Utils.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4}"
             );
 
-        public static Regex DATE_DD_MM_YYYY_HH_MM_SS = iText.IO.Util.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"
+        public static Regex DATE_DD_MM_YYYY_HH_MM_SS = iText.Commons.Utils.StringUtil.RegexCompile("\\d{1,2}[ \\/-]\\d{1,2}[ \\/-]\\d{4} \\d{1,2}:\\d{1,2}:\\d{1,2}"
             );
 
         /*
         * ICT
         */
-        public static Regex IPV4_ADDRESS = iText.IO.Util.StringUtil.RegexCompile("(?:[0-9]{1,3}\\.){3}[0-9]{1,3}");
-
-        public static Regex IPV6_ADDRESS = iText.IO.Util.StringUtil.RegexCompile("(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}"
+        public static Regex IPV4_ADDRESS = iText.Commons.Utils.StringUtil.RegexCompile("(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
             );
 
-        public static Regex MAC_ADDRESS = iText.IO.Util.StringUtil.RegexCompile("([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])"
+        public static Regex IPV6_ADDRESS = iText.Commons.Utils.StringUtil.RegexCompile("(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}"
             );
 
-        public static Regex EMAIL_ADDRESS = iText.IO.Util.StringUtil.RegexCompile("[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9}"
+        public static Regex MAC_ADDRESS = iText.Commons.Utils.StringUtil.RegexCompile("([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])"
             );
 
-        public static Regex HTTP_URL = iText.IO.Util.StringUtil.RegexCompile("(https?|ftp)://[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].+)?"
+        public static Regex EMAIL_ADDRESS = iText.Commons.Utils.StringUtil.RegexCompile("[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9}"
+            );
+
+        public static Regex HTTP_URL = iText.Commons.Utils.StringUtil.RegexCompile("(https?|ftp)://[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].+)?"
             );
     }
 }

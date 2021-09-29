@@ -42,12 +42,13 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using iText.Commons;
+using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Source;
-using iText.IO.Util;
-using iText.Kernel;
 using iText.Kernel.Colors;
+using iText.Kernel.Exceptions;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -59,6 +60,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Colorspace;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
+using iText.PdfCleanup.Logs;
 using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
@@ -188,19 +190,6 @@ namespace iText.PdfCleanup {
         public override void ProcessPageContent(PdfPage page) {
             currentPage = page;
             base.ProcessPageContent(page);
-        }
-
-        /// <summary>Process the annotations of a page.</summary>
-        /// <remarks>
-        /// Process the annotations of a page.
-        /// Default process behaviour is to remove the annotation if there is (partial) overlap with a redaction region
-        /// </remarks>
-        /// <param name="page">the page to process</param>
-        /// <param name="regions">a list of redaction regions</param>
-        [System.ObsoleteAttribute(@"Will be removed in iText 7.2, use ProcessPageAnnotations(iText.Kernel.Pdf.PdfPage, System.Collections.Generic.IList{E}, bool) instead."
-            )]
-        public virtual void ProcessPageAnnotations(PdfPage page, IList<Rectangle> regions) {
-            ProcessPageAnnotations(page, regions, false);
         }
 
         /// <summary>Process the annotations of a page.</summary>
@@ -340,8 +329,8 @@ namespace iText.PdfCleanup {
             PdfName annotationType = annotation.GetPdfObject().GetAsName(PdfName.Subtype);
             if (annotationType.Equals(PdfName.Watermark)) {
                 // TODO /FixedPrint entry effect is not fully investigated: DEVSIX-2471
-                ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Warn(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
+                ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                logger.LogWarning(CleanUpLogMessageConstant.REDACTION_OF_ANNOTATION_TYPE_WATERMARK_IS_NOT_SUPPORTED);
             }
             PdfArray rectAsArray = annotation.GetRectangle();
             Rectangle rect = null;
@@ -716,7 +705,8 @@ namespace iText.PdfCleanup {
                     float[] ctm = PollNotAppliedCtm();
                     WriteNotAppliedGsParams(false, false);
                     OpenNotWrittenTags();
-                    GetCanvas().AddXObject(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]);
+                    GetCanvas().AddXObjectWithTransformationMatrix(imageToWrite, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5
+                        ]);
                 }
             }
         }
@@ -731,8 +721,8 @@ namespace iText.PdfCleanup {
                     ImageData filteredImageData = imageFilterResult.GetFilterResult();
                     if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
                         if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
-                            ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                            logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                            ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                            logger.LogError(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                         }
                         else {
                             filteredImageData.MakeMask();
@@ -786,8 +776,8 @@ namespace iText.PdfCleanup {
             }
             PdfImageXObject maskImageXObject = new PdfImageXObject(maskStream);
             if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(maskImageXObject)) {
-                ILog logger = LogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                logger.Error(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                logger.LogError(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
                 return;
             }
             FilteredImagesCache.FilteredImageKey k = filter.CreateFilteredImageKey(maskImageXObject, ctmForMasksFiltering
@@ -820,7 +810,8 @@ namespace iText.PdfCleanup {
                 float[] ctm = PollNotAppliedCtm();
                 WriteNotAppliedGsParams(false, false);
                 OpenNotWrittenTags();
-                GetCanvas().AddImage(filteredImage, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5], true);
+                GetCanvas().AddImageWithTransformationMatrix(filteredImage, ctm[0], ctm[1], ctm[2], ctm[3], ctm[4], ctm[5]
+                    , true);
             }
         }
 
@@ -903,7 +894,7 @@ namespace iText.PdfCleanup {
                     // we still need to open all q operators
                     canvas.MoveTo(0, 0).Clip();
                 }
-                canvas.NewPath();
+                canvas.EndPath();
             }
         }
 

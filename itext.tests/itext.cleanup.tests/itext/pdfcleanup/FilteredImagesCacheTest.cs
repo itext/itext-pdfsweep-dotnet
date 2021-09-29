@@ -200,7 +200,7 @@ namespace iText.PdfCleanup {
         }
 
         private void CleanUp(PdfDocument pdfDocument, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations) {
-            new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations).CleanUp();
+            PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
             pdfDocument.Close();
         }
 

@@ -4,6 +4,6 @@
 def repoName = "pdfSweep"
 def dependencyRegex = "itextcore"
 def solutionFile = "itext.cleanup.sln"
-def csprojFramework = "netcoreapp2.0"
+def frameworksToTest = "net461"
 
-automaticDotnetBuild(repoName, dependencyRegex, solutionFile, csprojFramework)
+automaticDotnetBuild(repoName, dependencyRegex, solutionFile, frameworksToTest)

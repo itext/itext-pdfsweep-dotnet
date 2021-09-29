@@ -43,12 +43,11 @@ address: sales@itextpdf.com
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using iText.Commons.Actions;
+using iText.Commons.Utils;
 using iText.IO.Source;
-using iText.IO.Util;
-using iText.Kernel;
 using iText.Kernel.Colors;
-using iText.Kernel.Counter;
-using iText.Kernel.Counter.Event;
+using iText.Kernel.Exceptions;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -58,61 +57,46 @@ using iText.Kernel.Pdf.Xobject;
 using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
-using iText.PdfCleanup.Events;
+using iText.PdfCleanup.Actions.Event;
+using iText.PdfCleanup.Exceptions;
 
 namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
     public class PdfCleanUpTool {
         /// <summary>
-        /// When a document with line arts is being cleaned up, there are lot of
+        /// When a document with line arts is being cleaned up, there are a lot of
         /// calculations with floating point numbers.
         /// </summary>
         /// <remarks>
-        /// When a document with line arts is being cleaned up, there are lot of
+        /// When a document with line arts is being cleaned up, there are a lot of
         /// calculations with floating point numbers. All of them are translated
         /// into fixed point numbers by multiplying by this coefficient. Vary it
         /// to adjust the preciseness of the calculations.
         /// </remarks>
         [System.ObsoleteAttribute]
-        public static double floatMultiplier = Math.Pow(10, 14);
+        public static double floatMultiplier = Math
+                //TODO DEVSIX-5770 make this constant a single non-static configuration
+                .Pow(10, 14);
 
         /// <summary>
         /// Used as the criterion of a good approximation of rounded line joins
         /// and line caps.
         /// </summary>
         [System.ObsoleteAttribute]
-        public static double arcTolerance = 0.0025;
+        public static double arcTolerance = 
+                //TODO DEVSIX-5770 make this constant a single non-static configuration
+                0.0025;
 
         private PdfDocument pdfDocument;
 
         private bool processAnnotations;
-
-        private IMetaInfo cleanupMetaInfo;
-
-        /// <summary>
-        /// Check if page annotations will be processed
-        /// Default: True
-        /// </summary>
-        /// <returns>True if annotations will be processed by the PdfCleanUpTool</returns>
-        public virtual bool IsProcessAnnotations() {
-            return processAnnotations;
-        }
-
-        /// <summary>
-        /// Set if page annotations will be processed
-        /// Default processing behaviour: remove annotation if there is overlap with a redaction region
-        /// </summary>
-        /// <param name="processAnnotations">if page annotations will be processed</param>
-        public virtual void SetProcessAnnotations(bool processAnnotations) {
-            this.processAnnotations = processAnnotations;
-        }
 
         /// <summary>Key - page number, value - list of locations related to the page.</summary>
         private IDictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>> pdfCleanUpLocations;
 
         /// <summary>
         /// Keys - redact annotations to be removed from the document after clean up,
-        /// Values - list of regions defined by redact annotation
+        /// values - list of regions defined by redact annotation.
         /// </summary>
         private IDictionary<PdfRedactAnnotation, IList<Rectangle>> redactAnnotations;
 
@@ -135,11 +119,10 @@ namespace iText.PdfCleanup {
         /// <param name="pdfDocument">
         /// A
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// object representing the document
-        /// to which redaction applies.
+        /// object representing the document to which redaction applies.
         /// </param>
         public PdfCleanUpTool(PdfDocument pdfDocument)
-            : this(pdfDocument, false) {
+            : this(pdfDocument, false, new CleanUpProperties()) {
         }
 
         /// <summary>
@@ -164,17 +147,19 @@ namespace iText.PdfCleanup {
         /// <param name="pdfDocument">
         /// A
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// object representing the document
-        /// to which redaction applies.
+        /// object representing the document to which redaction applies.
         /// </param>
-        /// <param name="cleanRedactAnnotations">
-        /// if true - regions to be erased are extracted from the redact annotations contained
+        /// <param name="cleanRedactAnnotations">if true - regions to be erased are extracted from the redact annotations contained
+        ///     </param>
+        /// <param name="properties">
+        /// additional properties for clean-up process
         /// inside the given document.
         /// </param>
-        public PdfCleanUpTool(PdfDocument pdfDocument, bool cleanRedactAnnotations) {
-            ReflectionUtils.ScheduledLicenseCheck();
+        public PdfCleanUpTool(PdfDocument pdfDocument, bool cleanRedactAnnotations, CleanUpProperties properties) {
+            EventManager.GetInstance().OnEvent(PdfSweepProductEvent.CreateCleanupPdfEvent(pdfDocument.GetDocumentIdWrapper
+                (), properties.GetMetaInfo()));
             if (pdfDocument.GetReader() == null || pdfDocument.GetWriter() == null) {
-                throw new PdfException(PdfException.PdfDocumentMustBeOpenedInStampingMode);
+                throw new PdfException(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE);
             }
             this.pdfDocument = pdfDocument;
             this.pdfCleanUpLocations = new Dictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>>();
@@ -182,7 +167,7 @@ namespace iText.PdfCleanup {
             if (cleanRedactAnnotations) {
                 AddCleanUpLocationsBasedOnRedactAnnotations();
             }
-            processAnnotations = true;
+            processAnnotations = properties.IsProcessAnnotations();
         }
 
         /// <summary>
@@ -199,14 +184,14 @@ namespace iText.PdfCleanup {
         /// <see cref="PdfCleanUpLocation"/>
         /// </param>
         /// <param name="pdfDocument">
-        /// A
+        /// a
         /// <see cref="iText.Kernel.Pdf.PdfDocument"/>
-        /// object representing the document
-        /// to which redaction applies.
+        /// object representing the document to which redaction applies.
         /// </param>
+        /// <param name="properties">additional properties for clean-up process</param>
         public PdfCleanUpTool(PdfDocument pdfDocument, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
-            )
-            : this(pdfDocument) {
+            , CleanUpProperties properties)
+            : this(pdfDocument, false, properties) {
             foreach (iText.PdfCleanup.PdfCleanUpLocation location in cleanUpLocations) {
                 AddCleanupLocation(location);
             }
@@ -224,24 +209,8 @@ namespace iText.PdfCleanup {
             return this;
         }
 
-        /// <summary>
-        /// Sets the cleanup meta info that will be passed to the
-        /// <see cref="iText.Kernel.Counter.EventCounter"/>
-        /// with
-        /// <see cref="iText.PdfCleanup.Events.PdfSweepEvent"/>
-        /// and can be used to determine event origin.
-        /// </summary>
-        /// <param name="metaInfo">the meta info to set.</param>
-        /// <returns>this instance</returns>
-        public virtual iText.PdfCleanup.PdfCleanUpTool SetEventCountingMetaInfo(IMetaInfo metaInfo) {
-            this.cleanupMetaInfo = metaInfo;
-            return this;
-        }
-
-        /// <summary>
-        /// Cleans the document by erasing all the areas which are either provided or
-        /// extracted from redaction annotations.
-        /// </summary>
+        /// <summary>Cleans the document by erasing all the areas which are provided or extracted from redaction annotations.
+        ///     </summary>
         public virtual void CleanUp() {
             foreach (KeyValuePair<int, IList<iText.PdfCleanup.PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -251,10 +220,12 @@ namespace iText.PdfCleanup {
                 RemoveRedactAnnots();
             }
             pdfCleanUpLocations.Clear();
-            EventCounterHandler.GetInstance().OnEvent(PdfSweepEvent.CLEANUP, cleanupMetaInfo, GetType());
         }
 
-        /// <summary>Cleans a page from the document by erasing all the areas which are provided or</summary>
+        /// <summary>
+        /// Cleans a page from the document by erasing all the areas which
+        /// are provided or extracted from redaction annotations.
+        /// </summary>
         /// <param name="pageNumber">the page to be cleaned up</param>
         /// <param name="cleanUpLocations">the locations to be cleaned up</param>
         private void CleanUpPage(int pageNumber, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations) {
@@ -278,7 +249,7 @@ namespace iText.PdfCleanup {
             ColorCleanedLocations(pageCleanedContents, cleanUpLocations);
         }
 
-        /// <summary>Draws colored rectangles on the PdfCanvas corresponding to the PdfCleanUpLocation objects</summary>
+        /// <summary>Draws colored rectangles on the PdfCanvas corresponding to the PdfCleanUpLocation objects.</summary>
         /// <param name="canvas">the PdfCanvas on which to draw</param>
         /// <param name="cleanUpLocations">the PdfCleanUpLocations</param>
         private void ColorCleanedLocations(PdfCanvas canvas, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
@@ -290,7 +261,7 @@ namespace iText.PdfCleanup {
             }
         }
 
-        /// <summary>Draws a colored rectangle on the PdfCanvas correponding to a PdfCleanUpLocation</summary>
+        /// <summary>Draws a colored rectangle on the PdfCanvas correponding to a PdfCleanUpLocation.</summary>
         /// <param name="canvas">the PdfCanvas on which to draw</param>
         /// <param name="location">the PdfCleanUpLocation</param>
         private void AddColoredRectangle(PdfCanvas canvas, iText.PdfCleanup.PdfCleanUpLocation location) {
@@ -360,7 +331,7 @@ namespace iText.PdfCleanup {
             }
         }
 
-        /// <summary>Convert a PdfArray of floats into a List of Rectangle objects</summary>
+        /// <summary>Convert a PdfArray of floats into a List of Rectangle objects.</summary>
         /// <param name="quadPoints">input PdfArray</param>
         private IList<Rectangle> TranslateQuadPointsToRectangles(PdfArray quadPoints) {
             IList<Rectangle> rectangles = new List<Rectangle>();
@@ -376,10 +347,11 @@ namespace iText.PdfCleanup {
             return rectangles;
         }
 
-        /// <summary>
-        /// Remove the redaction annotations
+        /// <summary>Remove the redaction annotations.</summary>
+        /// <remarks>
+        /// Remove the redaction annotations.
         /// This method is called after the annotations are processed.
-        /// </summary>
+        /// </remarks>
         private void RemoveRedactAnnots() {
             foreach (PdfRedactAnnotation annotation in redactAnnotations.Keys) {
                 PdfPage page = annotation.GetPage();
@@ -415,9 +387,10 @@ namespace iText.PdfCleanup {
             foreach (Rectangle rect in cleanedRegions) {
                 canvas.Rectangle(rect.GetLeft(), rect.GetBottom(), rect.GetWidth(), rect.GetHeight());
             }
-            canvas.Clip().NewPath();
+            canvas.Clip().EndPath();
             PdfFormXObject formXObject = new PdfFormXObject(redactRolloverAppearance);
-            canvas.AddXObject(formXObject, 1, 0, 0, 1, annotRect.GetLeft(), annotRect.GetBottom());
+            canvas.AddXObjectWithTransformationMatrix(formXObject, 1, 0, 0, 1, annotRect.GetLeft(), annotRect.GetBottom
+                ());
             canvas.RestoreState();
             if (pdfDocument.IsTagged()) {
                 canvas.CloseTag();
@@ -431,7 +404,7 @@ namespace iText.PdfCleanup {
                 parsedDA = ParseDAParam(defaultAppearance);
             }
             catch (NullReferenceException) {
-                throw new PdfException(PdfException.DefaultAppearanceNotFound);
+                throw new PdfException(CleanupExceptionMessageConstant.DEFAULT_APPEARANCE_NOT_FOUND);
             }
             PdfFont font;
             float fontSize = 12;
@@ -447,7 +420,7 @@ namespace iText.PdfCleanup {
             if (pdfDocument.IsTagged()) {
                 canvas.OpenTag(new CanvasArtifact());
             }
-            iText.Layout.Canvas modelCanvas = new iText.Layout.Canvas(canvas, pdfDocument, annotRect, false);
+            iText.Layout.Canvas modelCanvas = new iText.Layout.Canvas(canvas, annotRect, false);
             Paragraph p = new Paragraph(overlayText).SetFont(font).SetFontSize(fontSize).SetMargin(0);
             TextAlignment? textAlignment = TextAlignment.LEFT;
             switch (justification) {

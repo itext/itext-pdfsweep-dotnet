@@ -54,7 +54,7 @@ namespace iText.PdfCleanup.Autosweep {
 
         public RegexBasedCleanupStrategy(String regex)
             : base(regex) {
-            this.pattern = iText.IO.Util.StringUtil.RegexCompile(regex);
+            this.pattern = iText.Commons.Utils.StringUtil.RegexCompile(regex);
         }
 
         public RegexBasedCleanupStrategy(Regex pattern)

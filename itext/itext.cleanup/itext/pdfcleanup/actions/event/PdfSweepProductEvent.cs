@@ -41,14 +41,40 @@ For more information, please contact iText Software Corp. at this
 address: sales@itextpdf.com
 */
 using System;
+using iText.Commons.Actions;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Actions.Contexts;
+using iText.Commons.Actions.Sequence;
+using iText.PdfCleanup.Actions.Data;
 
-namespace Versions.Attributes {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    internal class KeyVersionAttribute : Attribute {
-        internal string KeyVersion { get; private set; }
+namespace iText.PdfCleanup.Actions.Event {
+    /// <summary>Class represents events registered in iText cleanup module.</summary>
+    public class PdfSweepProductEvent : AbstractProductProcessITextEvent {
+        /// <summary>Cleanup event type description.</summary>
+        public const String CLEANUP_PDF = "cleanup-pdf";
 
-        internal KeyVersionAttribute(string keyVersion) {
-            this.KeyVersion = keyVersion;
+        private readonly String eventType;
+
+        /// <summary>Creates an event associated with a general identifier and additional meta data.</summary>
+        /// <param name="sequenceId">is an identifier associated with the event</param>
+        /// <param name="metaInfo">is an additional meta info</param>
+        /// <param name="eventType">is a string description of the event</param>
+        private PdfSweepProductEvent(SequenceId sequenceId, IMetaInfo metaInfo, String eventType)
+            : base(sequenceId, PdfSweepProductData.GetInstance(), metaInfo, EventConfirmationType.ON_CLOSE) {
+            this.eventType = eventType;
+        }
+
+        /// <summary>Creates a cleanup-pdf event which associated with a general identifier and additional meta data.</summary>
+        /// <param name="sequenceId">is an identifier associated with the event</param>
+        /// <param name="metaInfo">is an additional meta info</param>
+        /// <returns>the cleanup-pdf event</returns>
+        public static iText.PdfCleanup.Actions.Event.PdfSweepProductEvent CreateCleanupPdfEvent(SequenceId sequenceId
+            , IMetaInfo metaInfo) {
+            return new iText.PdfCleanup.Actions.Event.PdfSweepProductEvent(sequenceId, metaInfo, CLEANUP_PDF);
+        }
+
+        public override String GetEventType() {
+            return eventType;
         }
     }
 }

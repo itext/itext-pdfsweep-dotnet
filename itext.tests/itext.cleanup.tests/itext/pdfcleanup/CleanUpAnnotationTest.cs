@@ -42,11 +42,12 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
+using iText.PdfCleanup.Logs;
 using iText.Test;
 using iText.Test.Attributes;
 
@@ -226,9 +227,12 @@ namespace iText.PdfCleanup {
         private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
             ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
-            iText.PdfCleanup.PdfCleanUpTool cleaner = (cleanUpLocations == null) ? new iText.PdfCleanup.PdfCleanUpTool
-                (pdfDocument, true) : new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, cleanUpLocations);
-            cleaner.CleanUp();
+            if (cleanUpLocations == null) {
+                PdfCleaner.CleanUpRedactAnnotations(pdfDocument);
+            }
+            else {
+                PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
+            }
             pdfDocument.Close();
         }
 

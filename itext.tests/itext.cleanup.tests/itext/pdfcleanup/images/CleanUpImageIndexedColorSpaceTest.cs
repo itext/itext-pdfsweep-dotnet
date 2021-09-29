@@ -21,10 +21,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
-using iText.IO.Util;
+using iText.Commons.Utils;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Utils;
+using iText.PdfCleanup;
 using iText.Test;
 
 namespace iText.PdfCleanup.Images {
@@ -45,8 +46,8 @@ namespace iText.PdfCleanup.Images {
             String output = outputPath + "indexedImageNoWhite.pdf";
             String cmp = inputPath + "cmp_indexedImageNoWhite.pdf";
             using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output))) {
-                new iText.PdfCleanup.PdfCleanUpTool(pdfDocument, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation
-                    (1, new Rectangle(150, 250, 100, 100)))).CleanUp();
+                PdfCleaner.CleanUp(pdfDocument, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle
+                    (150, 250, 100, 100))));
             }
             /*
             Result in Java and .NET is different.
