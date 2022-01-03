@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ namespace iText.PdfCleanup.Actions.Data {
 
         private const int PDF_SWEEP_COPYRIGHT_SINCE = 2000;
 
-        private const int PDF_SWEEP_COPYRIGHT_TO = 2021;
+        private const int PDF_SWEEP_COPYRIGHT_TO = 2022;
 
         private static readonly ProductData PDF_SWEEP_PRODUCT_DATA = new ProductData(PDF_SWEEP_PUBLIC_PRODUCT_NAME
             , PDF_SWEEP_PRODUCT_NAME, PDF_SWEEP_VERSION, PDF_SWEEP_COPYRIGHT_SINCE, PDF_SWEEP_COPYRIGHT_TO);
