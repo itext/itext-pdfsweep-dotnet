@@ -51,22 +51,45 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 namespace iText.PdfCleanup.Autosweep {
     /// <summary>
     /// This class is a composite pattern for
-    /// <c>ICleanupStrategy</c>
-    /// It allows users to have multiple ICleanupStrategy implementations and bundle them as one.
+    /// <see cref="ICleanupStrategy"/>.
     /// </summary>
+    /// <remarks>
+    /// This class is a composite pattern for
+    /// <see cref="ICleanupStrategy"/>.
+    /// It allows users to have multiple ICleanupStrategy implementations and bundle them as one.
+    /// </remarks>
     public class CompositeCleanupStrategy : ICleanupStrategy {
         private IDictionary<int, ICollection<IPdfTextLocation>> locations = new Dictionary<int, ICollection<IPdfTextLocation
             >>();
 
         private IList<ICleanupStrategy> strategies = new List<ICleanupStrategy>();
 
+        /// <summary>
+        /// Creates a
+        /// <see cref="CompositeCleanupStrategy">composite pattern</see>
+        /// for
+        /// <see cref="ICleanupStrategy">cleanup strategies</see>.
+        /// </summary>
         public CompositeCleanupStrategy() {
         }
 
-        public virtual void Add(ICleanupStrategy ies) {
-            strategies.Add(ies);
+        /// <summary>
+        /// Adds a
+        /// <see cref="ICleanupStrategy">cleanup strategy</see>
+        /// to this
+        /// <see cref="CompositeCleanupStrategy">composite pattern</see>.
+        /// </summary>
+        /// <param name="strategy">
+        /// a
+        /// <see cref="ICleanupStrategy">cleanup strategy</see>
+        /// to be added to this
+        /// <see cref="CompositeCleanupStrategy">composite pattern</see>.
+        /// </param>
+        public virtual void Add(ICleanupStrategy strategy) {
+            strategies.Add(strategy);
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual ICollection<IPdfTextLocation> GetResultantLocations() {
             locations.Clear();
             // build return value
@@ -78,13 +101,12 @@ namespace iText.PdfCleanup.Autosweep {
                 locations.Put(i, new HashSet<IPdfTextLocation>(rects));
             }
             IList<IPdfTextLocation> rectangles = new List<IPdfTextLocation>(retval);
-            JavaCollectionsUtil.Sort(rectangles, new _IComparer_94());
-            // return
+            JavaCollectionsUtil.Sort(rectangles, new _IComparer_106());
             return rectangles;
         }
 
-        private sealed class _IComparer_94 : IComparer<IPdfTextLocation> {
-            public _IComparer_94() {
+        private sealed class _IComparer_106 : IComparer<IPdfTextLocation> {
+            public _IComparer_106() {
             }
 
             public int Compare(IPdfTextLocation l1, IPdfTextLocation l2) {
@@ -99,6 +121,7 @@ namespace iText.PdfCleanup.Autosweep {
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual Color GetRedactionColor(IPdfTextLocation location) {
             for (int i = 0; i < strategies.Count; i++) {
                 if (locations.Get(i).Contains(location)) {
@@ -108,12 +131,14 @@ namespace iText.PdfCleanup.Autosweep {
             return ColorConstants.BLACK;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual void EventOccurred(IEventData data, EventType type) {
             foreach (ILocationExtractionStrategy s in strategies) {
                 s.EventOccurred(data, type);
             }
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual ICollection<EventType> GetSupportedEvents() {
             ICollection<EventType> evts = new HashSet<EventType>();
             foreach (ILocationExtractionStrategy s in strategies) {
@@ -125,13 +150,35 @@ namespace iText.PdfCleanup.Autosweep {
             return evts.IsEmpty() ? null : evts;
         }
 
+        /// <summary>
+        /// Returns a
+        /// <see cref="ICleanupStrategy">cleanup strategy</see>
+        /// which represents
+        /// a reset
+        /// <see cref="CompositeCleanupStrategy">composite cleanup strategy</see>.
+        /// </summary>
+        /// <remarks>
+        /// Returns a
+        /// <see cref="ICleanupStrategy">cleanup strategy</see>
+        /// which represents
+        /// a reset
+        /// <see cref="CompositeCleanupStrategy">composite cleanup strategy</see>.
+        /// <para />
+        /// Note that all the inner
+        /// <see cref="ICleanupStrategy">strategies</see>
+        /// will be reset as well.
+        /// </remarks>
+        /// <returns>
+        /// a reset
+        /// <see cref="CompositeCleanupStrategy">composite strategy</see>
+        /// </returns>
         public virtual ICleanupStrategy Reset() {
-            iText.PdfCleanup.Autosweep.CompositeCleanupStrategy retval = new iText.PdfCleanup.Autosweep.CompositeCleanupStrategy
+            iText.PdfCleanup.Autosweep.CompositeCleanupStrategy resetCompositeStrategy = new iText.PdfCleanup.Autosweep.CompositeCleanupStrategy
                 ();
             foreach (ICleanupStrategy s in strategies) {
-                retval.Add(s.Reset());
+                resetCompositeStrategy.Add(s.Reset());
             }
-            return retval;
+            return resetCompositeStrategy;
         }
     }
 }
