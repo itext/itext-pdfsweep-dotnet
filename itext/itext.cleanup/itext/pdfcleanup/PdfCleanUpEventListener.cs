@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
 namespace iText.PdfCleanup {
+    /// <summary>An event listener which handles cleanup related events.</summary>
     public class PdfCleanUpEventListener : IEventListener {
         private const String textDataExpected = "Text data expected.";
 
@@ -57,6 +58,7 @@ namespace iText.PdfCleanup {
 
         private IList<IEventData> content = new List<IEventData>();
 
+        /// <summary><inheritDoc/></summary>
         public virtual void EventOccurred(IEventData data, EventType type) {
             switch (type) {
                 case EventType.RENDER_TEXT:
@@ -121,6 +123,7 @@ namespace iText.PdfCleanup {
             return (PathRenderInfo)eventData;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual ICollection<EventType> GetSupportedEvents() {
             return null;
         }

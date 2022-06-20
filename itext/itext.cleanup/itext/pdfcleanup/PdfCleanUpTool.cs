@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -197,6 +197,20 @@ namespace iText.PdfCleanup {
             }
         }
 
+        /// <summary>
+        /// Adds a
+        /// <see cref="PdfCleanUpLocation"/>
+        /// to be cleaned up.
+        /// </summary>
+        /// <param name="cleanUpLocation">
+        /// a
+        /// <see cref="PdfCleanUpLocation"/>
+        /// to be cleaned up
+        /// </param>
+        /// <returns>
+        /// this
+        /// <see cref="PdfCleanUpTool"/>
+        /// </returns>
         public virtual iText.PdfCleanup.PdfCleanUpTool AddCleanupLocation(iText.PdfCleanup.PdfCleanUpLocation cleanUpLocation
             ) {
             IList<iText.PdfCleanup.PdfCleanUpLocation> pgLocations = this.pdfCleanUpLocations.Get(cleanUpLocation.GetPage

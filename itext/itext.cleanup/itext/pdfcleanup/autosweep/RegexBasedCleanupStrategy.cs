@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2021 iText Group NV
+Copyright (c) 1998-2022 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -52,25 +52,49 @@ namespace iText.PdfCleanup.Autosweep {
 
         private Color redactionColor = ColorConstants.BLACK;
 
+        /// <summary>Creates an object of regular expression based cleanup strategy.</summary>
+        /// <param name="regex">regular expression on which cleanup strategy will be based</param>
         public RegexBasedCleanupStrategy(String regex)
             : base(regex) {
             this.pattern = iText.Commons.Utils.StringUtil.RegexCompile(regex);
         }
 
+        /// <summary>Creates an object of regular expression based cleanup strategy.</summary>
+        /// <param name="pattern">
+        /// 
+        /// <see cref="System.Text.RegularExpressions.Regex"/>
+        /// pattern on which cleanup strategy will be based
+        /// </param>
         public RegexBasedCleanupStrategy(Regex pattern)
             : base(pattern) {
             this.pattern = pattern;
         }
 
+        /// <summary><inheritDoc/></summary>
         public virtual Color GetRedactionColor(IPdfTextLocation location) {
             return redactionColor;
         }
 
+        /// <summary>Sets the color in which redaction is to take place.</summary>
+        /// <param name="color">the color in which redaction is to take place</param>
+        /// <returns>
+        /// this
+        /// <see cref="RegexBasedCleanupStrategy">strategy</see>
+        /// </returns>
         public virtual iText.PdfCleanup.Autosweep.RegexBasedCleanupStrategy SetRedactionColor(Color color) {
             this.redactionColor = color;
             return this;
         }
 
+        /// <summary>
+        /// Returns an
+        /// <see cref="ICleanupStrategy"/>
+        /// object which is set to this regular pattern and redaction color.
+        /// </summary>
+        /// <returns>
+        /// a reset
+        /// <see cref="ICleanupStrategy">cleanup strategy</see>
+        /// </returns>
         public virtual ICleanupStrategy Reset() {
             return new iText.PdfCleanup.Autosweep.RegexBasedCleanupStrategy(pattern).SetRedactionColor(redactionColor);
         }
