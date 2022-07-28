@@ -27,6 +27,7 @@ using iText.Kernel.Pdf;
 using iText.Test;
 
 namespace iText.PdfCleanup {
+    [NUnit.Framework.Category("Integration test")]
     public class CleanUpInvalidPdfTest : ExtendedITextTest {
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/CleanUpInvalidPdfTest/";

@@ -29,6 +29,7 @@ using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup {
+    [NUnit.Framework.Category("Integration test")]
     public class CleanUpImageUtilTest : ExtendedITextTest {
         private static readonly String SOURCE_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/CleanupImageHandlingUtilTest/";

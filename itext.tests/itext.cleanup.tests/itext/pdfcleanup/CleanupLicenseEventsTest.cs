@@ -39,6 +39,7 @@ using iText.PdfCleanup.Autosweep;
 using iText.Test;
 
 namespace iText.PdfCleanup {
+    [NUnit.Framework.Category("Integration test")]
     public class CleanupLicenseEventsTest : ExtendedITextTest {
         private static readonly String INPUT_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/PdfCleanUpToolTest/";
