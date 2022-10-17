@@ -30,7 +30,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Test;
 
 namespace iText.PdfCleanup {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class TextPositioningTest : ExtendedITextTest {
         public const float EPS = 0.0001F;
 

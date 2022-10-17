@@ -44,7 +44,7 @@ using iText.Kernel.Geom;
 using iText.Test;
 
 namespace iText.PdfCleanup {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class PdfCleanUpFilterUnitTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void CheckIfRectanglesIntersect_completelyCoveredBasic() {

@@ -51,7 +51,7 @@ using iText.PdfCleanup.Util;
 using iText.Test;
 
 namespace iText.PdfCleanup.Images {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class CleanupImageWithColorSpaceTest : ExtendedITextTest {
         private static readonly String inputPath = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/images/CleanupImageWithColorSpaceTest/";

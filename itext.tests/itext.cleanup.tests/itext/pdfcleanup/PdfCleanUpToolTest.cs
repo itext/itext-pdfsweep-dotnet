@@ -58,7 +58,7 @@ using iText.Test;
 using iText.Test.Attributes;
 
 namespace iText.PdfCleanup {
-    [NUnit.Framework.Category("Integration test")]
+    [NUnit.Framework.Category("IntegrationTest")]
     public class PdfCleanUpToolTest : ExtendedITextTest {
         private static readonly String INPUT_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/PdfCleanUpToolTest/";

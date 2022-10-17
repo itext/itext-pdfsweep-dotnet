@@ -30,7 +30,7 @@ using iText.Kernel.Pdf.Xobject;
 using iText.Test;
 
 namespace iText.PdfCleanup {
-    [NUnit.Framework.Category("Unit test")]
+    [NUnit.Framework.Category("UnitTest")]
     public class PdfCleanUpProcessorUnitTest : ExtendedITextTest {
         [NUnit.Framework.Test]
         public virtual void AreColorSpacesDifferentForJavaNullValuesTest() {
