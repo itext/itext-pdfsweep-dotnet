@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
     <PropertyGroup Label="Configuration">
         <SignAssembly>True</SignAssembly>
@@ -44,6 +44,9 @@
         <ProjectReference Include="..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.kernel\itext.kernel.csproj')" />
         <ProjectReference Include="..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
         <PackageReference Include="itext7.pdftest" Version="8.0.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.pdftest\itext.pdftest.csproj')" />
+		<ProjectReference Include="..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+        <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.bouncy-castle-adapter\itext.bouncy-castle-adapter.csproj')" />
+		
         <ProjectReference Include="..\..\itext\itext.cleanup\itext.cleanup.csproj" />
     </ItemGroup>
 </Project>
