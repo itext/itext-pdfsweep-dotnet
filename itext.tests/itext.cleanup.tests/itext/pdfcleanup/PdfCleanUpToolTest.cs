@@ -949,6 +949,22 @@ namespace iText.PdfCleanup {
             CompareByContent(cmp, output, OUTPUT_PATH, "diff_lineArtsDrawingOnCanvasTest_");
         }
 
+        [NUnit.Framework.Test]
+        public virtual void CheckUnSupportedImageTypeTest() {
+            String input = INPUT_PATH + "UnsupportedImageType.pdf";
+            String output = OUTPUT_PATH + "UnsupportedImageType.pdf";
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output, new WriterProperties
+                ()));
+            iText.PdfCleanup.PdfCleanUpTool workingTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
+            int pageIndex = 1;
+            Rectangle area = pdfDocument.GetPage(pageIndex).GetPageSize();
+            workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(pageIndex, area));
+            Exception e = NUnit.Framework.Assert.Catch(typeof(Exception), () => workingTool.CleanUp());
+            NUnit.Framework.Assert.AreEqual(CleanupExceptionMessageConstant.UNSUPPORTED_IMAGE_TYPE.ToLowerInvariant(), 
+                e.Message.ToLowerInvariant());
+            pdfDocument.Close();
+        }
+
         private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
             ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));

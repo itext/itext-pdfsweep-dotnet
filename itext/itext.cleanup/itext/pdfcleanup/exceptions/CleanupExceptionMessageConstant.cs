@@ -33,6 +33,10 @@ namespace iText.PdfCleanup.Exceptions {
         public const String PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE = "PdfDocument must be opened in stamping "
              + "mode.";
 
+        // Do not remove, it's used in .NET
+        // This same exception message is thrown in CleanUpImageUtil#cleanImage when the image format is unsupported
+        public const String UNSUPPORTED_IMAGE_TYPE = "Unsupported image type";
+
         private CleanupExceptionMessageConstant() {
         }
     }
