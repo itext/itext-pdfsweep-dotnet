@@ -42,6 +42,7 @@ address: sales@itextpdf.com
 */
 using System;
 using System.Collections.Generic;
+using iText.IO.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
@@ -141,7 +142,8 @@ namespace iText.PdfCleanup {
                 removedTextShift = 0f;
             }
             float shift = tjArray.GetAsNumber(0).FloatValue();
-            removedTextShift += shift * fontSize * (scaling / 100) / 1000;
+            removedTextShift += FontProgram.ConvertTextSpaceToGlyphSpace(shift * fontSize * (scaling / FontProgram.HORIZONTAL_SCALING_FACTOR
+                ));
         }
 
         /// <summary>is performed when text object is ended or text chunk is written</summary>
@@ -196,8 +198,8 @@ namespace iText.PdfCleanup {
             }
             PdfTextArray tjShiftArray = null;
             if (removedTextShift != null) {
-                float tjShift = (float)removedTextShift * 1000 / (canvasGs.GetFontSize() * canvasGs.GetHorizontalScaling()
-                     / 100);
+                float tjShift = (float)(FontProgram.ConvertGlyphSpaceToTextSpace((float)removedTextShift) / (canvasGs.GetFontSize
+                    () * canvasGs.GetHorizontalScaling() / FontProgram.HORIZONTAL_SCALING_FACTOR));
                 tjShiftArray = new PdfTextArray();
                 tjShiftArray.Add(new PdfNumber(tjShift));
             }

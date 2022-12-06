@@ -46,6 +46,7 @@ using Microsoft.Extensions.Logging;
 using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iText.Kernel.Pdf.Canvas.Parser.ClipperLib.IntPoint>>;
 using iText.Commons;
 using iText.Commons.Utils;
+using iText.IO.Font;
 using iText.IO.Image;
 using iText.Kernel.Exceptions;
 using iText.Kernel.Geom;
@@ -198,8 +199,8 @@ namespace iText.PdfCleanup {
                     textArray.Add(ri.GetPdfString());
                 }
                 else {
-                    textArray.Add(new PdfNumber(-ri.GetUnscaledWidth() * 1000f / (text.GetFontSize() * text.GetHorizontalScaling
-                        () / 100)));
+                    textArray.Add(new PdfNumber(FontProgram.ConvertGlyphSpaceToTextSpace(-ri.GetUnscaledWidth()) / (text.GetFontSize
+                        () * text.GetHorizontalScaling() / FontProgram.HORIZONTAL_SCALING_FACTOR)));
                 }
             }
             return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
