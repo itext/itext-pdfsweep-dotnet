@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2022 iText Group NV
+Copyright (c) 1998-2023 iText Group NV
 Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ using iText.PdfCleanup.Autosweep;
 using iText.Test;
 
 namespace iText.PdfCleanup {
+    [NUnit.Framework.Category("IntegrationTest")]
     public class PdfAutoSweepToolsTest : ExtendedITextTest {
         private static readonly String INPUT_PATH = iText.Test.TestUtil.GetParentProjectDirectory(NUnit.Framework.TestContext
             .CurrentContext.TestDirectory) + "/resources/itext/pdfcleanup/PdfAutoSweepTest/";

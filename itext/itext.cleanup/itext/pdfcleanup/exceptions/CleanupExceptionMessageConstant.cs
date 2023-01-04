@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2022 iText Group NV
+Copyright (c) 1998-2023 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -32,6 +32,10 @@ namespace iText.PdfCleanup.Exceptions {
 
         public const String PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE = "PdfDocument must be opened in stamping "
              + "mode.";
+
+        // Do not remove, it's used in .NET
+        // This same exception message is thrown in CleanUpImageUtil#cleanImage when the image format is unsupported
+        public const String UNSUPPORTED_IMAGE_TYPE = "Unsupported image type";
 
         private CleanupExceptionMessageConstant() {
         }

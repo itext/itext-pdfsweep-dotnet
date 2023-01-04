@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2022 iText Group NV
+Copyright (c) 1998-2023 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -28,6 +28,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using iText.Kernel.Exceptions;
+using iText.PdfCleanup.Exceptions;
 using Rectangle = iText.Kernel.Geom.Rectangle;
 
 namespace iText.PdfCleanup.Util {
@@ -60,7 +61,11 @@ namespace iText.PdfCleanup.Util {
                         image = Clean8bppImage(image, areasToBeCleaned);
                         break;
                     default:
-                        CleanImage(image, areasToBeCleaned, DEFAULT_CLEANED_AREA_FILL_COLOR);
+                        if (Enum.IsDefined(typeof(PixelFormat), pixelFormat)) {
+                            CleanImage(image, areasToBeCleaned, DEFAULT_CLEANED_AREA_FILL_COLOR);
+                        } else {
+                            throw new PdfException(CleanupExceptionMessageConstant.UNSUPPORTED_IMAGE_TYPE);
+                        }
                         break;
                 }
 

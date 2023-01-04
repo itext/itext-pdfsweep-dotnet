@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2022 iText Group NV
+Copyright (c) 1998-2023 iText Group NV
 Authors: iText Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -30,6 +30,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Test;
 
 namespace iText.PdfCleanup {
+    [NUnit.Framework.Category("UnitTest")]
     public class TextPositioningTest : ExtendedITextTest {
         public const float EPS = 0.0001F;
 
