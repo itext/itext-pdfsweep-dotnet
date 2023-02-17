@@ -3,14 +3,14 @@
   <metadata>
     <id>itext7.pdfsweep</id>
     <version>4.0.0-SNAPSHOT</version>
-    <title>iText 7 pdfSweep</title>
+    <title>iText pdfSweep</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
     <licenseUrl>https://itextpdf.com/legal</licenseUrl>
     <projectUrl>https://itextpdf.com/</projectUrl>
     <icon>ITSC-avatar.png</icon>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>pdfSweep is an iText 7 add-on that allows you to permanently remove or black out sensitive data from your PDF documents.</description>
+    <description>pdfSweep is an iText add-on that allows you to permanently remove or black out sensitive data from your PDF documents.</description>
     <summary />
     <releaseNotes>https://itextpdf.com/itext7release</releaseNotes>
     <copyright>Copyright (c) 1998-2023 iText Group NV</copyright>
