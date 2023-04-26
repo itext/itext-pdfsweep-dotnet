@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>itext7.pdfsweep</id>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0</version>
     <title>iText pdfSweep</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
@@ -18,7 +18,7 @@
     <tags>itext itext7 itextsharp c# .net csharp pdf cleanup pdfsweep</tags>
 	<repository type="git" url="https://github.com/itext/i7j-pdfsweep.git" />
     <dependencies>
-      <dependency id="itext7" version="8.0.0-SNAPSHOT" />
+      <dependency id="itext7" version="8.0.0" />
     </dependencies>
   </metadata>
   <files>
