@@ -1,6 +1,6 @@
-**[pdfSweep][pdfSweep]** is an [iText 7][itext] add on.
+**[pdfSweep][pdfSweep]** is an [iText][itext] add on.
 
-This add on will allow you to easily construct e-Sweeps. As of yet, the only supported format is the ZUGFeRD standard. Support for other formats is on the way. Should you want to add support to a format then we invite you to take a look at our [Contribution Guidelines][contributing].
+This add on will allow you to easily redact PDF files. Redaction is the process of removing sensitive or confidential information. pdfSweep will remove this data entirely so that it won't be extractable anymore.
 
 The **pdfSweep Community** source code is hosted on [Github][github], where you can also [download the latest releases][latest].
 
