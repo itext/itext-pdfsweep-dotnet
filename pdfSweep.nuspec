@@ -18,7 +18,7 @@
     <tags>itext itext7 itextsharp c# .net csharp pdf cleanup pdfsweep</tags>
 	<repository type="git" url="https://github.com/itext/i7j-pdfsweep.git" />
     <dependencies>
-      <dependency id="itext" version="8.0.1-SNAPSHOT" />
+      <dependency id="itext" version="8.0.2-SNAPSHOT" />
     </dependencies>
   </metadata>
   <files>
