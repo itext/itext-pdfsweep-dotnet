@@ -700,16 +700,16 @@ namespace iText.PdfCleanup {
                 PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(filteredImageKey);
                 if (imageFilterResult.IsModified()) {
                     ImageData filteredImageData = imageFilterResult.GetFilterResult();
-                    if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
-                        if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
-                            ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
-                            logger.LogError(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
-                        }
-                        else {
-                            filteredImageData.MakeMask();
-                        }
-                    }
                     if (filteredImageData != null) {
+                        if (true.Equals(originalImage.GetPdfObject().GetAsBool(PdfName.ImageMask))) {
+                            if (!PdfCleanUpFilter.ImageSupportsDirectCleanup(originalImage)) {
+                                ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpProcessor));
+                                logger.LogError(CleanUpLogMessageConstant.IMAGE_MASK_CLEAN_UP_NOT_SUPPORTED);
+                            }
+                            else {
+                                filteredImageData.MakeMask();
+                            }
+                        }
                         imageToWrite = new PdfImageXObject(filteredImageData);
                         GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
                         // While having been processed with java libraries, only the number of components mattered.

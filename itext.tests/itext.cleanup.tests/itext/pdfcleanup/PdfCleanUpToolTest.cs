@@ -945,6 +945,22 @@ namespace iText.PdfCleanup {
             pdfDocument.Close();
         }
 
+        [NUnit.Framework.Test]
+        public virtual void CleanUpFullyFilteredImageTest() {
+            String input = INPUT_PATH + "fullyFilteredImageDocument.pdf";
+            String output = OUTPUT_PATH + "fullyFilteredImageDocument.pdf";
+            String cmp = INPUT_PATH + "cmp_fullyFilteredImageDocument.pdf";
+            PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output, new WriterProperties
+                ()));
+            iText.PdfCleanup.PdfCleanUpTool workingTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
+            int pageIndex = 1;
+            Rectangle area = pdfDocument.GetPage(pageIndex).GetPageSize();
+            workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(pageIndex, area));
+            workingTool.CleanUp();
+            pdfDocument.Close();
+            CompareByContent(cmp, output, OUTPUT_PATH, "diff_fullyFilteredImageDocument_");
+        }
+
         private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
             ) {
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output));
