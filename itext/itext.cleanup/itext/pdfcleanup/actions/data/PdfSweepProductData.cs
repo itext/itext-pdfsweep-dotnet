@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2023 Apryse Group NV
+Copyright (c) 1998-2024 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -34,11 +34,11 @@ namespace iText.PdfCleanup.Actions.Data {
 
         public const String PDF_SWEEP_PUBLIC_PRODUCT_NAME = PDF_SWEEP_PRODUCT_NAME;
 
-        private const String PDF_SWEEP_VERSION = "4.0.1";
+        private const String PDF_SWEEP_VERSION = "4.0.2";
 
         private const int PDF_SWEEP_COPYRIGHT_SINCE = 2000;
 
-        private const int PDF_SWEEP_COPYRIGHT_TO = 2023;
+        private const int PDF_SWEEP_COPYRIGHT_TO = 2024;
 
         private static readonly ProductData PDF_SWEEP_PRODUCT_DATA = new ProductData(PDF_SWEEP_PUBLIC_PRODUCT_NAME
             , PDF_SWEEP_PRODUCT_NAME, PDF_SWEEP_VERSION, PDF_SWEEP_COPYRIGHT_SINCE, PDF_SWEEP_COPYRIGHT_TO);

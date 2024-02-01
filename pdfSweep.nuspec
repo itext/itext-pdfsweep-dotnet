@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>itext.pdfsweep</id>
-    <version>4.0.1</version>
+    <version>4.0.2</version>
     <title>iText pdfSweep</title>
     <authors>iText Software</authors>
     <owners>iText Software</owners>
@@ -13,12 +13,12 @@
     <description>pdfSweep is an iText add-on that allows you to permanently remove or black out sensitive data from your PDF documents.</description>
     <summary />
     <releaseNotes>https://itextpdf.com/itext7release</releaseNotes>
-    <copyright>Copyright (c) 1998-2023 Apryse Group NV</copyright>
+    <copyright>Copyright (c) 1998-2024 Apryse Group NV</copyright>
     <language>en-US</language>
     <tags>itext itext7 itextsharp c# .net csharp pdf cleanup pdfsweep</tags>
 	<repository type="git" url="https://github.com/itext/i7j-pdfsweep.git" />
     <dependencies>
-      <dependency id="itext" version="8.0.2" />
+      <dependency id="itext" version="8.0.3" />
     </dependencies>
   </metadata>
   <files>
