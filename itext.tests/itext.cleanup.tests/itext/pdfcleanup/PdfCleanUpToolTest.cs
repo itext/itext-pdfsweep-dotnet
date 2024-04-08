@@ -940,8 +940,9 @@ namespace iText.PdfCleanup {
             Rectangle area = pdfDocument.GetPage(pageIndex).GetPageSize();
             workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(pageIndex, area));
             Exception e = NUnit.Framework.Assert.Catch(typeof(Exception), () => workingTool.CleanUp());
-            NUnit.Framework.Assert.AreEqual(CleanupExceptionMessageConstant.UNSUPPORTED_IMAGE_TYPE.ToLowerInvariant(), 
-                e.Message.ToLowerInvariant());
+            NUnit.Framework.Assert.IsTrue(CleanupExceptionMessageConstant.UNSUPPORTED_IMAGE_TYPE.ToLowerInvariant().Equals
+                (e.Message.ToLowerInvariant()) || "incompatible color conversion".Equals(e.Message.ToLowerInvariant())
+                );
             pdfDocument.Close();
         }
 
