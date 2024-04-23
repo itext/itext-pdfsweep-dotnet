@@ -43,7 +43,7 @@ namespace iText.PdfCleanup {
         [NUnit.Framework.Ignore("DEVSIX-3608: this test currently throws StackOverflowError, which cannot be caught in .NET"
             )]
         public virtual void CleanCircularReferencesInResourcesTest() {
-            NUnit.Framework.Assert.That(() =>  {
+            NUnit.Framework.Assert.Catch(typeof(OutOfMemoryException), () => {
                 String input = inputPath + "circularReferencesInResources.pdf";
                 PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(new MemoryStream()));
                 IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
@@ -53,8 +53,7 @@ namespace iText.PdfCleanup {
                 PdfCleaner.CleanUp(pdfDocument, cleanUpLocations);
                 pdfDocument.Close();
             }
-            , NUnit.Framework.Throws.InstanceOf<OutOfMemoryException>())
-;
+            );
         }
     }
 }

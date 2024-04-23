@@ -50,12 +50,11 @@ namespace iText.PdfCleanup.Images {
             String output = outputPath + "skewedGrayImage.pdf";
             String cmp = inputPath + "cmp_skewedGrayImage.pdf";
             Rectangle cleanupRegion = new Rectangle(150, 250, 100, 100);
-            NUnit.Framework.Assert.That(() =>  {
+            NUnit.Framework.Assert.Catch(typeof(IndexOutOfRangeException), () => {
                 CleanFirstPageAndDrawCleanupRegion(cleanupRegion, input, output);
                 NUnit.Framework.Assert.IsNull(FindDifferencesBetweenOutputAndCmp(output, cmp));
             }
-            , NUnit.Framework.Throws.InstanceOf<IndexOutOfRangeException>())
-;
+            );
         }
 
         [NUnit.Framework.Test]

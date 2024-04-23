@@ -38,11 +38,8 @@ namespace iText.PdfCleanup {
         public virtual void CleanUpImageNullImageBytesTest() {
             IList<Rectangle> areasToBeCleaned = new List<Rectangle>();
             areasToBeCleaned.Add(new Rectangle(100, 100));
-            NUnit.Framework.Assert.That(() =>  {
-                CleanUpImageUtil.CleanUpImage(null, areasToBeCleaned);
-            }
-            , NUnit.Framework.Throws.InstanceOf<Exception>())
-;
+            NUnit.Framework.Assert.Catch(typeof(Exception), () => CleanUpImageUtil.CleanUpImage(null, areasToBeCleaned
+                ));
         }
 
         [NUnit.Framework.Test]
