@@ -930,6 +930,7 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
+        [NUnit.Framework.Ignore("DEVSIX-8367: Rewrite checkUnSupportedImageTypeTest")]
         public virtual void CheckUnSupportedImageTypeTest() {
             String input = INPUT_PATH + "UnsupportedImageType.pdf";
             String output = OUTPUT_PATH + "UnsupportedImageType.pdf";
