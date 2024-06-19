@@ -54,6 +54,7 @@ namespace iText.PdfCleanup {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Get the last encountered TextRenderInfo objects, then clears the internal buffer</summary>
         /// <returns>the TextRenderInfo objects that were encountered when processing the last text rendering operation
         ///     </returns>
@@ -73,7 +74,9 @@ namespace iText.PdfCleanup {
             content.Clear();
             return text;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Get the last encountered ImageRenderInfo, then clears the internal buffer</summary>
         /// <returns>the ImageRenderInfo object that was encountered when processing the last image rendering operation
         ///     </returns>
@@ -88,7 +91,9 @@ namespace iText.PdfCleanup {
             content.Clear();
             return (ImageRenderInfo)eventData;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Get the last encountered PathRenderInfo, then clears the internal buffer</summary>
         /// <returns>the PathRenderInfo object that was encountered when processing the last path rendering operation</returns>
         internal virtual PathRenderInfo GetEncounteredPath() {
@@ -102,6 +107,7 @@ namespace iText.PdfCleanup {
             content.Clear();
             return (PathRenderInfo)eventData;
         }
+//\endcond
 
         /// <summary><inheritDoc/></summary>
         public virtual ICollection<EventType> GetSupportedEvents() {

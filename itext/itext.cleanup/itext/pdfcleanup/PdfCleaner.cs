@@ -462,7 +462,9 @@ namespace iText.PdfCleanup {
             cleanUpTool.CleanUp();
         }
 
+//\cond DO_NOT_DOCUMENT
         internal class CleanUpToolMetaInfo : IMetaInfo {
         }
+//\endcond
     }
 }

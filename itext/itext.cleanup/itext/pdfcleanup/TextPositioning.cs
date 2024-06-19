@@ -28,6 +28,7 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas;
 
 namespace iText.PdfCleanup {
+//\cond DO_NOT_DOCUMENT
     internal class TextPositioning {
         private String prevOperator;
 
@@ -46,11 +47,14 @@ namespace iText.PdfCleanup {
 
         private float currLeading = 0F;
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Get the current leading</summary>
         internal virtual float GetCurrLeading() {
             return currLeading;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual void AppendPositioningOperator(String @operator, IList<PdfObject> operands) {
             if (firstPositioningOperands != null) {
                 StorePositioningInfoInShiftFields();
@@ -98,6 +102,7 @@ namespace iText.PdfCleanup {
                 }
             }
         }
+//\endcond
 
         // concatenation of two any TD, Td, T* result in Td
         private void StorePositioningInfoInShiftFields() {
@@ -117,6 +122,7 @@ namespace iText.PdfCleanup {
             firstPositioningOperands = null;
         }
 
+//\cond DO_NOT_DOCUMENT
         internal virtual void AppendTjArrayWithSingleNumber(PdfArray tjArray, float fontSize, float scaling) {
             if (removedTextShift == null) {
                 removedTextShift = 0f;
@@ -125,7 +131,9 @@ namespace iText.PdfCleanup {
             removedTextShift += FontProgram.ConvertTextSpaceToGlyphSpace(shift * fontSize * (scaling / FontProgram.HORIZONTAL_SCALING_FACTOR
                 ));
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>is performed when text object is ended or text chunk is written</summary>
         internal virtual void Clear() {
             // leading is not removed, as it is preserved between different text objects
@@ -135,13 +143,16 @@ namespace iText.PdfCleanup {
             tdShift = null;
             tmShift = null;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual void WritePositionedText(String @operator, IList<PdfObject> operands, PdfArray cleanedText
             , PdfCanvas canvas) {
             WritePositioningOperator(canvas);
             WriteText(@operator, operands, cleanedText, canvas);
             Clear();
         }
+//\endcond
 
         private void WritePositioningOperator(PdfCanvas canvas) {
             if (firstPositioningOperands != null) {
@@ -202,4 +213,5 @@ namespace iText.PdfCleanup {
             }
         }
     }
+//\endcond
 }

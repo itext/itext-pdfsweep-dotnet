@@ -183,6 +183,7 @@ namespace iText.PdfCleanup {
 
             private bool isGap;
 
+//\cond DO_NOT_DOCUMENT
             /// <summary>Construct a new DashArrayElem object</summary>
             /// <param name="val">the length of the dash array element</param>
             /// <param name="isGap">whether this element indicates a gap, or a stroke</param>
@@ -191,22 +192,31 @@ namespace iText.PdfCleanup {
                 this.val = val;
                 this.isGap = isGap;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual float GetVal() {
                 return this.val;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual void SetVal(float val) {
                 this.val = val;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual bool IsGap() {
                 return this.isGap;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual void SetGap(bool isGap) {
                 this.isGap = isGap;
             }
+//\endcond
 
             private readonly LineDashPattern _enclosing;
         }

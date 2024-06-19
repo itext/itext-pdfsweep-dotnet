@@ -38,11 +38,13 @@ namespace iText.PdfCleanup {
             processAnnotations = true;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Returns metaInfo property.</summary>
         /// <returns>metaInfo property</returns>
         internal virtual IMetaInfo GetMetaInfo() {
             return metaInfo;
         }
+//\endcond
 
         /// <summary>Sets additional meta info.</summary>
         /// <param name="metaInfo">the meta info to set</param>

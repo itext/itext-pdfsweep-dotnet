@@ -158,6 +158,7 @@ namespace iText.PdfCleanup {
         }
     }
 
+//\cond DO_NOT_DOCUMENT
     /*
     * color matching text redaction
     */
@@ -180,7 +181,9 @@ namespace iText.PdfCleanup {
             return fillColor;
         }
     }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
     internal class CustomLocationExtractionStrategy : RegexBasedLocationExtractionStrategy, ICleanupStrategy {
         private String regex;
 
@@ -217,4 +220,5 @@ namespace iText.PdfCleanup {
             return new iText.PdfCleanup.CustomLocationExtractionStrategy(regex);
         }
     }
+//\endcond
 }

@@ -154,6 +154,7 @@ namespace iText.PdfCleanup {
 
         private FilteredImagesCache filteredImagesCache;
 
+//\cond DO_NOT_DOCUMENT
         internal PdfCleanUpProcessor(IList<Rectangle> cleanUpRegions, PdfDocument document)
             : base(new PdfCleanUpEventListener()) {
             this.document = document;
@@ -167,6 +168,7 @@ namespace iText.PdfCleanup {
             this.isInText = false;
             this.textPositioning = new TextPositioning();
         }
+//\endcond
 
         public override void ProcessPageContent(PdfPage page) {
             currentPage = page;
@@ -209,9 +211,11 @@ namespace iText.PdfCleanup {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         internal virtual void SetFilteredImagesCache(FilteredImagesCache cache) {
             this.filteredImagesCache = cache;
         }
+//\endcond
 
         /// <param name="contentBytes">the bytes of a content stream</param>
         /// <param name="resources">the resources of the content stream. Must not be null.</param>
@@ -229,6 +233,7 @@ namespace iText.PdfCleanup {
             return eventListener;
         }
 
+//\cond DO_NOT_DOCUMENT
         internal virtual PdfCanvas PopCleanedCanvas() {
             // If it is the last canvas, we finish to wrap it with Q
             if (canvasStack.Count == 1) {
@@ -236,6 +241,7 @@ namespace iText.PdfCleanup {
             }
             return canvasStack.Pop();
         }
+//\endcond
 
         protected override void InvokeOperator(PdfLiteral @operator, IList<PdfObject> operands) {
             String operatorString = @operator.ToString();
@@ -253,6 +259,7 @@ namespace iText.PdfCleanup {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         internal static void WriteOperands(PdfCanvas canvas, IList<PdfObject> operands) {
             int index = 0;
             foreach (PdfObject obj in operands) {
@@ -265,7 +272,9 @@ namespace iText.PdfCleanup {
                 }
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal static Matrix OperandsToMatrix(IList<PdfObject> operands) {
             float a = ((PdfNumber)operands[0]).FloatValue();
             float b = ((PdfNumber)operands[1]).FloatValue();
@@ -275,6 +284,7 @@ namespace iText.PdfCleanup {
             float f = ((PdfNumber)operands[5]).FloatValue();
             return new Matrix(a, b, c, d, e, f);
         }
+//\endcond
 
         protected override void EventOccurred(IEventData data, EventType type) {
             if (supportedEvents == null || supportedEvents.Contains(type)) {
@@ -282,18 +292,23 @@ namespace iText.PdfCleanup {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Returns the last canvas without removing it.</summary>
         /// <returns>the last canvas in canvasStack.</returns>
         internal virtual PdfCanvas GetCanvas() {
             return canvasStack.Peek();
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Adds tag to the deque of not written tags.</summary>
         /// <param name="tag">tag to be added.</param>
         internal virtual void AddNotWrittenTag(CanvasTag tag) {
             notWrittenTags.AddFirst(tag);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Opens all tags from deque of not written tags.</summary>
         /// <remarks>Opens all tags from deque of not written tags. Should be called before some content is drawn.</remarks>
         internal virtual void OpenNotWrittenTags() {
@@ -303,6 +318,7 @@ namespace iText.PdfCleanup {
                 tag = notWrittenTags.PollLast();
             }
         }
+//\endcond
 
         private bool AnnotationIsToBeRedacted(PdfAnnotation annotation, Rectangle redactRegion) {
             // TODO(DEVSIX-1605,DEVSIX-1606,DEVSIX-1607,DEVSIX-1608,DEVSIX-1609)
@@ -1003,6 +1019,7 @@ namespace iText.PdfCleanup {
             }
         }
 
+//\cond DO_NOT_DOCUMENT
         internal static bool AreColorSpacesDifferent(PdfImageXObject originalImage, PdfImageXObject clearedImage) {
             PdfObject originalImageCS = originalImage.GetPdfObject().Get(PdfName.ColorSpace);
             PdfObject clearedImageCS = clearedImage.GetPdfObject().Get(PdfName.ColorSpace);
@@ -1038,7 +1055,9 @@ namespace iText.PdfCleanup {
             }
             return true;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Single instance of this class represents not applied graphics state params of the single q/Q nesting level.
         ///     </summary>
         /// <remarks>
@@ -1063,18 +1082,29 @@ namespace iText.PdfCleanup {
         /// Operators of every level of the q/Q nesting are stored in different instances of this class.
         /// </remarks>
         internal class NotAppliedGsParams {
+//\cond DO_NOT_DOCUMENT
             internal IList<PdfDictionary> extGStates = new List<PdfDictionary>();
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal IList<IList<PdfObject>> ctms = new List<IList<PdfObject>>();
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             // list of operator statements
             internal Color fillColor;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal Color strokeColor;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal IDictionary<String, IList<PdfObject>> lineStyleOperators = new LinkedDictionary<String, IList<PdfObject
                 >>();
+//\endcond
             // operator and it's operands
         }
+//\endcond
     }
 }

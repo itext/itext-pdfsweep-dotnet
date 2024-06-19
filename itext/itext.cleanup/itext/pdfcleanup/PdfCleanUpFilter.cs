@@ -40,6 +40,7 @@ using iText.PdfCleanup.Logs;
 using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
+//\cond DO_NOT_DOCUMENT
     internal class PdfCleanUpFilter {
         private static readonly ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpFilter
             ));
@@ -66,6 +67,7 @@ namespace iText.PdfCleanup {
             this.regions = regions;
         }
 
+//\cond DO_NOT_DOCUMENT
         internal static bool ImageSupportsDirectCleanup(PdfImageXObject image) {
             PdfObject filter = image.GetPdfObject().Get(PdfName.Filter);
             bool supportedFilterForDirectCleanup = IsSupportedFilterForDirectImageCleanup(filter);
@@ -73,7 +75,9 @@ namespace iText.PdfCleanup {
                 image.GetPdfObject().ContainsKey(PdfName.ColorSpace);
             return deviceGrayOrNoCS && supportedFilterForDirectCleanup;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Return true if two given rectangles (specified by an array of points) intersect.</summary>
         /// <param name="rect1">
         /// the first rectangle, considered as a subject of intersection. Even if it's width is zero,
@@ -161,7 +165,9 @@ namespace iText.PdfCleanup {
                     (paths), true) && !paths.IsEmpty();
             }
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter a TextRenderInfo object.</summary>
         /// <param name="text">the TextRenderInfo to be filtered</param>
         /// <returns>
@@ -185,7 +191,9 @@ namespace iText.PdfCleanup {
             }
             return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter an ImageRenderInfo object.</summary>
         /// <param name="image">the ImageRenderInfo object to be filtered</param>
         /// <returns>
@@ -196,12 +204,16 @@ namespace iText.PdfCleanup {
         internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image) {
             return FilterImage(image.GetImage(), GetImageAreasToBeCleaned(image.GetImageCtm()));
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(FilteredImagesCache.FilteredImageKey
              imageKey) {
             return FilterImage(imageKey.GetImageXObject(), imageKey.GetCleanedAreas());
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter a PathRenderInfo object.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered</param>
         /// <returns>
@@ -216,7 +228,9 @@ namespace iText.PdfCleanup {
             return FilterStrokePath(path.GetPath(), path.GetCtm(), path.GetLineWidth(), path.GetLineCapStyle(), path.GetLineJoinStyle
                 (), path.GetMiterLimit(), lineDashPattern);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter a PathRenderInfo object.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered</param>
         /// <param name="fillingRule">
@@ -231,11 +245,14 @@ namespace iText.PdfCleanup {
         internal virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
             return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, Matrix
              imageCtm, PdfDocument document) {
             return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(imageCtm), document);
         }
+//\endcond
 
         /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered.</param>
@@ -700,6 +717,7 @@ namespace iText.PdfCleanup {
             return (x2 - x1 > 0 && y2 - y1 > 0) ? new Rectangle(x1, y1, x2 - x1, y2 - y1) : null;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Generic class representing the result of filtering an object of type T.</summary>
         internal class FilterResult<T> {
             private bool isModified;
@@ -711,18 +729,23 @@ namespace iText.PdfCleanup {
                 this.filterResult = filterResult;
             }
 
+//\cond DO_NOT_DOCUMENT
             /// <summary>Get whether the object was modified or not.</summary>
             /// <returns>true if the object was modified, false otherwise</returns>
             internal virtual bool IsModified() {
                 return isModified;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             /// <summary>Get the result after filtering</summary>
             /// <returns>the result of filtering an object of type T.</returns>
             internal virtual T GetFilterResult() {
                 return filterResult;
             }
+//\endcond
         }
+//\endcond
 
         private class ApproxPointList<T> : List<Point> {
             public ApproxPointList()
@@ -743,28 +766,41 @@ namespace iText.PdfCleanup {
 
         // Constants from the standard line representation: Ax+By+C
         private class StandardLine {
+//\cond DO_NOT_DOCUMENT
             internal float A;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal float B;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal float C;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal StandardLine(Point p1, Point p2) {
                 A = (float)(p2.GetY() - p1.GetY());
                 B = (float)(p1.GetX() - p2.GetX());
                 C = (float)(p1.GetY() * (-B) - p1.GetX() * A);
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual float GetSlope() {
                 if (B == 0) {
                     return float.PositiveInfinity;
                 }
                 return -A / B;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual bool Contains(Point point) {
                 return JavaUtil.FloatCompare(Math.Abs(A * (float)point.GetX() + B * (float)point.GetY() + C), 0.1f) < 0;
             }
+//\endcond
         }
     }
+//\endcond
 }
