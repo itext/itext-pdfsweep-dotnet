@@ -30,6 +30,8 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 
 namespace iText.PdfCleanup {
+    
+    //\cond DO_NOT_DOCUMENT
     internal static class CleanUpExtensions {
 
         public static bool AddAll(this IList<Point> list, ICollection<Point> c) {
@@ -164,4 +166,5 @@ namespace iText.PdfCleanup {
             return type.Assembly;
         }
     }
+    //\endcond
 }
