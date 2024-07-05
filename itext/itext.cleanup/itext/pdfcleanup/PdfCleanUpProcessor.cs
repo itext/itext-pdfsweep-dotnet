@@ -156,9 +156,16 @@ namespace iText.PdfCleanup {
 
 //\cond DO_NOT_DOCUMENT
         internal PdfCleanUpProcessor(IList<Rectangle> cleanUpRegions, PdfDocument document)
+            : this(cleanUpRegions, document, new CleanUpProperties()) {
+        }
+//\endcond
+
+//\cond DO_NOT_DOCUMENT
+        internal PdfCleanUpProcessor(IList<Rectangle> cleanUpRegions, PdfDocument document, CleanUpProperties properties
+            )
             : base(new PdfCleanUpEventListener()) {
             this.document = document;
-            this.filter = new PdfCleanUpFilter(cleanUpRegions);
+            this.filter = new PdfCleanUpFilter(cleanUpRegions, properties);
             this.canvasStack = new Stack<PdfCanvas>();
             this.notAppliedGsParams = new LinkedList<PdfCleanUpProcessor.NotAppliedGsParams>();
             this.notAppliedGsParams.AddFirst(new PdfCleanUpProcessor.NotAppliedGsParams());

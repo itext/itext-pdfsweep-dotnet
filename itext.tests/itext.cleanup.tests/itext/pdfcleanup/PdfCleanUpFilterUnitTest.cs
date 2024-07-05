@@ -20,6 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System.Collections.Generic;
 using iText.Kernel.Geom;
 using iText.Test;
 
@@ -32,7 +33,8 @@ namespace iText.PdfCleanup {
                 (70, 80) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(100, 50), new Point(100, 100), new Point
                 (50, 100) };
-            NUnit.Framework.Assert.IsTrue(PdfCleanUpFilter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            PdfCleanUpFilter filter = new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties());
+            NUnit.Framework.Assert.IsTrue(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
@@ -41,7 +43,8 @@ namespace iText.PdfCleanup {
                 (70, 80) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(100, 50), new Point(100, 100), new Point
                 (50, 100) };
-            NUnit.Framework.Assert.IsTrue(PdfCleanUpFilter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsTrue(new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties()).CheckIfRectanglesIntersect
+                (intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
@@ -50,7 +53,8 @@ namespace iText.PdfCleanup {
                 (70, 70) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(100, 50), new Point(100, 100), new Point
                 (50, 100) };
-            NUnit.Framework.Assert.IsTrue(PdfCleanUpFilter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsTrue(new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties()).CheckIfRectanglesIntersect
+                (intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
@@ -59,7 +63,8 @@ namespace iText.PdfCleanup {
                 (70, 70) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(100, 50), new Point(100, 100), new Point
                 (50, 100) };
-            NUnit.Framework.Assert.IsTrue(PdfCleanUpFilter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsTrue(new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties()).CheckIfRectanglesIntersect
+                (intersectSubject, intersecting));
         }
     }
 }

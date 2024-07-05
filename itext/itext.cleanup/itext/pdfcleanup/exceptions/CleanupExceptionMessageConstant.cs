@@ -37,7 +37,10 @@ namespace iText.PdfCleanup.Exceptions {
         // This same exception message is thrown in CleanUpImageUtil#cleanImage when the image format is unsupported
         public const String UNSUPPORTED_IMAGE_TYPE = "Unsupported image type";
 
+        public const String OVERLAP_RATIO_SHOULD_BE_IN_RANGE = "Overlap ratio should be in range (0, 1]";
+
         private CleanupExceptionMessageConstant() {
         }
+        //empty constructor
     }
 }
