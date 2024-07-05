@@ -930,24 +930,6 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("DEVSIX-8367: Rewrite checkUnSupportedImageTypeTest")]
-        public virtual void CheckUnSupportedImageTypeTest() {
-            String input = INPUT_PATH + "UnsupportedImageType.pdf";
-            String output = OUTPUT_PATH + "UnsupportedImageType.pdf";
-            PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output, new WriterProperties
-                ()));
-            iText.PdfCleanup.PdfCleanUpTool workingTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument);
-            int pageIndex = 1;
-            Rectangle area = pdfDocument.GetPage(pageIndex).GetPageSize();
-            workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(pageIndex, area));
-            Exception e = NUnit.Framework.Assert.Catch(typeof(Exception), () => workingTool.CleanUp());
-            NUnit.Framework.Assert.IsTrue(CleanupExceptionMessageConstant.UNSUPPORTED_IMAGE_TYPE.ToLowerInvariant().Equals
-                (e.Message.ToLowerInvariant()) || "incompatible color conversion".Equals(e.Message.ToLowerInvariant())
-                );
-            pdfDocument.Close();
-        }
-
-        [NUnit.Framework.Test]
         public virtual void CleanUpFullyFilteredImageTest() {
             String input = INPUT_PATH + "fullyFilteredImageDocument.pdf";
             String output = OUTPUT_PATH + "fullyFilteredImageDocument.pdf";
