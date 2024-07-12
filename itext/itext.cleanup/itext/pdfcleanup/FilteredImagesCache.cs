@@ -27,10 +27,12 @@ using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Xobject;
 
 namespace iText.PdfCleanup {
+//\cond DO_NOT_DOCUMENT
     internal class FilteredImagesCache {
         private IDictionary<PdfIndirectReference, IList<FilteredImagesCache.FilteredImageKey>> cache = new Dictionary
             <PdfIndirectReference, IList<FilteredImagesCache.FilteredImageKey>>();
 
+//\cond DO_NOT_DOCUMENT
         internal static FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, IList<Rectangle
             > areasToBeCleaned, PdfDocument document) {
             PdfStream imagePdfObject = image.GetPdfObject();
@@ -39,7 +41,9 @@ namespace iText.PdfCleanup {
             }
             return new FilteredImagesCache.FilteredImageKey(image, areasToBeCleaned);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Retrieves saved result of image filtering based on given set of cleaning areas.</summary>
         /// <remarks>
         /// Retrieves saved result of image filtering based on given set of cleaning areas.
@@ -65,7 +69,9 @@ namespace iText.PdfCleanup {
             }
             return null;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual void Put(FilteredImagesCache.FilteredImageKey imageKey, PdfImageXObject filteredImage) {
             if (imageKey.GetCleanedAreas() == null || imageKey.GetCleanedAreas().IsEmpty()) {
                 return;
@@ -77,6 +83,7 @@ namespace iText.PdfCleanup {
             filteredImageKeys.Add(imageKey);
             imageKey.SetFilteredImage(filteredImage);
         }
+//\endcond
 
         private bool RectanglesEqualWithEps(IList<Rectangle> cacheRects, IList<Rectangle> keyRects) {
             if (keyRects == null || cacheRects.Count != keyRects.Count) {
@@ -99,6 +106,7 @@ namespace iText.PdfCleanup {
             return cacheRectsSet.IsEmpty();
         }
 
+//\cond DO_NOT_DOCUMENT
         internal class FilteredImageKey {
             private PdfImageXObject image;
 
@@ -106,30 +114,44 @@ namespace iText.PdfCleanup {
 
             private PdfImageXObject filteredImage;
 
+//\cond DO_NOT_DOCUMENT
             internal FilteredImageKey(PdfImageXObject image, IList<Rectangle> cleanedAreas) {
                 this.image = image;
                 this.cleanedAreas = cleanedAreas;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual IList<Rectangle> GetCleanedAreas() {
                 return cleanedAreas;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual PdfImageXObject GetImageXObject() {
                 return image;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual PdfIndirectReference GetImageIndRef() {
                 return image.GetPdfObject().GetIndirectReference();
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual PdfImageXObject GetFilteredImage() {
                 return filteredImage;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual void SetFilteredImage(PdfImageXObject filteredImage) {
                 this.filteredImage = filteredImage;
             }
+//\endcond
         }
+//\endcond
     }
+//\endcond
 }

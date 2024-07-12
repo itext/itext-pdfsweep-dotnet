@@ -158,9 +158,11 @@ namespace iText.PdfCleanup {
                 this.tags = tags;
             }
 
+//\cond DO_NOT_DOCUMENT
             internal override PdfCanvas GetCanvas() {
                 return new _PdfCanvas_164(tags, new PdfStream(), null, null);
             }
+//\endcond
 
             private sealed class _PdfCanvas_164 : PdfCanvas {
                 public _PdfCanvas_164(LinkedList<CanvasTag> tags, PdfStream baseArg1, PdfResources baseArg2, PdfDocument baseArg3
@@ -170,7 +172,9 @@ namespace iText.PdfCleanup {
                     this.tagsToCompare = tags;
                 }
 
+//\cond DO_NOT_DOCUMENT
                 internal readonly LinkedList<CanvasTag> tagsToCompare;
+//\endcond
 
                 public override PdfCanvas OpenTag(CanvasTag tag) {
                     NUnit.Framework.Assert.AreEqual(this.tagsToCompare.JRemoveFirst(), tag);

@@ -20,7 +20,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
 using iText.Commons.Actions.Contexts;
+using iText.PdfCleanup.Exceptions;
 
 namespace iText.PdfCleanup {
     /// <summary>
@@ -33,16 +35,20 @@ namespace iText.PdfCleanup {
 
         private bool processAnnotations;
 
+        private double? overlapRatio;
+
         /// <summary>Creates default CleanUpProperties instance.</summary>
         public CleanUpProperties() {
             processAnnotations = true;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Returns metaInfo property.</summary>
         /// <returns>metaInfo property</returns>
         internal virtual IMetaInfo GetMetaInfo() {
             return metaInfo;
         }
+//\endcond
 
         /// <summary>Sets additional meta info.</summary>
         /// <param name="metaInfo">the meta info to set</param>
@@ -74,6 +80,42 @@ namespace iText.PdfCleanup {
         /// <param name="processAnnotations">is page annotations will be processed</param>
         public virtual void SetProcessAnnotations(bool processAnnotations) {
             this.processAnnotations = processAnnotations;
+        }
+
+        /// <summary>Gets the overlap ratio.</summary>
+        /// <remarks>
+        /// Gets the overlap ratio.
+        /// This is a value between 0 and 1 that indicates how much the content region should overlap with the redaction
+        /// area to be removed.
+        /// </remarks>
+        /// <returns>
+        /// the overlap ratio or
+        /// <see langword="null"/>
+        /// if it has not been set.
+        /// </returns>
+        public virtual double? GetOverlapRatio() {
+            return overlapRatio;
+        }
+
+        /// <summary>Sets the overlap ratio.</summary>
+        /// <remarks>
+        /// Sets the overlap ratio.
+        /// This is a value between 0 and 1 that indicates how much the content region should overlap with the
+        /// redaction area to be removed.
+        /// <para />
+        /// Example: if the overlap ratio is set to 0.3, the content region will be removed if it overlaps with
+        /// the redaction area by at least 30%.
+        /// </remarks>
+        /// <param name="overlapRatio">The overlap ratio to set.</param>
+        public virtual void SetOverlapRatio(double? overlapRatio) {
+            if (overlapRatio == null) {
+                this.overlapRatio = null;
+                return;
+            }
+            if (overlapRatio <= 0 || overlapRatio > 1) {
+                throw new ArgumentException(CleanupExceptionMessageConstant.OVERLAP_RATIO_SHOULD_BE_IN_RANGE);
+            }
+            this.overlapRatio = overlapRatio;
         }
     }
 }

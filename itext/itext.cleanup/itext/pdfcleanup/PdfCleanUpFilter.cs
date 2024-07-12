@@ -40,6 +40,7 @@ using iText.PdfCleanup.Logs;
 using iText.PdfCleanup.Util;
 
 namespace iText.PdfCleanup {
+//\cond DO_NOT_DOCUMENT
     internal class PdfCleanUpFilter {
         private static readonly ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpFilter
             ));
@@ -60,12 +61,16 @@ namespace iText.PdfCleanup {
             .UnmodifiableSet(new LinkedHashSet<PdfName>(JavaUtil.ArraysAsList(PdfName.JBIG2Decode, PdfName.DCTDecode
             , PdfName.JPXDecode)));
 
-        private IList<Rectangle> regions;
+        private readonly IList<Rectangle> regions;
 
-        public PdfCleanUpFilter(IList<Rectangle> regions) {
+        private readonly CleanUpProperties properties;
+
+        public PdfCleanUpFilter(IList<Rectangle> regions, CleanUpProperties properties) {
             this.regions = regions;
+            this.properties = properties;
         }
 
+//\cond DO_NOT_DOCUMENT
         internal static bool ImageSupportsDirectCleanup(PdfImageXObject image) {
             PdfObject filter = image.GetPdfObject().Get(PdfName.Filter);
             bool supportedFilterForDirectCleanup = IsSupportedFilterForDirectImageCleanup(filter);
@@ -73,7 +78,9 @@ namespace iText.PdfCleanup {
                 image.GetPdfObject().ContainsKey(PdfName.ColorSpace);
             return deviceGrayOrNoCS && supportedFilterForDirectCleanup;
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Return true if two given rectangles (specified by an array of points) intersect.</summary>
         /// <param name="rect1">
         /// the first rectangle, considered as a subject of intersection. Even if it's width is zero,
@@ -84,7 +91,7 @@ namespace iText.PdfCleanup {
         /// are never considered as intersecting.
         /// </param>
         /// <returns>true if the rectangles intersect, false otherwise</returns>
-        internal static bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
+        internal virtual bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
             Clipper clipper = new Clipper();
             // If the redaction area is degenerate, the result will be false
             if (!ClipperBridge.AddPolygonToClipper(clipper, rect2, PolyType.CLIP)) {
@@ -136,32 +143,48 @@ namespace iText.PdfCleanup {
                 // working with paths is considered to be a bit faster in terms of performance.
                 Paths paths = new Paths();
                 clipper.Execute(ClipType.INTERSECTION, paths, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-                return !CheckIfIntersectionRectangleDegenerate(iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.GetBounds
-                    (paths), false) && !paths.IsEmpty();
+                return CheckIfIntersectionOccurs(paths, rect1, false);
             }
-            else {
-                int rect1Size = rect1.Length;
+            intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
+            if (!intersectionSubjectAdded) {
+                // According to the comment above,
+                // this could have happened only if all four passed points are actually the same point.
+                // Adding here a point really close to the original point, to make sure it's not covered by the
+                // intersecting rectangle.
+                double SMALL_DIFF = 0.01;
+                Point[] expandedRect1 = new Point[rect1.Length + 1];
+                Array.Copy(rect1, 0, expandedRect1, 0, rect1.Length);
+                expandedRect1[rect1.Length] = new Point(rect1[0].GetX() + SMALL_DIFF, rect1[0].GetY());
+                rect1 = expandedRect1;
                 intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
-                if (!intersectionSubjectAdded) {
-                    // According to the comment above,
-                    // this could have happened only if all four passed points are actually the same point.
-                    // Adding here a point really close to the original point, to make sure it's not covered by the
-                    // intersecting rectangle.
-                    double smallDiff = 0.01;
-                    IList<Point> rect1List = new List<Point>(JavaUtil.ArraysAsList(rect1));
-                    rect1List.Add(new Point(rect1[0].GetX() + smallDiff, rect1[0].GetY()));
-                    rect1 = rect1List.ToArray(new Point[rect1Size]);
-                    intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
-                    System.Diagnostics.Debug.Assert(intersectionSubjectAdded);
-                }
-                PolyTree polyTree = new PolyTree();
-                clipper.Execute(ClipType.INTERSECTION, polyTree, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-                Paths paths = iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.PolyTreeToPaths(polyTree);
-                return !CheckIfIntersectionRectangleDegenerate(iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.GetBounds
-                    (paths), true) && !paths.IsEmpty();
+                System.Diagnostics.Debug.Assert(intersectionSubjectAdded);
             }
+            PolyTree polyTree = new PolyTree();
+            clipper.Execute(ClipType.INTERSECTION, polyTree, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
+            return CheckIfIntersectionOccurs(iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.PolyTreeToPaths(polyTree
+                ), rect1, true);
+        }
+//\endcond
+
+        private bool CheckIfIntersectionOccurs(Paths paths, Point[] rect1, bool isDegenerate) {
+            if (paths.IsEmpty()) {
+                return false;
+            }
+            IntRect intersectionRectangle = iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.GetBounds(paths);
+            // If the user defines a overlappingRatio we use this to calculate whether it intersects enough
+            // To pass as an intersection
+            if (properties.GetOverlapRatio() == null) {
+                return !CheckIfIntersectionRectangleDegenerate(intersectionRectangle, isDegenerate);
+            }
+            double overlappedArea = CleanUpHelperUtil.CalculatePolygonArea(rect1);
+            double intersectionArea = ClipperBridge.LongRectCalculateHeight(intersectionRectangle) * ClipperBridge.LongRectCalculateWidth
+                (intersectionRectangle);
+            double percentageOfOverlapping = intersectionArea / overlappedArea;
+            float SMALL_VALUE_FOR_ROUNDING_ERRORS = 1e-5f;
+            return percentageOfOverlapping + SMALL_VALUE_FOR_ROUNDING_ERRORS > properties.GetOverlapRatio();
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter a TextRenderInfo object.</summary>
         /// <param name="text">the TextRenderInfo to be filtered</param>
         /// <returns>
@@ -185,7 +208,9 @@ namespace iText.PdfCleanup {
             }
             return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter an ImageRenderInfo object.</summary>
         /// <param name="image">the ImageRenderInfo object to be filtered</param>
         /// <returns>
@@ -196,12 +221,16 @@ namespace iText.PdfCleanup {
         internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(ImageRenderInfo image) {
             return FilterImage(image.GetImage(), GetImageAreasToBeCleaned(image.GetImageCtm()));
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual PdfCleanUpFilter.FilterResult<ImageData> FilterImage(FilteredImagesCache.FilteredImageKey
              imageKey) {
             return FilterImage(imageKey.GetImageXObject(), imageKey.GetCleanedAreas());
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter a PathRenderInfo object.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered</param>
         /// <returns>
@@ -216,7 +245,9 @@ namespace iText.PdfCleanup {
             return FilterStrokePath(path.GetPath(), path.GetCtm(), path.GetLineWidth(), path.GetLineCapStyle(), path.GetLineJoinStyle
                 (), path.GetMiterLimit(), lineDashPattern);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Filter a PathRenderInfo object.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered</param>
         /// <param name="fillingRule">
@@ -231,11 +262,14 @@ namespace iText.PdfCleanup {
         internal virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
             return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
         }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
         internal virtual FilteredImagesCache.FilteredImageKey CreateFilteredImageKey(PdfImageXObject image, Matrix
              imageCtm, PdfDocument document) {
             return FilteredImagesCache.CreateFilteredImageKey(image, GetImageAreasToBeCleaned(imageCtm), document);
         }
+//\endcond
 
         /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered.</param>
@@ -398,8 +432,8 @@ namespace iText.PdfCleanup {
         /// <returns>true - if the intersection rectangle is degenerate.</returns>
         private static bool CheckIfIntersectionRectangleDegenerate(IntRect rect, bool isIntersectSubjectDegenerate
             ) {
-            float width = (float)(Math.Abs(rect.left - rect.right) / ClipperBridge.floatMultiplier);
-            float height = (float)(Math.Abs(rect.top - rect.bottom) / ClipperBridge.floatMultiplier);
+            float width = ClipperBridge.LongRectCalculateWidth(rect);
+            float height = ClipperBridge.LongRectCalculateHeight(rect);
             return isIntersectSubjectDegenerate ? (width < EPS && height < EPS) : (width < EPS || height < EPS);
         }
 
@@ -700,6 +734,7 @@ namespace iText.PdfCleanup {
             return (x2 - x1 > 0 && y2 - y1 > 0) ? new Rectangle(x1, y1, x2 - x1, y2 - y1) : null;
         }
 
+//\cond DO_NOT_DOCUMENT
         /// <summary>Generic class representing the result of filtering an object of type T.</summary>
         internal class FilterResult<T> {
             private bool isModified;
@@ -711,18 +746,23 @@ namespace iText.PdfCleanup {
                 this.filterResult = filterResult;
             }
 
+//\cond DO_NOT_DOCUMENT
             /// <summary>Get whether the object was modified or not.</summary>
             /// <returns>true if the object was modified, false otherwise</returns>
             internal virtual bool IsModified() {
                 return isModified;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             /// <summary>Get the result after filtering</summary>
             /// <returns>the result of filtering an object of type T.</returns>
             internal virtual T GetFilterResult() {
                 return filterResult;
             }
+//\endcond
         }
+//\endcond
 
         private class ApproxPointList<T> : List<Point> {
             public ApproxPointList()
@@ -743,28 +783,41 @@ namespace iText.PdfCleanup {
 
         // Constants from the standard line representation: Ax+By+C
         private class StandardLine {
+//\cond DO_NOT_DOCUMENT
             internal float A;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal float B;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal float C;
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal StandardLine(Point p1, Point p2) {
                 A = (float)(p2.GetY() - p1.GetY());
                 B = (float)(p1.GetX() - p2.GetX());
                 C = (float)(p1.GetY() * (-B) - p1.GetX() * A);
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual float GetSlope() {
                 if (B == 0) {
                     return float.PositiveInfinity;
                 }
                 return -A / B;
             }
+//\endcond
 
+//\cond DO_NOT_DOCUMENT
             internal virtual bool Contains(Point point) {
                 return JavaUtil.FloatCompare(Math.Abs(A * (float)point.GetX() + B * (float)point.GetY() + C), 0.1f) < 0;
             }
+//\endcond
         }
     }
+//\endcond
 }

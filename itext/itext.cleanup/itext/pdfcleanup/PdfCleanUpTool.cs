@@ -69,7 +69,7 @@ namespace iText.PdfCleanup {
 
         private PdfDocument pdfDocument;
 
-        private bool processAnnotations;
+        private CleanUpProperties properties;
 
         /// <summary>Key - page number, value - list of locations related to the page.</summary>
         private IDictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>> pdfCleanUpLocations;
@@ -141,13 +141,13 @@ namespace iText.PdfCleanup {
             if (pdfDocument.GetReader() == null || pdfDocument.GetWriter() == null) {
                 throw new PdfException(CleanupExceptionMessageConstant.PDF_DOCUMENT_MUST_BE_OPENED_IN_STAMPING_MODE);
             }
+            this.properties = properties;
             this.pdfDocument = pdfDocument;
             this.pdfCleanUpLocations = new Dictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>>();
             this.filteredImagesCache = new FilteredImagesCache();
             if (cleanRedactAnnotations) {
                 AddCleanUpLocationsBasedOnRedactAnnotations();
             }
-            processAnnotations = properties.IsProcessAnnotations();
         }
 
         /// <summary>
@@ -231,10 +231,10 @@ namespace iText.PdfCleanup {
                 regions.Add(cleanUpLocation.GetRegion());
             }
             PdfPage page = pdfDocument.GetPage(pageNumber);
-            PdfCleanUpProcessor cleanUpProcessor = new PdfCleanUpProcessor(regions, pdfDocument);
+            PdfCleanUpProcessor cleanUpProcessor = new PdfCleanUpProcessor(regions, pdfDocument, this.properties);
             cleanUpProcessor.SetFilteredImagesCache(filteredImagesCache);
             cleanUpProcessor.ProcessPageContent(page);
-            if (processAnnotations) {
+            if (properties.IsProcessAnnotations()) {
                 cleanUpProcessor.ProcessPageAnnotations(page, regions, redactAnnotations != null);
             }
             PdfCanvas pageCleanedContents = cleanUpProcessor.PopCleanedCanvas();
