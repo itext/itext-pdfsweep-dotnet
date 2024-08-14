@@ -439,21 +439,21 @@ namespace iText.PdfCleanup {
 
         private static bool IsPointOnALineSegment(Point currPoint, Point linePoint1, Point linePoint2, bool isBetweenLinePoints
             ) {
-            double dxc = currPoint.x - linePoint1.x;
-            double dyc = currPoint.y - linePoint1.y;
-            double dxl = linePoint2.x - linePoint1.x;
-            double dyl = linePoint2.y - linePoint1.y;
+            double dxc = currPoint.GetX() - linePoint1.GetX();
+            double dyc = currPoint.GetY() - linePoint1.GetY();
+            double dxl = linePoint2.GetX() - linePoint1.GetX();
+            double dyl = linePoint2.GetY() - linePoint1.GetY();
             double cross = dxc * dyl - dyc * dxl;
             // if point is on a line, let's check whether it's between provided line points
             if (Math.Abs(cross) <= EPS) {
                 if (isBetweenLinePoints) {
                     if (Math.Abs(dxl) >= Math.Abs(dyl)) {
-                        return dxl > 0 ? linePoint1.x - EPS <= currPoint.x && currPoint.x <= linePoint2.x + EPS : linePoint2.x - EPS
-                             <= currPoint.x && currPoint.x <= linePoint1.x + EPS;
+                        return dxl > 0 ? linePoint1.GetX() - EPS <= currPoint.GetX() && currPoint.GetX() <= linePoint2.GetX() + EPS
+                             : linePoint2.GetX() - EPS <= currPoint.GetX() && currPoint.GetX() <= linePoint1.GetX() + EPS;
                     }
                     else {
-                        return dyl > 0 ? linePoint1.y - EPS <= currPoint.y && currPoint.y <= linePoint2.y + EPS : linePoint2.y - EPS
-                             <= currPoint.y && currPoint.y <= linePoint1.y + EPS;
+                        return dyl > 0 ? linePoint1.GetY() - EPS <= currPoint.GetY() && currPoint.GetY() <= linePoint2.GetY() + EPS
+                             : linePoint2.GetY() - EPS <= currPoint.GetY() && currPoint.GetY() <= linePoint1.GetY() + EPS;
                     }
                 }
                 else {
@@ -488,8 +488,8 @@ namespace iText.PdfCleanup {
             if (imageCtm == null) {
                 return null;
             }
-            Point[] points = TransformPoints(imageCtm, false, new Point(0, 0), new Point(0, 1), new Point(1, 0), new Point
-                (1, 1));
+            Point[] points = TransformPoints(imageCtm, false, new Point(0d, 0d), new Point(0d, 1d), new Point(1d, 0d), 
+                new Point(1d, 1d));
             return Rectangle.CalculateBBox(JavaUtil.ArraysAsList(points));
         }
 
