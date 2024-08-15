@@ -72,7 +72,7 @@ namespace iText.PdfCleanup {
             Point[] intersectSubject = new Point[] { new Point(50, 80), new Point(70, 80), new Point(50, 80) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(50, 70), new Point(50, 50) };
             PdfCleanUpFilter filter = new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties());
-            NUnit.Framework.Assert.IsTrue(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsFalse(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
@@ -80,7 +80,7 @@ namespace iText.PdfCleanup {
             Point[] intersectSubject = new Point[] { new Point(50, 40), new Point(70, 40), new Point(50, 40) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(50, 70), new Point(50, 50) };
             PdfCleanUpFilter filter = new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties());
-            NUnit.Framework.Assert.IsTrue(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsFalse(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
@@ -96,7 +96,7 @@ namespace iText.PdfCleanup {
             Point[] intersectSubject = new Point[] { new Point(50, 40), new Point(70, 40), new Point(50, 40) };
             Point[] intersecting = new Point[] { new Point(50, 50), new Point(50, 30), new Point(50, 50) };
             PdfCleanUpFilter filter = new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties());
-            NUnit.Framework.Assert.IsFalse(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsTrue(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
@@ -104,7 +104,7 @@ namespace iText.PdfCleanup {
             Point[] intersectSubject = new Point[] { new Point(30, 80), new Point(90, 80), new Point(30, 80) };
             Point[] intersecting = new Point[] { new Point(60, 50), new Point(40, 70), new Point(60, 50) };
             PdfCleanUpFilter filter = new PdfCleanUpFilter(new List<Rectangle>(), new CleanUpProperties());
-            NUnit.Framework.Assert.IsTrue(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
+            NUnit.Framework.Assert.IsFalse(filter.CheckIfRectanglesIntersect(intersectSubject, intersecting));
         }
 
         [NUnit.Framework.Test]
