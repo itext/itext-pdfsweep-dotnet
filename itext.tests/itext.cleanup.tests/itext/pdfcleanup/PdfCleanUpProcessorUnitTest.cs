@@ -144,15 +144,15 @@ namespace iText.PdfCleanup {
         }
 
         private void TestOpenNotWrittenTags(LinkedList<CanvasTag> tags) {
-            PdfCleanUpProcessor processor = new _PdfCleanUpProcessor_161(tags, null, null);
+            PdfCleanUpProcessor processor = new _PdfCleanUpProcessor_160(tags, null, null);
             foreach (CanvasTag tag in tags) {
                 processor.AddNotWrittenTag(tag);
             }
             processor.OpenNotWrittenTags();
         }
 
-        private sealed class _PdfCleanUpProcessor_161 : PdfCleanUpProcessor {
-            public _PdfCleanUpProcessor_161(LinkedList<CanvasTag> tags, IList<Rectangle> baseArg1, PdfDocument baseArg2
+        private sealed class _PdfCleanUpProcessor_160 : PdfCleanUpProcessor {
+            public _PdfCleanUpProcessor_160(LinkedList<CanvasTag> tags, IList<Rectangle> baseArg1, PdfDocument baseArg2
                 )
                 : base(baseArg1, baseArg2) {
                 this.tags = tags;
@@ -160,12 +160,12 @@ namespace iText.PdfCleanup {
 
 //\cond DO_NOT_DOCUMENT
             internal override PdfCanvas GetCanvas() {
-                return new _PdfCanvas_164(tags, new PdfStream(), null, null);
+                return new _PdfCanvas_163(tags, new PdfStream(), null, null);
             }
 //\endcond
 
-            private sealed class _PdfCanvas_164 : PdfCanvas {
-                public _PdfCanvas_164(LinkedList<CanvasTag> tags, PdfStream baseArg1, PdfResources baseArg2, PdfDocument baseArg3
+            private sealed class _PdfCanvas_163 : PdfCanvas {
+                public _PdfCanvas_163(LinkedList<CanvasTag> tags, PdfStream baseArg1, PdfResources baseArg2, PdfDocument baseArg3
                     )
                     : base(baseArg1, baseArg2, baseArg3) {
                     this.tags = tags;
