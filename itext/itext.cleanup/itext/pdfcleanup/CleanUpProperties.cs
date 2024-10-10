@@ -37,6 +37,8 @@ namespace iText.PdfCleanup {
 
         private double? overlapRatio;
 
+        private PathOffsetApproximationProperties offsetProperties = new PathOffsetApproximationProperties();
+
         /// <summary>Creates default CleanUpProperties instance.</summary>
         public CleanUpProperties() {
             processAnnotations = true;
@@ -52,8 +54,14 @@ namespace iText.PdfCleanup {
 
         /// <summary>Sets additional meta info.</summary>
         /// <param name="metaInfo">the meta info to set</param>
-        public virtual void SetMetaInfo(IMetaInfo metaInfo) {
+        /// <returns>
+        /// this
+        /// <see cref="CleanUpProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.PdfCleanup.CleanUpProperties SetMetaInfo(IMetaInfo metaInfo) {
             this.metaInfo = metaInfo;
+            return this;
         }
 
         /// <summary>Check if page annotations will be processed.</summary>
@@ -78,8 +86,14 @@ namespace iText.PdfCleanup {
         /// Default processing behaviour: remove annotation if there is overlap with a redaction region.
         /// </remarks>
         /// <param name="processAnnotations">is page annotations will be processed</param>
-        public virtual void SetProcessAnnotations(bool processAnnotations) {
+        /// <returns>
+        /// this
+        /// <see cref="CleanUpProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.PdfCleanup.CleanUpProperties SetProcessAnnotations(bool processAnnotations) {
             this.processAnnotations = processAnnotations;
+            return this;
         }
 
         /// <summary>Gets the overlap ratio.</summary>
@@ -106,16 +120,61 @@ namespace iText.PdfCleanup {
         /// Example: if the overlap ratio is set to 0.3, the content region will be removed if it overlaps with
         /// the redaction area by at least 30%.
         /// </remarks>
-        /// <param name="overlapRatio">The overlap ratio to set.</param>
-        public virtual void SetOverlapRatio(double? overlapRatio) {
+        /// <param name="overlapRatio">the overlap ratio to set</param>
+        /// <returns>
+        /// this
+        /// <see cref="CleanUpProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.PdfCleanup.CleanUpProperties SetOverlapRatio(double? overlapRatio) {
             if (overlapRatio == null) {
                 this.overlapRatio = null;
-                return;
+                return this;
             }
             if (overlapRatio <= 0 || overlapRatio > 1) {
                 throw new ArgumentException(CleanupExceptionMessageConstant.OVERLAP_RATIO_SHOULD_BE_IN_RANGE);
             }
             this.overlapRatio = overlapRatio;
+            return this;
+        }
+
+        /// <summary>
+        /// Get
+        /// <see cref="PathOffsetApproximationProperties"/>
+        /// specifying approximation parameters for
+        /// <see cref="iText.Kernel.Pdf.Canvas.Parser.ClipperLib.ClipperOffset"/>
+        /// operations.
+        /// </summary>
+        /// <returns>
+        /// 
+        /// <see cref="PathOffsetApproximationProperties"/>
+        /// parameters
+        /// </returns>
+        public virtual PathOffsetApproximationProperties GetOffsetProperties() {
+            return offsetProperties;
+        }
+
+        /// <summary>
+        /// Set
+        /// <see cref="PathOffsetApproximationProperties"/>
+        /// specifying approximation parameters for
+        /// <see cref="iText.Kernel.Pdf.Canvas.Parser.ClipperLib.ClipperOffset"/>
+        /// operations.
+        /// </summary>
+        /// <param name="offsetProperties">
+        /// 
+        /// <see cref="PathOffsetApproximationProperties"/>
+        /// to set
+        /// </param>
+        /// <returns>
+        /// this
+        /// <see cref="CleanUpProperties"/>
+        /// instance
+        /// </returns>
+        public virtual iText.PdfCleanup.CleanUpProperties SetOffsetProperties(PathOffsetApproximationProperties offsetProperties
+            ) {
+            this.offsetProperties = offsetProperties;
+            return this;
         }
     }
 }

@@ -638,8 +638,7 @@ namespace iText.PdfCleanup {
             IList<iText.PdfCleanup.PdfCleanUpLocation> additionalLocation = new List<iText.PdfCleanup.PdfCleanUpLocation
                 >();
             additionalLocation.Add(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(100, 560, 200, 30)));
-            CleanUpProperties properties = new CleanUpProperties();
-            properties.SetProcessAnnotations(false);
+            CleanUpProperties properties = new CleanUpProperties().SetProcessAnnotations(false);
             PdfCleaner.AutoSweepCleanUp(new FileStream(input, FileMode.Open, FileAccess.Read), new FileStream(output, 
                 FileMode.Create), strategy, additionalLocation, properties);
             CompareByContent(cmp, output, OUTPUT_PATH, "autoCleanWithFalseProcessAnnotationTest");

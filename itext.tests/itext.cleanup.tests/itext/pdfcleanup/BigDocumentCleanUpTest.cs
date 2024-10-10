@@ -66,6 +66,21 @@ namespace iText.PdfCleanup {
         }
 
         [NUnit.Framework.Test]
+        [LogMessage(iText.IO.Logs.IoLogMessageConstant.CREATED_ROOT_TAG_HAS_MAPPING)]
+        public virtual void BigTaggedDocumentDynamicOffsetMultiplier() {
+            String input = inputPath + "chapter8_Interactive_features.pdf";
+            String output = outputPath + "bigTaggedDocumentDynamicOffsetMultiplier.pdf";
+            String cmp = inputPath + "cmp_bigTaggedDocument.pdf";
+            IList<Rectangle> rects = JavaUtil.ArraysAsList(new Rectangle(60f, 80f, 460f, 65f), new Rectangle(300f, 370f
+                , 215f, 270f));
+            using (PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output))) {
+                PdfCleaner.CleanUp(pdfDocument, InitLocations(rects, 131), new CleanUpProperties().SetOffsetProperties(new 
+                    PathOffsetApproximationProperties().CalculateOffsetMultiplierDynamically(true)));
+            }
+            CompareByContent(cmp, output, outputPath, "4");
+        }
+
+        [NUnit.Framework.Test]
         public virtual void TextPositioning() {
             String input = inputPath + "textPositioning.pdf";
             String output = outputPath + "textPositioning.pdf";
