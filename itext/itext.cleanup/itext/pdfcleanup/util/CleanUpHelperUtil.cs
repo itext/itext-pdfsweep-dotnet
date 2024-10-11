@@ -63,14 +63,14 @@ namespace iText.PdfCleanup.Util {
             double sum = 0;
             for (int i = 0; i < vertices.Length; i++) {
                 if (i == 0) {
-                    sum += vertices[i].x * (vertices[i + 1].y - vertices[vertices.Length - 1].y);
+                    sum += vertices[i].GetX() * (vertices[i + 1].GetY() - vertices[vertices.Length - 1].GetY());
                 }
                 else {
                     if (i == vertices.Length - 1) {
-                        sum += vertices[i].x * (vertices[0].y - vertices[i - 1].y);
+                        sum += vertices[i].GetX() * (vertices[0].GetY() - vertices[i - 1].GetY());
                     }
                     else {
-                        sum += vertices[i].x * (vertices[i + 1].y - vertices[i - 1].y);
+                        sum += vertices[i].GetX() * (vertices[i + 1].GetY() - vertices[i - 1].GetY());
                     }
                 }
             }

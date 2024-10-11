@@ -45,8 +45,8 @@ namespace iText.PdfCleanup {
         private static readonly ILogger logger = ITextLogManager.GetLogger(typeof(iText.PdfCleanup.PdfCleanUpFilter
             ));
 
-        /* There is no exact representation of the circle using Bezier curves.
-        * But, for a Bezier curve with n segments the optimal distance to the control points,
+        /* There is no exact representation of the circle using Bézier curves.
+        * But, for a Bézier curve with n segments the optimal distance to the control points,
         * in the sense that the middle of the curve lies on the circle itself, is (4/3) * tan(pi / (2*n))
         * So for 4 points it is (4/3) * tan(pi/8) = 4 * (sqrt(2)-1)/3 = 0.5522847498
         * In this approximation, the Bézier curve always falls outside the circle,
@@ -93,13 +93,15 @@ namespace iText.PdfCleanup {
         /// <returns>true if the rectangles intersect, false otherwise</returns>
         internal virtual bool CheckIfRectanglesIntersect(Point[] rect1, Point[] rect2) {
             Clipper clipper = new Clipper();
+            ClipperBridge clipperBridge = properties.GetOffsetProperties().CalculateOffsetMultiplierDynamically() ? new 
+                ClipperBridge(rect1, rect2) : new ClipperBridge();
             // If the redaction area is degenerate, the result will be false
-            if (!ClipperBridge.AddPolygonToClipper(clipper, rect2, PolyType.CLIP)) {
+            if (!clipperBridge.AddPolygonToClipper(clipper, rect2, PolyType.CLIP)) {
                 // If the content area is not degenerate (and the redaction area is), let's return false:
                 // even if they overlaps somehow, we do not consider it as an intersection.
                 // If the content area is degenerate, let's process this case specifically
-                if (!ClipperBridge.AddPolygonToClipper(clipper, rect1, PolyType.SUBJECT)) {
-                    // Clipper fails to process degenerate redaction areas. However that's vital for pdfAutoSweep,
+                if (!clipperBridge.AddPolygonToClipper(clipper, rect1, PolyType.SUBJECT)) {
+                    // Clipper fails to process degenerate redaction areas. However, that's vital for pdfAutoSweep,
                     // because in some cases (for example, noninvertible cm) the text's area might be degenerate,
                     // but we still need to sweep the content.
                     // The idea is as follows:
@@ -107,7 +109,7 @@ namespace iText.PdfCleanup {
                     // b) if the degenerate redaction area represents a line, let's check that there the redaction line
                     // equals to one of the edges of the content's area. That is implemented in respect to area generation,
                     // because the redaction line corresponds to the descent line of the content.
-                    if (!ClipperBridge.AddPolylineSubjectToClipper(clipper, rect2)) {
+                    if (!clipperBridge.AddPolylineSubjectToClipper(clipper, rect2)) {
                         return false;
                     }
                     if (rect1.Length != rect2.Length) {
@@ -121,8 +123,8 @@ namespace iText.PdfCleanup {
                             break;
                         }
                     }
-                    for (int i = 0; i < rect1.Length; i++) {
-                        if (IsPointOnALineSegment(rect1[i], startPoint, endPoint, true)) {
+                    foreach (Point point in rect1) {
+                        if (IsPointOnALineSegment(point, startPoint, endPoint, true)) {
                             return true;
                         }
                     }
@@ -138,14 +140,14 @@ namespace iText.PdfCleanup {
             // If addition returns false, this means that there are less than 3 distinct points, because of rectangle zero width.
             // Let's in this case specify the path as polyline, because we still want to know if redaction area
             // intersects even with zero-width rectangles.
-            bool intersectionSubjectAdded = ClipperBridge.AddPolygonToClipper(clipper, rect1, PolyType.SUBJECT);
+            bool intersectionSubjectAdded = clipperBridge.AddPolygonToClipper(clipper, rect1, PolyType.SUBJECT);
             if (intersectionSubjectAdded) {
                 // working with paths is considered to be a bit faster in terms of performance.
                 Paths paths = new Paths();
                 clipper.Execute(ClipType.INTERSECTION, paths, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
-                return CheckIfIntersectionOccurs(paths, rect1, false);
+                return CheckIfIntersectionOccurs(paths, rect1, false, clipperBridge);
             }
-            intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
+            intersectionSubjectAdded = clipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
             if (!intersectionSubjectAdded) {
                 // According to the comment above,
                 // this could have happened only if all four passed points are actually the same point.
@@ -156,17 +158,18 @@ namespace iText.PdfCleanup {
                 Array.Copy(rect1, 0, expandedRect1, 0, rect1.Length);
                 expandedRect1[rect1.Length] = new Point(rect1[0].GetX() + SMALL_DIFF, rect1[0].GetY());
                 rect1 = expandedRect1;
-                intersectionSubjectAdded = ClipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
+                intersectionSubjectAdded = clipperBridge.AddPolylineSubjectToClipper(clipper, rect1);
                 System.Diagnostics.Debug.Assert(intersectionSubjectAdded);
             }
             PolyTree polyTree = new PolyTree();
             clipper.Execute(ClipType.INTERSECTION, polyTree, PolyFillType.NON_ZERO, PolyFillType.NON_ZERO);
             return CheckIfIntersectionOccurs(iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.PolyTreeToPaths(polyTree
-                ), rect1, true);
+                ), rect1, true, clipperBridge);
         }
 //\endcond
 
-        private bool CheckIfIntersectionOccurs(Paths paths, Point[] rect1, bool isDegenerate) {
+        private bool CheckIfIntersectionOccurs(Paths paths, Point[] rect1, bool isDegenerate, ClipperBridge clipperBridge
+            ) {
             if (paths.IsEmpty()) {
                 return false;
             }
@@ -174,10 +177,10 @@ namespace iText.PdfCleanup {
             // If the user defines a overlappingRatio we use this to calculate whether it intersects enough
             // To pass as an intersection
             if (properties.GetOverlapRatio() == null) {
-                return !CheckIfIntersectionRectangleDegenerate(intersectionRectangle, isDegenerate);
+                return !CheckIfIntersectionRectangleDegenerate(intersectionRectangle, isDegenerate, clipperBridge);
             }
             double overlappedArea = CleanUpHelperUtil.CalculatePolygonArea(rect1);
-            double intersectionArea = ClipperBridge.LongRectCalculateHeight(intersectionRectangle) * ClipperBridge.LongRectCalculateWidth
+            double intersectionArea = clipperBridge.LongRectCalculateHeight(intersectionRectangle) * clipperBridge.LongRectCalculateWidth
                 (intersectionRectangle);
             double percentageOfOverlapping = intersectionArea / overlappedArea;
             float SMALL_VALUE_FOR_ROUNDING_ERRORS = 1e-5f;
@@ -286,12 +289,10 @@ namespace iText.PdfCleanup {
         /// </returns>
         private Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
             path.CloseAllSubpaths();
-            Clipper clipper = new Clipper();
-            ClipperBridge.AddPath(clipper, path, PolyType.SUBJECT);
+            IList<Point[]> transfRectVerticesList = new List<Point[]>();
             foreach (Rectangle rectangle in regions) {
                 try {
-                    Point[] transfRectVertices = TransformPoints(ctm, true, GetRectangleVertices(rectangle));
-                    ClipperBridge.AddPolygonToClipper(clipper, transfRectVertices, PolyType.CLIP);
+                    transfRectVerticesList.Add(TransformPoints(ctm, true, GetRectangleVertices(rectangle)));
                 }
                 catch (PdfException e) {
                     if (!(e.InnerException is NoninvertibleTransformException)) {
@@ -303,13 +304,20 @@ namespace iText.PdfCleanup {
                     }
                 }
             }
+            Clipper clipper = new Clipper();
+            ClipperBridge clipperBridge = properties.GetOffsetProperties().CalculateOffsetMultiplierDynamically() ? GetClipperBridge
+                (path, transfRectVerticesList) : new ClipperBridge();
+            clipperBridge.AddPath(clipper, path, PolyType.SUBJECT);
+            foreach (Point[] transfRectVertices in transfRectVerticesList) {
+                clipperBridge.AddPolygonToClipper(clipper, transfRectVertices, PolyType.CLIP);
+            }
             PolyFillType fillType = PolyFillType.NON_ZERO;
             if (fillingRule == PdfCanvasConstants.FillingRule.EVEN_ODD) {
                 fillType = PolyFillType.EVEN_ODD;
             }
             PolyTree resultTree = new PolyTree();
             clipper.Execute(ClipType.DIFFERENCE, resultTree, fillType, PolyFillType.NON_ZERO);
-            return ClipperBridge.ConvertToPath(resultTree);
+            return clipperBridge.ConvertToPath(resultTree);
         }
 
         /// <summary>Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
@@ -350,13 +358,15 @@ namespace iText.PdfCleanup {
             if (lineDashPattern != null && !lineDashPattern.IsSolid()) {
                 path = LineDashPattern.ApplyDashPattern(path, lineDashPattern);
             }
-            ClipperOffset offset = new ClipperOffset(miterLimit, iText.PdfCleanup.PdfCleanUpTool.arcTolerance * iText.PdfCleanup.PdfCleanUpTool
-                .floatMultiplier);
-            IList<Subpath> degenerateSubpaths = ClipperBridge.AddPath(offset, path, joinType, endType);
+            ClipperBridge clipperBridge = properties.GetOffsetProperties().CalculateOffsetMultiplierDynamically() ? new 
+                ClipperBridge(path) : new ClipperBridge();
+            ClipperOffset offset = new ClipperOffset(miterLimit, properties.GetOffsetProperties().GetArcTolerance() * 
+                clipperBridge.GetFloatMultiplier());
+            IList<Subpath> degenerateSubpaths = clipperBridge.AddPath(offset, path, joinType, endType);
             PolyTree resultTree = new PolyTree();
-            offset.Execute(resultTree, lineWidth * iText.PdfCleanup.PdfCleanUpTool.floatMultiplier / 2);
-            Path offsetedPath = ClipperBridge.ConvertToPath(resultTree);
-            if (degenerateSubpaths.Count > 0) {
+            offset.Execute(resultTree, lineWidth * clipperBridge.GetFloatMultiplier() / 2);
+            Path offsetedPath = clipperBridge.ConvertToPath(resultTree);
+            if (!degenerateSubpaths.IsEmpty()) {
                 if (endType == EndType.OPEN_ROUND) {
                     IList<Subpath> circles = ConvertToCircles(degenerateSubpaths, lineWidth / 2);
                     offsetedPath.AddSubpaths(circles);
@@ -422,7 +432,7 @@ namespace iText.PdfCleanup {
         /// Checks if the input intersection rectangle is degenerate.
         /// In case of intersection subject is degenerate (isIntersectSubjectDegenerate
         /// is true) and it is included into intersecting rectangle, this method returns false,
-        /// despite of the intersection rectangle is degenerate.
+        /// despite the intersection rectangle is degenerate.
         /// </remarks>
         /// <param name="rect">intersection rectangle</param>
         /// <param name="isIntersectSubjectDegenerate">
@@ -431,29 +441,29 @@ namespace iText.PdfCleanup {
         /// </param>
         /// <returns>true - if the intersection rectangle is degenerate.</returns>
         private static bool CheckIfIntersectionRectangleDegenerate(IntRect rect, bool isIntersectSubjectDegenerate
-            ) {
-            float width = ClipperBridge.LongRectCalculateWidth(rect);
-            float height = ClipperBridge.LongRectCalculateHeight(rect);
+            , ClipperBridge clipperBridge) {
+            float width = clipperBridge.LongRectCalculateWidth(rect);
+            float height = clipperBridge.LongRectCalculateHeight(rect);
             return isIntersectSubjectDegenerate ? (width < EPS && height < EPS) : (width < EPS || height < EPS);
         }
 
         private static bool IsPointOnALineSegment(Point currPoint, Point linePoint1, Point linePoint2, bool isBetweenLinePoints
             ) {
-            double dxc = currPoint.x - linePoint1.x;
-            double dyc = currPoint.y - linePoint1.y;
-            double dxl = linePoint2.x - linePoint1.x;
-            double dyl = linePoint2.y - linePoint1.y;
+            double dxc = currPoint.GetX() - linePoint1.GetX();
+            double dyc = currPoint.GetY() - linePoint1.GetY();
+            double dxl = linePoint2.GetX() - linePoint1.GetX();
+            double dyl = linePoint2.GetY() - linePoint1.GetY();
             double cross = dxc * dyl - dyc * dxl;
             // if point is on a line, let's check whether it's between provided line points
             if (Math.Abs(cross) <= EPS) {
                 if (isBetweenLinePoints) {
                     if (Math.Abs(dxl) >= Math.Abs(dyl)) {
-                        return dxl > 0 ? linePoint1.x - EPS <= currPoint.x && currPoint.x <= linePoint2.x + EPS : linePoint2.x - EPS
-                             <= currPoint.x && currPoint.x <= linePoint1.x + EPS;
+                        return dxl > 0 ? linePoint1.GetX() - EPS <= currPoint.GetX() && currPoint.GetX() <= linePoint2.GetX() + EPS
+                             : linePoint2.GetX() - EPS <= currPoint.GetX() && currPoint.GetX() <= linePoint1.GetX() + EPS;
                     }
                     else {
-                        return dyl > 0 ? linePoint1.y - EPS <= currPoint.y && currPoint.y <= linePoint2.y + EPS : linePoint2.y - EPS
-                             <= currPoint.y && currPoint.y <= linePoint1.y + EPS;
+                        return dyl > 0 ? linePoint1.GetY() - EPS <= currPoint.GetY() && currPoint.GetY() <= linePoint2.GetY() + EPS
+                             : linePoint2.GetY() - EPS <= currPoint.GetY() && currPoint.GetY() <= linePoint1.GetY() + EPS;
                     }
                 }
                 else {
@@ -488,8 +498,8 @@ namespace iText.PdfCleanup {
             if (imageCtm == null) {
                 return null;
             }
-            Point[] points = TransformPoints(imageCtm, false, new Point(0, 0), new Point(0, 1), new Point(1, 0), new Point
-                (1, 1));
+            Point[] points = TransformPoints(imageCtm, false, new Point(0d, 0d), new Point(0d, 1d), new Point(1d, 0d), 
+                new Point(1d, 1d));
             return Rectangle.CalculateBBox(JavaUtil.ArraysAsList(points));
         }
 
@@ -718,9 +728,8 @@ namespace iText.PdfCleanup {
         /// <summary>Convert a Rectangle object into 4 Points</summary>
         /// <param name="rect">input Rectangle</param>
         private static Point[] GetRectangleVertices(Rectangle rect) {
-            Point[] points = new Point[] { new Point(rect.GetLeft(), rect.GetBottom()), new Point(rect.GetRight(), rect
-                .GetBottom()), new Point(rect.GetRight(), rect.GetTop()), new Point(rect.GetLeft(), rect.GetTop()) };
-            return points;
+            return new Point[] { new Point(rect.GetLeft(), rect.GetBottom()), new Point(rect.GetRight(), rect.GetBottom
+                ()), new Point(rect.GetRight(), rect.GetTop()), new Point(rect.GetLeft(), rect.GetTop()) };
         }
 
         /// <summary>Calculate the intersection of 2 Rectangles.</summary>
@@ -734,12 +743,25 @@ namespace iText.PdfCleanup {
             return (x2 - x1 > 0 && y2 - y1 > 0) ? new Rectangle(x1, y1, x2 - x1, y2 - y1) : null;
         }
 
+        private static ClipperBridge GetClipperBridge(Path path, IList<Point[]> transfRectVerticesList) {
+            IList<Point> pointsList = new List<Point>();
+            foreach (Subpath subpath in path.GetSubpaths()) {
+                if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
+                    pointsList.AddAll(subpath.GetPiecewiseLinearApproximation());
+                }
+            }
+            foreach (Point[] transfRectVertices in transfRectVerticesList) {
+                pointsList.AddAll(JavaUtil.ArraysAsList(transfRectVertices));
+            }
+            return new ClipperBridge(pointsList.ToArray(new Point[0]));
+        }
+
 //\cond DO_NOT_DOCUMENT
         /// <summary>Generic class representing the result of filtering an object of type T.</summary>
         internal class FilterResult<T> {
-            private bool isModified;
+            private readonly bool isModified;
 
-            private T filterResult;
+            private readonly T filterResult;
 
             public FilterResult(bool isModified, T filterResult) {
                 this.isModified = isModified;

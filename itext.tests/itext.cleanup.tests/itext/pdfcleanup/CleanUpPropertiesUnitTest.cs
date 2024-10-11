@@ -81,5 +81,15 @@ namespace iText.PdfCleanup {
             properties.SetOverlapRatio(null);
             NUnit.Framework.Assert.IsNull(properties.GetOverlapRatio());
         }
+
+        [NUnit.Framework.Test]
+        public virtual void SetGetPathOffsetApproximationPropertiesTest() {
+            PathOffsetApproximationProperties pathOffsetApproximationProperties = new PathOffsetApproximationProperties
+                ().CalculateOffsetMultiplierDynamically(true).SetArcTolerance(0.0015);
+            CleanUpProperties properties = new CleanUpProperties().SetOffsetProperties(pathOffsetApproximationProperties
+                );
+            NUnit.Framework.Assert.IsTrue(properties.GetOffsetProperties().CalculateOffsetMultiplierDynamically());
+            NUnit.Framework.Assert.AreEqual(0.0015, properties.GetOffsetProperties().GetArcTolerance());
+        }
     }
 }

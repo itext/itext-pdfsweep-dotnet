@@ -43,44 +43,20 @@ using iText.PdfCleanup.Exceptions;
 namespace iText.PdfCleanup {
     /// <summary>Represents the main mechanism for cleaning a PDF document.</summary>
     public class PdfCleanUpTool {
-        /// <summary>
-        /// When a document with line arts is being cleaned up, there are a lot of
-        /// calculations with floating point numbers.
-        /// </summary>
-        /// <remarks>
-        /// When a document with line arts is being cleaned up, there are a lot of
-        /// calculations with floating point numbers. All of them are translated
-        /// into fixed point numbers by multiplying by this coefficient. Vary it
-        /// to adjust the preciseness of the calculations.
-        /// </remarks>
-        [System.ObsoleteAttribute]
-        public static double floatMultiplier = Math
-                //TODO DEVSIX-5770 make this constant a single non-static configuration
-                .Pow(10, 14);
+        private readonly PdfDocument pdfDocument;
 
-        /// <summary>
-        /// Used as the criterion of a good approximation of rounded line joins
-        /// and line caps.
-        /// </summary>
-        [System.ObsoleteAttribute]
-        public static double arcTolerance = 
-                //TODO DEVSIX-5770 make this constant a single non-static configuration
-                0.0025;
-
-        private PdfDocument pdfDocument;
-
-        private CleanUpProperties properties;
+        private readonly CleanUpProperties properties;
 
         /// <summary>Key - page number, value - list of locations related to the page.</summary>
-        private IDictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>> pdfCleanUpLocations;
+        private readonly IDictionary<int, IList<iText.PdfCleanup.PdfCleanUpLocation>> pdfCleanUpLocations;
+
+        private readonly FilteredImagesCache filteredImagesCache;
 
         /// <summary>
         /// Keys - redact annotations to be removed from the document after clean up,
         /// values - list of regions defined by redact annotation.
         /// </summary>
         private IDictionary<PdfRedactAnnotation, IList<Rectangle>> redactAnnotations;
-
-        private FilteredImagesCache filteredImagesCache;
 
         /// <summary>
         /// Creates a

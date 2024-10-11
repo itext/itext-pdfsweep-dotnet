@@ -37,7 +37,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using iText.Kernel.Pdf.Colorspace;
+using iText.Kernel.Pdf.Colorspace.Shading;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
 using iText.PdfCleanup.Logs;
@@ -544,7 +544,7 @@ namespace iText.PdfCleanup {
                                                                     }
                                                                     else {
                                                                         if ("sh".Equals(@operator)) {
-                                                                            PdfShading shading = GetResources().GetShading((PdfName)operands[0]);
+                                                                            AbstractPdfShading shading = GetResources().GetShading((PdfName)operands[0]);
                                                                             GetCanvas().PaintShading(shading);
                                                                         }
                                                                         else {
