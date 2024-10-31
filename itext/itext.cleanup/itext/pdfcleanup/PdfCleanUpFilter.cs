@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Paths = System.Collections.Generic.List<System.Collections.Generic.List<iText.Kernel.Pdf.Canvas.Parser.ClipperLib.IntPoint>>;
 using iText.Commons;
+using iText.Commons.Datastructures;
 using iText.Commons.Utils;
 using iText.IO.Font;
 using iText.IO.Image;
@@ -241,7 +242,7 @@ namespace iText.PdfCleanup {
         /// <see cref="iText.Kernel.Geom.Path"/>
         /// object.
         /// </returns>
-        internal virtual Path FilterStrokePath(PathRenderInfo path) {
+        internal virtual Tuple2<Path, bool> FilterStrokePath(PathRenderInfo path) {
             PdfArray dashPattern = path.GetLineDashPattern();
             LineDashPattern lineDashPattern = new LineDashPattern(dashPattern.GetAsArray(0), dashPattern.GetAsNumber(1
                 ).FloatValue());
@@ -263,7 +264,7 @@ namespace iText.PdfCleanup {
         /// object.
         /// </returns>
         internal virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
-            return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
+            return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule, false);
         }
 //\endcond
 
@@ -282,12 +283,20 @@ namespace iText.PdfCleanup {
         /// transformation matrix.
         /// </param>
         /// <param name="fillingRule">If the subpath is contour, pass any value.</param>
+        /// <param name="checkForIntersection">
+        /// if true, the intersection check of path and regions will be performed, and if
+        /// there is no intersection, original path from parameters will be returned.
+        /// We pass true when we filter stroke path (stroke converted to fill)
+        /// not to put fill path into the output if it's not intersected with cleanup area.
+        /// We pass false when we filter fill and clip paths (there we don't convert stroke to
+        /// fill) and thus happy with the result from ClipperBridge DIFFERENCES.
+        /// </param>
         /// <returns>
         /// a filtered
         /// <see cref="iText.Kernel.Geom.Path"/>
         /// object.
         /// </returns>
-        private Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+        private Path FilterFillPath(Path path, Matrix ctm, int fillingRule, bool checkForIntersection) {
             path.CloseAllSubpaths();
             IList<Point[]> transfRectVerticesList = new List<Point[]>();
             foreach (Rectangle rectangle in regions) {
@@ -314,6 +323,15 @@ namespace iText.PdfCleanup {
             PolyFillType fillType = PolyFillType.NON_ZERO;
             if (fillingRule == PdfCanvasConstants.FillingRule.EVEN_ODD) {
                 fillType = PolyFillType.EVEN_ODD;
+            }
+            if (checkForIntersection) {
+                //Find intersection with cleanup areas
+                PolyTree cleanupAreaIntersection = new PolyTree();
+                clipper.Execute(ClipType.INTERSECTION, cleanupAreaIntersection, fillType, PolyFillType.NON_ZERO);
+                if (iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.PolyTreeToPaths(cleanupAreaIntersection).IsEmpty()) {
+                    //if there are no intersections, return original path as mark that no need to filter anything
+                    return path;
+                }
             }
             PolyTree resultTree = new PolyTree();
             clipper.Execute(ClipType.DIFFERENCE, resultTree, fillType, PolyFillType.NON_ZERO);
@@ -350,8 +368,8 @@ namespace iText.PdfCleanup {
             return areasToBeCleaned;
         }
 
-        private Path FilterStrokePath(Path sourcePath, Matrix ctm, float lineWidth, int lineCapStyle, int lineJoinStyle
-            , float miterLimit, LineDashPattern lineDashPattern) {
+        private Tuple2<Path, bool> FilterStrokePath(Path sourcePath, Matrix ctm, float lineWidth, int lineCapStyle
+            , int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
             Path path = sourcePath;
             JoinType joinType = ClipperBridge.GetJoinType(lineJoinStyle);
             EndType endType = ClipperBridge.GetEndType(lineCapStyle);
@@ -378,7 +396,12 @@ namespace iText.PdfCleanup {
                     }
                 }
             }
-            return FilterFillPath(offsetedPath, ctm, PdfCanvasConstants.FillingRule.NONZERO_WINDING);
+            Path resultPath = FilterFillPath(offsetedPath, ctm, PdfCanvasConstants.FillingRule.NONZERO_WINDING, true);
+            //if path was not filtered, return original path
+            if (resultPath == offsetedPath) {
+                return new Tuple2<Path, bool>(sourcePath, false);
+            }
+            return new Tuple2<Path, bool>(resultPath, true);
         }
 
         /// <summary>Returns whether the given TextRenderInfo object needs to be cleaned up.</summary>
