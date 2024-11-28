@@ -31,6 +31,7 @@ namespace iText.PdfCleanup {
     /// operations.
     /// </summary>
     public class CleanUpProperties {
+        //test comment for sharpen
         private IMetaInfo metaInfo;
 
         private bool processAnnotations;
