@@ -947,6 +947,7 @@ namespace iText.PdfCleanup {
         [NUnit.Framework.Test]
         public virtual void DirectPropertyObjectTest() {
             String input = INPUT_PATH + "DirectPropertyObject.pdf";
+            String cmp = INPUT_PATH + "cmp_DirectPropertyObject.pdf";
             String output = OUTPUT_PATH + "DirectPropertyObjectOutput.pdf";
             PdfDocument pdfDocument = new PdfDocument(new PdfReader(input), new PdfWriter(output, new WriterProperties
                 ()));
@@ -956,12 +957,7 @@ namespace iText.PdfCleanup {
             workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(1, area));
             workingTool.CleanUp();
             pdfDocument.Close();
-            PdfDocument resultDoc = new PdfDocument(new PdfReader(output));
-            byte[] bytes = resultDoc.GetPage(1).GetFirstContentStream().GetBytes();
-            String contentString = iText.Commons.Utils.JavaUtil.GetStringForBytes(bytes, System.Text.Encoding.UTF8);
-            resultDoc.Close();
-            //TODO DEVSIX-7387 change when bug is fixed
-            NUnit.Framework.Assert.IsTrue(contentString.Contains("/PlacedPDF <</Metadata 14 0 R>> BDC"));
+            CompareByContent(cmp, output, OUTPUT_PATH, "diff_directPropertyObject_");
         }
 
         private void CleanUp(String input, String output, IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations
