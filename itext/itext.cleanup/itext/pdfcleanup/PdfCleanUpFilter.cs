@@ -198,19 +198,22 @@ namespace iText.PdfCleanup {
         /// </returns>
         internal virtual PdfCleanUpFilter.FilterResult<PdfArray> FilterText(TextRenderInfo text) {
             PdfTextArray textArray = new PdfTextArray();
-            if (IsTextNotToBeCleaned(text)) {
+            // Overlap ratio should not be taken into account when we check the whole text not to be cleaned up
+            if (properties.GetOverlapRatio() == null && IsTextNotToBeCleaned(text)) {
                 return new PdfCleanUpFilter.FilterResult<PdfArray>(false, new PdfArray(text.GetPdfString()));
             }
+            bool isModified = false;
             foreach (TextRenderInfo ri in text.GetCharacterRenderInfos()) {
                 if (IsTextNotToBeCleaned(ri)) {
                     textArray.Add(ri.GetPdfString());
                 }
                 else {
+                    isModified = true;
                     textArray.Add(new PdfNumber(FontProgram.ConvertGlyphSpaceToTextSpace(-ri.GetUnscaledWidth()) / (text.GetFontSize
                         () * text.GetHorizontalScaling() / FontProgram.HORIZONTAL_SCALING_FACTOR)));
                 }
             }
-            return new PdfCleanUpFilter.FilterResult<PdfArray>(true, textArray);
+            return new PdfCleanUpFilter.FilterResult<PdfArray>(isModified, textArray);
         }
 //\endcond
 

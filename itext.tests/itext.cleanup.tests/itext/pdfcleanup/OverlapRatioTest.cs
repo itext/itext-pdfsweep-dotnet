@@ -22,9 +22,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
 using System.Collections.Generic;
+using iText.IO.Util;
 using iText.Kernel.Colors;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Utils;
 using iText.Test;
 
@@ -106,7 +108,6 @@ namespace iText.PdfCleanup {
             properties.SetOverlapRatio(1d);
             IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
                 >();
-            // convertCleanupLocations();
             cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(20, 690, 263.75f, 40), ColorConstants
                 .YELLOW));
             PdfCleaner.CleanUp(pdfDoc, cleanUpLocations, properties);
@@ -114,6 +115,38 @@ namespace iText.PdfCleanup {
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(targetFile, cmpFile, outputPath, "diff_");
             NUnit.Framework.Assert.IsNull(errorMessage);
+        }
+
+        [NUnit.Framework.Test]
+        public virtual void DifferentTextRenderInfo() {
+            String inputFile = inputPath + "differentTextRenderInfo.pdf";
+            double?[] ratioArray = new double?[] { 0d, 0.001, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1d };
+            Rectangle r = new Rectangle(110, 700, 400, 130);
+            IList<iText.PdfCleanup.PdfCleanUpLocation> cleanUpLocations = new List<iText.PdfCleanup.PdfCleanUpLocation
+                >();
+            iText.PdfCleanup.PdfCleanUpLocation location = new iText.PdfCleanup.PdfCleanUpLocation(1, r);
+            cleanUpLocations.Add(location);
+            CleanUpProperties cleanUpProperties = new CleanUpProperties();
+            foreach (double? ratio in ratioArray) {
+                String targetFile = outputPath + "differentTextRenderInfo_" + DecimalFormatUtil.FormatNumber(ratio.Value, 
+                    "#.000#") + "_redact.pdf";
+                String cmpFile = inputPath + "cmp_differentTextRenderInfo_" + DecimalFormatUtil.FormatNumber(ratio.Value, 
+                    "#.000#") + "_redact.pdf";
+                using (PdfDocument pdfDoc = new PdfDocument(new PdfReader(inputFile), new PdfWriter(targetFile))) {
+                    if (ratio == 0d) {
+                        cleanUpProperties.SetOverlapRatio(null);
+                    }
+                    else {
+                        cleanUpProperties.SetOverlapRatio(ratio);
+                    }
+                    PdfCleaner.CleanUp(pdfDoc, cleanUpLocations, cleanUpProperties);
+                    // Draw a rectangle to visualize the cleanup
+                    PdfCanvas pdfCanvas = new PdfCanvas(pdfDoc.GetPage(1));
+                    pdfCanvas.SetStrokeColor(ColorConstants.RED).Rectangle(r).Stroke();
+                }
+                NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(targetFile, cmpFile, outputPath, "diff_")
+                    );
+            }
         }
 
         private static IList<iText.PdfCleanup.PdfCleanUpLocation> ConvertCleanupLocations() {
