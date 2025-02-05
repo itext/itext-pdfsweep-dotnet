@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2024 Apryse Group NV
+Copyright (c) 1998-2025 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -45,7 +45,7 @@ namespace iText.PdfCleanup {
 
         [NUnit.Framework.Test]
         public virtual void ZeroWidthLineTest() {
-            // TODO DEVSIX-7136 Rectangles drawn with zero-width line disappear on sweeping
+            // TODO DEVSIX-7136 Red rectangle drawn with zero-width line does not disappear on sweeping
             String outPdf = DESTINATION_FOLDER + "zeroWidthLine.pdf";
             String cmpPdf = SOURCE_FOLDER + "cmp_zeroWidthLine.pdf";
             MemoryStream outDocBaos = new MemoryStream();
@@ -60,8 +60,9 @@ namespace iText.PdfCleanup {
             PdfDocument pdfDocument_1 = new PdfDocument(new PdfReader(new MemoryStream(outDocBaos.ToArray())), new PdfWriter
                 (outPdf));
             iText.PdfCleanup.PdfCleanUpTool workingTool = new iText.PdfCleanup.PdfCleanUpTool(pdfDocument_1);
-            Rectangle area = new Rectangle(0, 50, 150, 150);
-            workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(1, area, ColorConstants.RED));
+            Rectangle area = new Rectangle(100, 150, 150, 150);
+            //It's expected that upper half of red rectangle is cleaned up
+            workingTool.AddCleanupLocation(new iText.PdfCleanup.PdfCleanUpLocation(1, area));
             workingTool.CleanUp();
             pdfDocument_1.Close();
             NUnit.Framework.Assert.IsNull(new CompareTool().CompareByContent(outPdf, cmpPdf, DESTINATION_FOLDER, "diff_"

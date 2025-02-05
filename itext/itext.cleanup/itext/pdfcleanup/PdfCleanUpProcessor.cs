@@ -1,6 +1,6 @@
 /*
 This file is part of the iText (R) project.
-Copyright (c) 1998-2024 Apryse Group NV
+Copyright (c) 1998-2025 Apryse Group NV
 Authors: Apryse Software.
 
 This program is offered under a commercial and under the AGPL license.
@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using iText.Commons;
+using iText.Commons.Datastructures;
 using iText.Commons.Utils;
 using iText.IO.Image;
 using iText.IO.Source;
@@ -858,12 +859,19 @@ namespace iText.PdfCleanup {
                 }
             }
             if (stroke) {
-                Path strokePath = filter.FilterStrokePath(path);
-                if (!strokePath.IsEmpty()) {
-                    // we pass stroke here as false, because stroke is transformed into fill. we don't need to set stroke color
-                    WriteNotAppliedGsParams(false, false);
-                    OpenNotWrittenTags();
-                    WriteStrokePath(strokePath, path.GetStrokeColor());
+                Tuple2<Path, bool> strokePath = filter.FilterStrokePath(path);
+                if (!strokePath.GetFirst().IsEmpty()) {
+                    if (strokePath.GetSecond()) {
+                        // we pass stroke here as false, because stroke is transformed into fill. we don't need to set stroke color
+                        WriteNotAppliedGsParams(false, false);
+                        OpenNotWrittenTags();
+                        WriteFilteredStrokePath(strokePath.GetFirst(), path.GetStrokeColor());
+                    }
+                    else {
+                        WriteNotAppliedGsParams(false, true);
+                        OpenNotWrittenTags();
+                        WriteStrokePath(strokePath.GetFirst(), path.GetStrokeColor());
+                    }
                 }
             }
             if (clip) {
@@ -927,12 +935,19 @@ namespace iText.PdfCleanup {
             }
         }
 
-        private void WriteStrokePath(Path strokePath, Color strokeColor) {
+        private void WriteFilteredStrokePath(Path strokePath, Color strokeColor) {
             PdfCanvas canvas = GetCanvas();
-            // As we transformed stroke to fill, we set stroke color for filling here
+            //As we transformed stroke to fill, we set stroke color for filling here
             canvas.SaveState().SetFillColor(strokeColor);
             WritePath(strokePath);
             canvas.Fill().RestoreState();
+        }
+
+        private void WriteStrokePath(Path strokePath, Color strokeColor) {
+            PdfCanvas canvas = GetCanvas();
+            canvas.SaveState().SetStrokeColor(strokeColor);
+            WritePath(strokePath);
+            canvas.Stroke().RestoreState();
         }
 
         private void RemoveOrCloseTag() {
