@@ -820,7 +820,6 @@ namespace iText.PdfCleanup {
             }
         }
 
-        // TODO
         // PdfCanvas doesn't have a method that writes inline image using pdf stream, and only have method which
         // accepts Image as parameter. That's why we can't write image just as it was in original file, we convert it to Image.
         // IMPORTANT: If writing of pdf stream of not changed inline image will be implemented, don't forget to ensure that
