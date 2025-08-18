@@ -17,6 +17,6 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("5.0.3.0")]
 [assembly: AssemblyFileVersion("5.0.3.0")]
-[assembly: AssemblyInformationalVersion("5.0.3-SNAPSHOT")]
+[assembly: AssemblyInformationalVersion("5.0.3")]
 
 [assembly: NUnit.Framework.Timeout(300000)]
