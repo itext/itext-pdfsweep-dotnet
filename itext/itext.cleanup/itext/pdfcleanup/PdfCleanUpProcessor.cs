@@ -764,6 +764,9 @@ namespace iText.PdfCleanup {
                                 imageToWrite.Put(PdfName.SMaskInData, originalImage.GetPdfObject().Get(PdfName.SMaskInData));
                             }
                         }
+                        if (originalImage.GetPdfObject().ContainsKey(PdfName.Decode)) {
+                            imageToWrite.Put(PdfName.Decode, originalImage.GetPdfObject().Get(PdfName.Decode));
+                        }
                     }
                 }
                 else {
