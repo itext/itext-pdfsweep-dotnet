@@ -52,22 +52,22 @@ namespace iText.PdfCleanup.Transparency {
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyMask() {
-            RunTest("imageMask", "1");
+            RunTest("imageMask", "1.6");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMask() {
-            RunTest("imageSMask", "1");
+            RunTest("imageSMask", "1.6");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencySMaskAIS() {
-            RunTest("imageSMaskAIS", "1");
+            RunTest("imageSMaskAIS", "1.6");
         }
 
         [NUnit.Framework.Test]
         public virtual void ImageTransparencyColorKeyMaskArray() {
-            RunTest("imageColorKeyMaskArray", "1");
+            RunTest("imageColorKeyMaskArray", "1.6");
         }
 
         [NUnit.Framework.Test]
