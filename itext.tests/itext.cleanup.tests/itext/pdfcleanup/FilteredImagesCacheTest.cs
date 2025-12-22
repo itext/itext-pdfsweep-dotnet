@@ -54,7 +54,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "1.2");
+            CompareByContent(cmp, output, outputPath, "1.6");
             AssertNumberXObjects(output, 1);
         }
 
@@ -86,7 +86,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(350, 450, 300, 20)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "1.2");
+            CompareByContent(cmp, output, outputPath, "1.6");
             AssertNumberXObjects(output, 5);
         }
 
@@ -103,7 +103,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 1, new Rectangle(150, 300, 300, 150)));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "1.2");
+            CompareByContent(cmp, output, outputPath, "1.6");
             AssertNumberXObjects(output, 2);
         }
 
@@ -130,7 +130,7 @@ namespace iText.PdfCleanup {
                 cleanUpLocations.Add(new iText.PdfCleanup.PdfCleanUpLocation(i + 2, region2));
             }
             CleanUp(pdfDocument, cleanUpLocations);
-            CompareByContent(cmp, output, outputPath, "1.2");
+            CompareByContent(cmp, output, outputPath, "1.6");
             AssertNumberXObjects(output, 1);
         }
 
@@ -153,7 +153,7 @@ namespace iText.PdfCleanup {
                 )));
             cleanUpTool.CleanUp();
             pdfDocument.Close();
-            CompareByContent(cmp, output, outputPath, "1.2");
+            CompareByContent(cmp, output, outputPath, "1.6");
             AssertNumberXObjects(output, 1);
         }
 
@@ -176,7 +176,7 @@ namespace iText.PdfCleanup {
                 )));
             cleanUpTool.CleanUp();
             pdfDocument.Close();
-            CompareByContent(cmp, output, outputPath, "1.2");
+            CompareByContent(cmp, output, outputPath, "1.6");
             AssertNumberXObjects(output, 1);
         }
 

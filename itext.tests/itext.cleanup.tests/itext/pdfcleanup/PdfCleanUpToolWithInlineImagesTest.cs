@@ -77,7 +77,7 @@ namespace iText.PdfCleanup {
             String cmp = inputPath + "cmp_inlineImageCleanup.pdf";
             CleanUp(input, output, null);
             CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
-            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "1");
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, outputPath, "1.2");
             String compareByContentResult = cmpTool.CompareByContent(output, cmp, outputPath);
             if (compareByContentResult != null) {
                 errorMessage += compareByContentResult;

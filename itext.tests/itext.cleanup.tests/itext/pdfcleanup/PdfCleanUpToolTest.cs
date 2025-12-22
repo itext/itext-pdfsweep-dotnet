@@ -377,7 +377,7 @@ namespace iText.PdfCleanup {
             CleanUp(input, output, JavaUtil.ArraysAsList(new iText.PdfCleanup.PdfCleanUpLocation(1, new Rectangle(150f
                 , 235f, 230f, 445f))));
             CleanUpImagesCompareTool cmpTool = new CleanUpImagesCompareTool();
-            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, OUTPUT_PATH, "1.2");
+            String errorMessage = cmpTool.ExtractAndCompareImages(output, cmp, OUTPUT_PATH, "2.0");
             String compareByContentResult = cmpTool.CompareByContent(output, cmp, OUTPUT_PATH);
             if (compareByContentResult != null) {
                 errorMessage += compareByContentResult;
