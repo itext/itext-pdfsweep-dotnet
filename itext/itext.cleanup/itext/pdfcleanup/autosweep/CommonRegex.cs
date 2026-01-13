@@ -20,6 +20,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+using System;
 using System.Text.RegularExpressions;
 
 namespace iText.PdfCleanup.Autosweep {
@@ -28,6 +29,7 @@ namespace iText.PdfCleanup.Autosweep {
     /// This class contains some of the more common regular expressions to be used for redaction.
     /// Most of these are copied verbatim from the "regular expression cookbook 2nd edition".
     /// </remarks>
+    [System.ObsoleteAttribute(@"to be removed")]
     public class CommonRegex {
         /*
         * NUMBERS
