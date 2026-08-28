@@ -40,6 +40,7 @@ using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Kernel.Pdf.Colorspace.Shading;
+using iText.Kernel.Pdf.Tagging;
 using iText.Kernel.Pdf.Tagutils;
 using iText.Kernel.Pdf.Xobject;
 using iText.PdfCleanup.Logs;
@@ -80,6 +81,10 @@ namespace iText.PdfCleanup {
         // TL actually is not a text positioning operator, but we need to process it with them
         private static readonly ICollection<String> TEXT_POSITIONING_OPERATORS = JavaCollectionsUtil.UnmodifiableSet
             (new HashSet<String>(JavaUtil.ArraysAsList("Td", "TD", "Tm", "T*", "TL")));
+
+        // Redacted ActualText and Alt entries of the canvas tags that are associated with the redacted content
+        // will be replaced with this value
+        private const String REDACTED_CONTENT = "Redacted content";
 
         // these operators are processed via PdfCanvasProcessor graphics state and event listener
         private static readonly ICollection<String> IGNORED_OPERATORS;
@@ -146,6 +151,10 @@ namespace iText.PdfCleanup {
 
         private LinkedList<CanvasTag> notWrittenTags;
 
+        // Stack of form XObject streams currently being processed.
+        // Used to match MCRs by their /Stm entry when content is inside a form XObject.
+        private Stack<PdfStream> currentFormXObjectStack;
+
         private int numOfOpenedTagsInsideText;
 
         private bool btEncountered;
@@ -172,6 +181,7 @@ namespace iText.PdfCleanup {
             this.notAppliedGsParams = new LinkedList<PdfCleanUpProcessor.NotAppliedGsParams>();
             this.notAppliedGsParams.AddFirst(new PdfCleanUpProcessor.NotAppliedGsParams());
             this.notWrittenTags = new LinkedList<CanvasTag>();
+            this.currentFormXObjectStack = new Stack<PdfStream>();
             this.numOfOpenedTagsInsideText = 0;
             this.btEncountered = false;
             this.isInText = false;
@@ -262,6 +272,9 @@ namespace iText.PdfCleanup {
 
         protected override void BeginMarkedContent(PdfName tag, PdfDictionary dict) {
             base.BeginMarkedContent(tag, dict);
+            // We might need to redact ActualText and Alt entries of the tags that are associated with the content.
+            // So we make them indirect.
+            EnsureIndirectIfCanBeRedacted(dict);
             notWrittenTags.AddFirst(new CanvasTag(tag).SetProperties(dict));
             if (btEncountered) {
                 ++numOfOpenedTagsInsideText;
@@ -328,6 +341,13 @@ namespace iText.PdfCleanup {
             }
         }
 //\endcond
+
+        private void EnsureIndirectIfCanBeRedacted(PdfDictionary props) {
+            if (props != null && (props.ContainsKey(PdfName.ActualText) || props.ContainsKey(PdfName.Alt)) && !props.IsIndirect
+                ()) {
+                props.MakeIndirect(document);
+            }
+        }
 
         private bool AnnotationIsToBeRedacted(PdfAnnotation annotation, Rectangle redactRegion) {
             // TODO(DEVSIX-1605,DEVSIX-1606,DEVSIX-1607,DEVSIX-1608,DEVSIX-1609)
@@ -451,6 +471,7 @@ namespace iText.PdfCleanup {
                 if (PdfName.Form.Equals(formStream.GetAsName(PdfName.Subtype))) {
                     WriteNotAppliedGsParams(true, true);
                     OpenNotWrittenTags();
+                    currentFormXObjectStack.Push(formStream);
                 }
             }
         }
@@ -459,6 +480,7 @@ namespace iText.PdfCleanup {
             if ("Do".Equals(@operator)) {
                 PdfStream formStream = GetXObjectStream((PdfName)operands[0]);
                 if (PdfName.Form.Equals(formStream.GetAsName(PdfName.Subtype))) {
+                    currentFormXObjectStack.Pop();
                     PdfCanvas cleanedCanvas = PopCleanedCanvas();
                     PdfFormXObject newFormXObject = new PdfFormXObject((Rectangle)null);
                     newFormXObject.GetPdfObject().PutAll(formStream);
@@ -487,7 +509,7 @@ namespace iText.PdfCleanup {
                     }
                     else {
                         if (PATH_PAINTING_OPERATORS.Contains(@operator)) {
-                            WritePath();
+                            CleanAndWritePath();
                         }
                         else {
                             if ("q".Equals(@operator)) {
@@ -589,8 +611,13 @@ namespace iText.PdfCleanup {
                         if (null == textChunks) {
                             textChunks = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredText();
                         }
-                        PdfArray filteredText = filter.FilterText(textChunks[i++]).GetFilterResult();
+                        PdfCleanUpFilter.FilterResult<PdfArray> filterResult = filter.FilterText(textChunks[i]);
+                        if (filterResult.IsModified()) {
+                            RedactTags(textChunks[i].GetCanvasTagHierarchy());
+                        }
+                        PdfArray filteredText = filterResult.GetFilterResult();
                         newTJ.AddAll(filteredText);
+                        ++i;
                     }
                     else {
                         newTJ.Add(e);
@@ -603,6 +630,7 @@ namespace iText.PdfCleanup {
                 textChunks = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredText();
                 PdfCleanUpFilter.FilterResult<PdfArray> filterResult = filter.FilterText(textChunks[0]);
                 if (filterResult.IsModified()) {
+                    RedactTags(textChunks[0].GetCanvasTagHierarchy());
                     cleanedText = filterResult.GetFilterResult();
                 }
             }
@@ -629,6 +657,88 @@ namespace iText.PdfCleanup {
                 }
                 textPositioning.AppendTjArrayWithSingleNumber(cleanedText, gs.GetFontSize(), gs.GetHorizontalScaling());
             }
+        }
+
+        private void RedactTags(IList<CanvasTag> tagHierarchy) {
+            ICollection<PdfDictionary> redactedStructElems = new HashSet<PdfDictionary>();
+            foreach (CanvasTag tag in tagHierarchy) {
+                RedactStructTreeByTag(tag, redactedStructElems);
+                PdfDictionary props = tag.GetProperties();
+                if (props == null) {
+                    continue;
+                }
+                if (props.ContainsKey(PdfName.ActualText)) {
+                    props.Put(PdfName.ActualText, new PdfString(REDACTED_CONTENT));
+                }
+                if (props.ContainsKey(PdfName.Alt)) {
+                    props.Put(PdfName.Alt, new PdfString(REDACTED_CONTENT));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Redacts /ActualText and /Alt on the struct element mapped to this marked content tag and
+        /// on all of its struct element ancestors up to the structure tree root.
+        /// </summary>
+        private void RedactStructTreeByTag(CanvasTag tag, ICollection<PdfDictionary> alreadyRedactedStructElems) {
+            if (!document.IsTagged() || !tag.HasMcid()) {
+                return;
+            }
+            PdfMcr mcr = FindMcrByMcid(tag);
+            if (mcr == null || !(mcr.GetParent() is PdfStructElem)) {
+                return;
+            }
+            IStructureNode node = mcr.GetParent();
+            while (node is PdfStructElem) {
+                PdfStructElem structElem = (PdfStructElem)node;
+                PdfDictionary structElemDict = structElem.GetPdfObject();
+                if (!alreadyRedactedStructElems.Contains(structElemDict)) {
+                    alreadyRedactedStructElems.Add(structElemDict);
+                    if (structElem.GetActualText() != null) {
+                        structElem.SetActualText(new PdfString(REDACTED_CONTENT));
+                    }
+                    if (structElem.GetAlt() != null) {
+                        structElem.SetAlt(new PdfString(REDACTED_CONTENT));
+                    }
+                }
+                else {
+                    // This struct element has already been redacted, so all of its ancestors have also been redacted
+                    break;
+                }
+                node = structElem.GetParent();
+            }
+        }
+
+        private PdfMcr FindMcrByMcid(CanvasTag tag) {
+            if (currentFormXObjectStack.IsEmpty()) {
+                // If we are not inside a form XObject, we can just look up the MCR by MCID in the page content stream
+                return document.GetStructTreeRoot().FindMcrByMcid(currentPage.GetPdfObject(), tag.GetMcid());
+            }
+            ICollection<PdfMcr> pageMcrs = document.GetStructTreeRoot().GetPageMarkedContentReferences(currentPage);
+            if (pageMcrs == null) {
+                return null;
+            }
+            PdfStream currentFormXobjectStream = currentFormXObjectStack.Peek();
+            PdfMcr pageMatchingMcid = null;
+            // Go over all MCRs on the page and find the one that matches the MCID of the current tag
+            foreach (PdfMcr candidate in pageMcrs) {
+                if (candidate == null || candidate.GetMcid() != tag.GetMcid()) {
+                    continue;
+                }
+                PdfObject candidateStm = candidate.GetPdfObject() is PdfDictionary ? ((PdfDictionary)candidate.GetPdfObject
+                    ()).Get(PdfName.Stm, false) : null;
+                if (currentFormXobjectStream.GetIndirectReference().Equals(candidateStm)) {
+                    // This is definitely the one we are looking for
+                    return candidate;
+                }
+                // Just in case we will not find any, let's take the one from the page content stream.
+                // Should be the same as
+                // document.getStructTreeRoot().findMcrByMcid(currentPage.getPdfObject(), tag.getMcid());
+                if (candidateStm == null) {
+                    pageMatchingMcid = candidate;
+                }
+            }
+            return pageMatchingMcid;
         }
 
         private void BeginTextObjectAndOpenNotWrittenTags() {
@@ -706,6 +816,12 @@ namespace iText.PdfCleanup {
                 ImageRenderInfo encounteredImage = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredImage();
                 FilteredImagesCache.FilteredImageKey key = filter.CreateFilteredImageKey(encounteredImage.GetImage(), encounteredImage
                     .GetImageCtm(), document);
+                IList<Rectangle> cleanedAreas = key.GetCleanedAreas();
+                // Null here means the image was fully covered. We will remove the whole canvas tag in this case anyway
+                // but not its ancestors. So we still need to redact ancestors.
+                if (cleanedAreas == null || !cleanedAreas.IsEmpty()) {
+                    RedactTags(encounteredImage.GetCanvasTagHierarchy());
+                }
                 PdfImageXObject imageToWrite = GetFilteredImage(key, encounteredImage.GetImageCtm());
                 if (imageToWrite != null) {
                     float[] ctm = PollNotAppliedCtm();
@@ -739,7 +855,7 @@ namespace iText.PdfCleanup {
                         GetFilteredImagesCache().Put(filteredImageKey, imageToWrite);
                         // While having been processed with java libraries, only the number of components mattered.
                         // However now we should put the correct color space dictionary as an image's resource,
-                        // because it'd be have been considered by pdf browsers before rendering it.
+                        // because it'd have been considered by pdf browsers before rendering it.
                         // Additional checks required as if an image format has been changed,
                         // then the old colorspace may produce an error with the new image data.
                         if (AreColorSpacesDifferent(originalImage, imageToWrite) && CleanUpCsCompareUtil.IsOriginalCsCompatible(originalImage
@@ -804,6 +920,9 @@ namespace iText.PdfCleanup {
         private void CleanInlineImage() {
             ImageRenderInfo encounteredImage = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredImage();
             PdfCleanUpFilter.FilterResult<ImageData> imageFilterResult = filter.FilterImage(encounteredImage);
+            if (imageFilterResult.IsModified()) {
+                RedactTags(encounteredImage.GetCanvasTagHierarchy());
+            }
             ImageData filteredImage;
             if (imageFilterResult.IsModified()) {
                 filteredImage = imageFilterResult.GetFilterResult();
@@ -828,7 +947,7 @@ namespace iText.PdfCleanup {
         // accepts Image as parameter. That's why we can't write image just as it was in original file, we convert it to Image.
         // IMPORTANT: If writing of pdf stream of not changed inline image will be implemented, don't forget to ensure that
         // inline image color space is present in new resources if necessary.
-        private void WritePath() {
+        private void CleanAndWritePath() {
             PathRenderInfo path = ((PdfCleanUpEventListener)GetEventListener()).GetEncounteredPath();
             bool stroke = (path.GetOperation() & PathRenderInfo.STROKE) == PathRenderInfo.STROKE;
             bool fill = (path.GetOperation() & PathRenderInfo.FILL) == PathRenderInfo.FILL;
@@ -844,10 +963,13 @@ namespace iText.PdfCleanup {
             // stroke path could not be combined with neither fill nor clip paths.
             // Some improved logic could be applied to distinguish the cases when some paths actually could be drawn as one,
             // but this is the only generic solution.
+            bool pathWasRedacted = false;
             Path fillPath = null;
             PdfCanvas canvas = GetCanvas();
             if (fill) {
-                fillPath = filter.FilterFillPath(path, path.GetRule());
+                Tuple2<Path, bool> filterResult = filter.FilterFillPath(path, path.GetRule());
+                fillPath = filterResult.GetFirst();
+                pathWasRedacted |= filterResult.GetSecond();
                 if (!fillPath.IsEmpty()) {
                     WriteNotAppliedGsParams(true, false);
                     OpenNotWrittenTags();
@@ -863,6 +985,7 @@ namespace iText.PdfCleanup {
             }
             if (stroke) {
                 Tuple2<Path, bool> strokePath = filter.FilterStrokePath(path);
+                pathWasRedacted |= strokePath.GetSecond();
                 if (!strokePath.GetFirst().IsEmpty()) {
                     if (strokePath.GetSecond()) {
                         // we pass stroke here as false, because stroke is transformed into fill. we don't need to set stroke color
@@ -880,10 +1003,13 @@ namespace iText.PdfCleanup {
             if (clip) {
                 Path clippingPath;
                 if (fill && path.GetClippingRule() == path.GetRule()) {
+                    // Reuse the already filtered fill path; modification already tracked above
                     clippingPath = fillPath;
                 }
                 else {
-                    clippingPath = filter.FilterFillPath(path, path.GetClippingRule());
+                    Tuple2<Path, bool> filterResult = filter.FilterFillPath(path, path.GetClippingRule());
+                    clippingPath = filterResult.GetFirst();
+                    pathWasRedacted |= filterResult.GetSecond();
                 }
                 if (!clippingPath.IsEmpty()) {
                     WriteNotAppliedGsParams(false, false);
@@ -910,6 +1036,9 @@ namespace iText.PdfCleanup {
                     canvas.MoveTo(0, 0).Clip();
                 }
                 canvas.EndPath();
+            }
+            if (pathWasRedacted) {
+                RedactTags(path.GetCanvasTagHierarchy());
             }
         }
 

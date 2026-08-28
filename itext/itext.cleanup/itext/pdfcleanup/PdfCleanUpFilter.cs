@@ -242,9 +242,12 @@ namespace iText.PdfCleanup {
         /// <summary>Filter a PathRenderInfo object.</summary>
         /// <param name="path">the PathRenderInfo object to be filtered</param>
         /// <returns>
-        /// a filtered
+        /// a filtered result represented by
+        /// <see cref="iText.Commons.Datastructures.Tuple2{T1, T2}"/>
+        /// object where first value is
         /// <see cref="iText.Kernel.Geom.Path"/>
-        /// object.
+        /// object
+        /// and second value is a boolean flag indicating whether the path was filtered or not
         /// </returns>
         internal virtual Tuple2<Path, bool> FilterStrokePath(PathRenderInfo path) {
             PdfArray dashPattern = path.GetLineDashPattern();
@@ -260,15 +263,20 @@ namespace iText.PdfCleanup {
         /// <param name="path">the PathRenderInfo object to be filtered</param>
         /// <param name="fillingRule">
         /// an integer parameter, specifying whether the subpath is contour.
-        /// If the subpath is contour, pass any value.
+        /// If the subpath is contour, pass any value
         /// </param>
         /// <returns>
-        /// a filtered
+        /// a filtered result represented by
+        /// <see cref="iText.Commons.Datastructures.Tuple2{T1, T2}"/>
+        /// object where first value is
         /// <see cref="iText.Kernel.Geom.Path"/>
-        /// object.
+        /// object
+        /// and second value is a boolean flag indicating whether the path was filtered or not
         /// </returns>
-        internal virtual Path FilterFillPath(PathRenderInfo path, int fillingRule) {
-            return FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule, false);
+        internal virtual Tuple2<Path, bool> FilterFillPath(PathRenderInfo path, int fillingRule) {
+            Path resultPath = FilterFillPath(path.GetPath(), path.GetCtm(), fillingRule);
+            // if path was not filtered, return original path
+            return new Tuple2<Path, bool>(resultPath, resultPath != path.GetPath());
         }
 //\endcond
 
@@ -280,27 +288,23 @@ namespace iText.PdfCleanup {
 //\endcond
 
         /// <summary>Note: this method will close all unclosed subpaths of the passed path.</summary>
-        /// <param name="path">the PathRenderInfo object to be filtered.</param>
-        /// <param name="ctm">
+        /// <param name="path">
         /// a
         /// <see cref="iText.Kernel.Geom.Path"/>
-        /// transformation matrix.
+        /// to be filtered
         /// </param>
-        /// <param name="fillingRule">If the subpath is contour, pass any value.</param>
-        /// <param name="checkForIntersection">
-        /// if true, the intersection check of path and regions will be performed, and if
-        /// there is no intersection, original path from parameters will be returned.
-        /// We pass true when we filter stroke path (stroke converted to fill)
-        /// not to put fill path into the output if it's not intersected with cleanup area.
-        /// We pass false when we filter fill and clip paths (there we don't convert stroke to
-        /// fill) and thus happy with the result from ClipperBridge DIFFERENCES.
+        /// <param name="ctm">
+        /// a
+        /// <see cref="iText.Kernel.Geom.Matrix"/>
+        /// transformation matrix
         /// </param>
+        /// <param name="fillingRule">if the subpath is contour, pass any value</param>
         /// <returns>
         /// a filtered
         /// <see cref="iText.Kernel.Geom.Path"/>
-        /// object.
+        /// object
         /// </returns>
-        private Path FilterFillPath(Path path, Matrix ctm, int fillingRule, bool checkForIntersection) {
+        private Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
             path.CloseAllSubpaths();
             IList<Point[]> transfRectVerticesList = new List<Point[]>();
             foreach (Rectangle rectangle in regions) {
@@ -328,14 +332,12 @@ namespace iText.PdfCleanup {
             if (fillingRule == PdfCanvasConstants.FillingRule.EVEN_ODD) {
                 fillType = PolyFillType.EVEN_ODD;
             }
-            if (checkForIntersection) {
-                //Find intersection with cleanup areas
-                PolyTree cleanupAreaIntersection = new PolyTree();
-                clipper.Execute(ClipType.INTERSECTION, cleanupAreaIntersection, fillType, PolyFillType.NON_ZERO);
-                if (iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.PolyTreeToPaths(cleanupAreaIntersection).IsEmpty()) {
-                    //if there are no intersections, return original path as mark that no need to filter anything
-                    return path;
-                }
+            // Find intersection with cleanup areas
+            PolyTree cleanupAreaIntersection = new PolyTree();
+            clipper.Execute(ClipType.INTERSECTION, cleanupAreaIntersection, fillType, PolyFillType.NON_ZERO);
+            if (iText.Kernel.Pdf.Canvas.Parser.ClipperLib.Clipper.PolyTreeToPaths(cleanupAreaIntersection).IsEmpty()) {
+                // If there are no intersections, return original path as mark that no need to filter anything
+                return path;
             }
             PolyTree resultTree = new PolyTree();
             clipper.Execute(ClipType.DIFFERENCE, resultTree, fillType, PolyFillType.NON_ZERO);
@@ -400,8 +402,8 @@ namespace iText.PdfCleanup {
                     }
                 }
             }
-            Path resultPath = FilterFillPath(offsetedPath, ctm, PdfCanvasConstants.FillingRule.NONZERO_WINDING, true);
-            //if path was not filtered, return original path
+            Path resultPath = FilterFillPath(offsetedPath, ctm, PdfCanvasConstants.FillingRule.NONZERO_WINDING);
+            // if path was not filtered, return original path
             if (resultPath == offsetedPath) {
                 return new Tuple2<Path, bool>(sourcePath, false);
             }
