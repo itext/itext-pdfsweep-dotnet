@@ -8,7 +8,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="itext" Version="9.8.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.io\itext.io.csproj')" />
+    <PackageReference Include="itext" Version="9.9.0-SNAPSHOT" Condition="!Exists('..\..\..\itextcore\itext\itext.io\itext.io.csproj')" />
     <ProjectReference Include="..\..\..\itextcore\itext\itext.layout\itext.layout.csproj" Condition="Exists('..\..\..\itextcore\itext\itext.layout\itext.layout.csproj')" />
   </ItemGroup>
 </Project>
