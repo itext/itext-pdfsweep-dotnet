@@ -24,6 +24,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using iText.Commons.Actions;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.IO.Source;
 using iText.Kernel.Colors;

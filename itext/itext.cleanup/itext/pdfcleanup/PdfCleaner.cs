@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using System.Collections.Generic;
 using System.IO;
 using iText.Commons.Actions.Contexts;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.Kernel.Pdf;
 using iText.PdfCleanup.Autosweep;

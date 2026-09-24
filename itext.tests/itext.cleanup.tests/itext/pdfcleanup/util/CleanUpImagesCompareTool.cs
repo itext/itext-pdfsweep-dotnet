@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iText.Commons.Internal.Runtime;
 using iText.Commons.Utils;
 using iText.IO.Util;
 using iText.Kernel.Exceptions;
@@ -145,7 +146,7 @@ namespace iText.PdfCleanup.Util {
             return resultErrorMessage.ToString();
         }
 
-        protected override bool CompareObjects(PdfObject outObj, PdfObject cmpObj, ObjectPath currentPath, CompareTool.CompareResult
+        protected override bool CompareObjects(PdfObject outObj, PdfObject cmpObj, ObjectPath currentPath, CompareToolResult
              compareResult) {
             if (ignoredObjectPaths.Contains(currentPath)) {
                 // Current objects should not be compared, if its ObjectPath is contained in ignored list

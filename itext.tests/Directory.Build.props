@@ -1,0 +1,35 @@
+<Project>
+    <!-- Build.props file evaluated before .csrpoj file processing -->
+    <PropertyGroup Label="Common">
+        <TargetFrameworks>net461</TargetFrameworks>
+        <!-- Signing -->
+        <SignAssembly>true</SignAssembly>
+        <DelaySign>false</DelaySign>
+        <AssemblyOriginatorKeyFile>itext.snk</AssemblyOriginatorKeyFile>
+        <!-- SDK-generated assembly attributes -->
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+        <!-- Output -->
+        <OutputType>library</OutputType>
+
+        <!-- Compiler -->
+        <WarningLevel>0</WarningLevel>
+
+        <!-- Warnings -->
+        <NoWarn>1701;1702;1591;1570;1572;1573;1574;1580;1584;1658</NoWarn>
+        <!-- TODO DEVSIX-9075: remove this suppression -->
+        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+
+        <RootNamespace/>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'net461'  ">
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1"/>
+        <PackageReference Include="NUnit" Version="3.11.0"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="3.13.0"/>
+        <PackageReference Include="Microsoft.CodeCoverage" Version="16.11.0"/>
+        <Reference Include="System"/>
+        <Reference Include="System.Core"/>
+    </ItemGroup>
+
+</Project>
