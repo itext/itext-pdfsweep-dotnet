@@ -168,19 +168,25 @@ namespace iText.PdfCleanup {
 
         private Color fillColor;
 
-        public CCharacterRenderInfo(TextRenderInfo tri)
+//\cond DO_NOT_DOCUMENT
+        internal CCharacterRenderInfo(TextRenderInfo tri)
             : base(tri) {
             this.strokeColor = tri.GetStrokeColor();
             this.fillColor = tri.GetFillColor();
         }
+//\endcond
 
-        public virtual Color GetStrokeColor() {
+//\cond DO_NOT_DOCUMENT
+        internal virtual Color GetStrokeColor() {
             return strokeColor;
         }
+//\endcond
 
-        public virtual Color GetFillColor() {
+//\cond DO_NOT_DOCUMENT
+        internal virtual Color GetFillColor() {
             return fillColor;
         }
+//\endcond
     }
 //\endcond
 
